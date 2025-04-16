@@ -33,6 +33,10 @@ This repository contains scripts for various Azure Arc-enabled SQL Server manage
 ### Onboarding Automation
 - [`arc-server-onboarding-automation`](arc-server-onboarding-automation): Scripts and documentation for automating the onboarding of servers to Azure Arc.
 
+### Learning Resources
+- [`arc-sql-videos`](arc-sql-videos): Collection of instructional videos about Azure Arc-enabled SQL Server, including overview, monitoring features, and migration assessment demonstrations.
+- [`arc-sql-presentation-files`](arc-sql-presentation-files): Presentation materials related to Azure Arc-enabled SQL Server, suitable for technical briefings, customer presentations, and education.
+
 ## Prerequisites
 
 - Azure subscription
