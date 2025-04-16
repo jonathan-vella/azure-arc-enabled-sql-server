@@ -26,6 +26,7 @@ This repository contains scripts for various Azure Arc-enabled SQL Server manage
 
 ### Monitoring and Management
 - [`arc-sql-monitoring`](arc-sql-monitoring): Configure monitoring features for Azure Arc-enabled SQL Server.
+- [`arc-sql-data-collection`](arc-sql-data-collection): Documentation on the data collection process and categories for SQL Server enabled by Azure Arc, including usage metrics, monitoring data, and privacy considerations.
 - [`arc-sql-report-reclass-extension-status`](arc-sql-report-reclass-extension-status): Report on SQL Azure Arc reclassification status.
 - [`arc-sql-uninstall-azure-extension-for-sql-server`](arc-sql-uninstall-azure-extension-for-sql-server): Uninstall Azure extension for SQL Server.
 
