@@ -15,7 +15,7 @@ In this episode with Anna Hoffman and Bob Ward, you will learn the benefits of c
 Dale Kirby, Principal Partners Solutions Architect, demonstrates how to Arc-Enable your SQL Servers to get the benefits of Azure while remaining On-Prem if you can’t migrate yet. Discover how easy it is to manage your SQL Servers through Azure Arc. Learn how to onboard your servers and take advantage of all the benefits that Azure Arc has to offer. For more information or guidance, check out our manual or leave your questions in the comments below.
 
 ### Simplify SQL Licensing with Azure Arc
-[!Learn how to configure unlimited virtualization by licensing physical cores of the host using Pay as you go billing or License + Software Assurance.](https://img.youtube.com/vi/ypM73pHllQc/0.jpg)](https://www.youtube.com/watch?v=ypM73pHllQc)
+[!Learn how to configure unlimited virtualization by licensing physical cores of the host using Pay as you go billing or License + Software Assurance(https://img.youtube.com/vi/ypM73pHllQc/0.jpg)](https://www.youtube.com/watch?v=ypM73pHllQc)
 
 This video demonstrates how to use the migration assessment features in Azure Arc-enabled SQL Server to evaluate and plan SQL Server migrations to Azure SQL services.
 
