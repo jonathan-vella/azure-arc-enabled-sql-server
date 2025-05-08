@@ -29,6 +29,7 @@ This repository contains scripts for various Azure Arc-enabled SQL Server manage
 - [`arc-sql-data-collection`](arc-sql-data-collection): Documentation on the data collection process and categories for SQL Server enabled by Azure Arc, including usage metrics, monitoring data, and privacy considerations.
 - [`arc-sql-report-reclass-extension-status`](arc-sql-report-reclass-extension-status): Report on SQL Azure Arc reclassification status.
 - [`arc-sql-uninstall-azure-extension-for-sql-server`](arc-sql-uninstall-azure-extension-for-sql-server): Uninstall Azure extension for SQL Server.
+- [`arc-sql-connectivity`](arc-sql-connectivity): Documentation and tools for checking network connectivity for Azure Connected Machine Agent, essential for Azure Arc-enabled SQL Server functionality.
 
 ### Onboarding Automation
 - [`arc-server-onboarding-automation`](arc-server-onboarding-automation): Scripts and documentation for automating the onboarding of servers to Azure Arc.
