@@ -32,11 +32,11 @@ This guide explains how to enable, run, and review the Best Practices Assessment
 5. Confirm the schedule (default every Sunday 12:00 AM). You can adjust later under Configuration.
 
 Media (from Microsoft TechCommunity):
-- Severity distribution example: https://techcommunity.microsoft.com/t5/s/gxcuf89792/images/bS0zNzE1Nzc2LTQzMjYyOGlBNTM2RDQ1NUE3MEQzNENF?image-dimensions=933x423&revision=12
-- Area distribution example: https://techcommunity.microsoft.com/t5/s/gxcuf89792/images/bS0zNzE1Nzc2LTQzMjYzNWlDMTNDMzMwQjkxRjc2MkY5?image-dimensions=967x268&revision=12
-- Issue grids: https://techcommunity.microsoft.com/t5/s/gxcuf89792/images/bS0zNzE1Nzc2LTQzMjY0MmlDNDQxQzdBMEJDMkIxRDFG?image-dimensions=999x226&revision=12
-- Detailed issue view: https://techcommunity.microsoft.com/t5/s/gxcuf89792/images/bS0zNzE1Nzc2LTQzMjY0NWlFMjZDQkNGRjM5QzM5MTRB?image-dimensions=813x999&revision=12
-- Trends (resolved issues): https://techcommunity.microsoft.com/t5/s/gxcuf89792/images/bS0zNzE1Nzc2LTQzMzgxMmlCQjRFNjI4NjQwNzk3QUQ3?image-dimensions=736x612&revision=12
+- Severity distribution example: media/severity-distribution-example.png
+- Area distribution example: media/area-distribution-example.png
+- Issue grids: media/issue-grids.png
+- Detailed issue view: media/detailed-issue-view.png
+- Trends (resolved issues): media/trends-resolved-issues.png
 
 ## Enable at scale (Azure Policy)
 
