@@ -4,13 +4,34 @@ This guide enables Best Practices Assessment (BPA) for many Arc-enabled SQL Serv
 
 ## Architecture
 
-Arc RG (servers + SQL extension)         Policy Assignment (subscription scope)        Logs RG (workspace)
-+-----------------------------------+     +--------------------------------------+     +---------------------------+
-| Arc-enabled servers (Windows)     | <-- | Configure Arc-enabled Servers with   | --> | Log Analytics Workspace   |
-|  • SQL extension (WindowsAgent...)|     | SQL Server extension installed to    |     |  (BPA results in Logs)    |
-|  • Instances discovered           |     | enable or disable SQL best practices |     +---------------------------+
-|  • Assessment runs weekly         |     | assessment                           |
-+-----------------------------------+     +--------------------------------------+
+```mermaid
+flowchart LR
+    subgraph ArcRG[Arc Resource Group]
+        Servers[Arc-enabled Servers<br/>Windows]
+        SQLExt[SQL Extension<br/>WindowsAgent.SqlServer]
+        Instances[SQL Instances<br/>Discovered & Assessed]
+        
+        Servers --> SQLExt
+        SQLExt --> Instances
+    end
+    
+    subgraph LogsRG[Log Analytics Resource Group]
+        LA[Log Analytics Workspace<br/>BPA Results & Queries]
+    end
+    
+    Policy[Azure Policy Assignment<br/>Configure Arc-enabled Servers with<br/>SQL Server extension installed to<br/>enable or disable SQL best<br/>practices assessment]
+    
+    Policy -.-> ArcRG
+    Policy -.-> LogsRG
+    Instances --Assessment Data--> LA
+    
+    classDef resourceGroup fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef policy fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef dataFlow stroke:#388e3c,stroke-width:3px
+    
+    class ArcRG,LogsRG resourceGroup
+    class Policy policy
+```
 
 Notes
 - BPA supports SQL Server license types Paid or PAYG; LicenseOnly isn’t supported.
