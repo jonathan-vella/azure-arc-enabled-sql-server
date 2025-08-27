@@ -32,11 +32,11 @@ This guide explains how to enable, run, and review the Best Practices Assessment
 5. Confirm the schedule (default every Sunday 12:00 AM). You can adjust later under Configuration.
 
 Media (from Microsoft TechCommunity):
-- Severity distribution example: media/severity-distribution-example.png
-- Area distribution example: media/area-distribution-example.png
-- Issue grids: media/issue-grids.png
-- Detailed issue view: media/detailed-issue-view.png
-- Trends (resolved issues): media/trends-resolved-issues.png
+- ![Severity distribution example](media/severity-distribution-example.png)
+- ![Area distribution example](media/area-distribution-example.png)
+- ![Issue grids](media/issue-grids.png)
+- ![Detailed issue view](media/detailed-issue-view.png)
+- ![Trends (resolved issues)](media/trends-resolved-issues.png)
 
 ## Enable at scale (Azure Policy)
 
@@ -99,11 +99,11 @@ SqlAssessment_CL
 
 - Review required roles and workspace access if enablement fails or results don’t appear.
 - Verify AMA presence and proxy connectivity to required endpoints listed above.
-- See the official troubleshooting guide: https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/troubleshoot-assessment?view=sql-server-ver17
+- See the [official troubleshooting guide](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/troubleshoot-assessment?view=sql-server-ver17).
 
 ## Related documentation
 
-- Configure best practices assessment: https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/assess?view=sql-server-ver17&tabs=portal
-- Azure Monitor Agent proxy config: https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-data-collection-endpoint?tabs=ArmPolicy#proxy-configuration
-- Manage configuration (license types): https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/manage-configuration?view=sql-server-ver17
-- Arc-enabled SQL Server overview: https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview?view=sql-server-ver17
+- [Configure best practices assessment](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/assess?view=sql-server-ver17&tabs=portal)
+- [Azure Monitor Agent proxy configuration](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-data-collection-endpoint?tabs=ArmPolicy#proxy-configuration)
+- [Manage configuration (license types)](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/manage-configuration?view=sql-server-ver17)
+- [Arc-enabled SQL Server overview](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview?view=sql-server-ver17)
