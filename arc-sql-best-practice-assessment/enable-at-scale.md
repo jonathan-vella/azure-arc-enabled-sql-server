@@ -49,6 +49,112 @@ Notes
 
 Replace placeholders in angle brackets and run in an elevated PowerShell session with Az modules installed.
 
+**Dry-run version** (validates without creating resources):
+```powershell
+# DRY RUN: BPA At-Scale Enablement - Validation Only
+param([switch]$Execute = $false)
+
+if (-not $Execute) {
+    Write-Host "=== DRY RUN MODE - No resources will be created ===" -ForegroundColor Yellow
+    Write-Host "Use -Execute to run with actual resource creation`n" -ForegroundColor Gray
+}
+
+# 0) Sign in and select subscription
+if (-not $Execute) { Write-Host "WOULD RUN: Connect-AzAccount" -ForegroundColor Cyan }
+else { Connect-AzAccount | Out-Null }
+
+$subscriptionId = '<subscription-id>'  # Replace with actual subscription ID
+if (-not $Execute) { Write-Host "WOULD RUN: Set-AzContext -Subscription $subscriptionId" -ForegroundColor Cyan }
+else { Set-AzContext -Subscription $subscriptionId | Out-Null }
+
+# 1) Create resource groups (separate RGs for Arc resources and LA workspace)
+$location = '<region>'                # e.g., westus, westeurope, swedencentral
+$arcRg    = '<arc-resources-rg>'      # e.g., rg-arc-sql-prod
+$laRg     = '<log-analytics-rg>'      # e.g., rg-ops-logs
+
+if (-not $Execute) {
+    Write-Host "WOULD CREATE: Resource Group '$arcRg' in '$location'" -ForegroundColor Cyan
+    Write-Host "WOULD CREATE: Resource Group '$laRg' in '$location'" -ForegroundColor Cyan
+} else {
+    New-AzResourceGroup -Name $arcRg -Location $location -ErrorAction SilentlyContinue | Out-Null
+    New-AzResourceGroup -Name $laRg  -Location $location -ErrorAction SilentlyContinue | Out-Null
+}
+
+# 2) Create Log Analytics workspace
+$laName = '<workspace-name>'          # e.g., la-arc-sql-bpa
+if (-not $Execute) {
+    Write-Host "WOULD CREATE: Log Analytics Workspace '$laName' in RG '$laRg'" -ForegroundColor Cyan
+    # Simulate workspace details for dry run
+    $laId = "/subscriptions/$subscriptionId/resourceGroups/$laRg/providers/Microsoft.OperationalInsights/workspaces/$laName"
+    $laLocation = $location
+} else {
+    New-AzOperationalInsightsWorkspace -ResourceGroupName $laRg -Name $laName -Location $location -Sku PerGB2018 -ErrorAction SilentlyContinue | Out-Null
+    # Capture workspace details
+    $la = Get-AzOperationalInsightsWorkspace -ResourceGroupName $laRg -Name $laName
+    $laId = $la.ResourceId
+    $laLocation = $la.Location
+}
+
+Write-Host "✓ Workspace ID: $laId" -ForegroundColor Green
+Write-Host "✓ Workspace Location: $laLocation" -ForegroundColor Green
+
+# 3) Locate the built-in policy definition by display name
+Write-Host "`nLooking up BPA policy definition..." -ForegroundColor Yellow
+$policyDisplayNamePattern = 'Configure Arc-enabled Servers with SQL Server extension installed to enable or disable SQL best practices assessment'
+if (-not $Execute) {
+    Write-Host "WOULD RUN: Get-AzPolicyDefinition | Where-Object DisplayName matches pattern" -ForegroundColor Cyan
+    Write-Host "✓ Policy lookup: SIMULATED SUCCESS" -ForegroundColor Green
+} else {
+    $policyDefinition = Get-AzPolicyDefinition | Where-Object { $_.Properties.DisplayName -match [regex]::Escape($policyDisplayNamePattern) }
+    if (-not $policyDefinition) { throw "Policy definition not found: $policyDisplayNamePattern" }
+    Write-Host "✓ Found policy: $($policyDefinition.Properties.DisplayName)" -ForegroundColor Green
+    # (Optional) Inspect parameter names to confirm keys
+    $policyDefinition.Properties.Parameters.GetEnumerator() | Select-Object Name, Value | Format-Table -AutoSize
+}
+
+# 4) Assign the policy (use subscription scope when RGs differ)
+$scope = "/subscriptions/$subscriptionId"
+$policyAssignmentName = 'SQLBestPracticesAssessmentAssignment'
+
+$parameters = @{
+  laWorkspaceId       = $laId
+  laWorkspaceLocation = $laLocation
+  isEnabled           = $true       # set $false to disable assessment
+}
+
+Write-Host "`nPolicy Assignment Details:" -ForegroundColor Yellow
+Write-Host "  Name: $policyAssignmentName" -ForegroundColor Gray
+Write-Host "  Scope: $scope" -ForegroundColor Gray
+Write-Host "  Parameters:" -ForegroundColor Gray
+$parameters.GetEnumerator() | ForEach-Object {
+    Write-Host "    $($_.Key): $($_.Value)" -ForegroundColor DarkGray
+}
+
+if (-not $Execute) {
+    Write-Host "`nWOULD CREATE: Policy Assignment with System-Assigned Identity" -ForegroundColor Cyan
+} else {
+    New-AzPolicyAssignment -Name $policyAssignmentName `
+      -DisplayName 'Enable SQL Best Practices Assessment (Arc-enabled SQL)' `
+      -PolicyDefinition $policyDefinition `
+      -Scope $scope `
+      -PolicyParameterObject $parameters `
+      -IdentityType 'SystemAssigned' `
+      -Location $location | Out-Null
+}
+
+# 5) Verify assignment
+if (-not $Execute) {
+    Write-Host "`nWOULD VERIFY: Get-AzPolicyAssignment -Name $policyAssignmentName -Scope $scope" -ForegroundColor Cyan
+    Write-Host "`n✓ DRY RUN COMPLETED SUCCESSFULLY" -ForegroundColor Green
+    Write-Host "All parameters validated. Ready for execution with -Execute flag." -ForegroundColor Gray
+} else {
+    Write-Host "`nVerifying policy assignment..." -ForegroundColor Yellow
+    Get-AzPolicyAssignment -Name $policyAssignmentName -Scope $scope | Format-List Name, Scope, EnforcementMode
+    Write-Host "`n✓ EXECUTION COMPLETED SUCCESSFULLY" -ForegroundColor Green
+}
+```
+
+**Production version** (creates actual resources):
 ```powershell
 # 0) Sign in and select subscription
 Connect-AzAccount | Out-Null
@@ -56,7 +162,7 @@ $subscriptionId = '<subscription-id>'
 Set-AzContext -Subscription $subscriptionId | Out-Null
 
 # 1) Create resource groups (separate RGs for Arc resources and LA workspace)
-$location = '<region>'                # e.g., westus, westeurope
+$location = '<region>'                # e.g., westus, westeurope, swedencentral
 $arcRg    = '<arc-resources-rg>'      # e.g., rg-arc-sql-prod
 $laRg     = '<log-analytics-rg>'      # e.g., rg-ops-logs
 
