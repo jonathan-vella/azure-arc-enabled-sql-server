@@ -2,12 +2,15 @@
 
 This repository contains scripts and utilities for managing SQL Server instances enabled by Azure Arc.
 
+Last updated: 2025-08-27
+
 ## Overview
 
 **SQL Server enabled by Azure Arc** extends Azure management and governance capabilities to SQL Server instances hosted outside of Azure—including on-premises, edge, or other cloud environments. With Azure Arc, you can:
 
 - Manage your SQL Server instances at scale from a single point of control in Azure
-- Monitor performance and inventory across all connected SQL Server instances
+- Automatically connect SQL Server instances discovered on Arc-enabled servers in supported regions (auto-connect), with an optional least-privilege mode rollout
+- Monitor performance and inventory across connected SQL Server instances (monitoring features are under active development; see docs for current preview scope)
 - Assess migration readiness and receive recommendations for Azure SQL targets
 - Enable advanced features such as Microsoft Defender for Cloud and Microsoft Purview integration
 - Access Extended Security Updates (ESUs) for end-of-support SQL Server versions
@@ -30,6 +33,7 @@ This repository contains scripts for various Azure Arc-enabled SQL Server manage
 - [`arc-sql-report-reclass-extension-status`](arc-sql-report-reclass-extension-status): Report on SQL Azure Arc reclassification status.
 - [`arc-sql-uninstall-azure-extension-for-sql-server`](arc-sql-uninstall-azure-extension-for-sql-server): Uninstall Azure extension for SQL Server.
 - [`arc-sql-connectivity`](arc-sql-connectivity): Documentation and tools for checking network connectivity for Azure Connected Machine Agent, essential for Azure Arc-enabled SQL Server functionality.
+- [`arc-sql-best-practice-assessment`](arc-sql-best-practice-assessment): Enable and manage SQL Best Practices Assessment; includes an at-scale Azure Policy guide.
 
 ### Onboarding Automation
 - [`arc-server-onboarding-automation`](arc-server-onboarding-automation): Scripts and documentation for automating the onboarding of servers to Azure Arc.
@@ -46,12 +50,15 @@ This repository contains scripts for various Azure Arc-enabled SQL Server manage
 - Azure PowerShell module installed
 - Appropriate Azure RBAC permissions
 - Network connectivity to Azure (outbound HTTPS on TCP port 443)
+ - Registered resource providers: `Microsoft.AzureArcData` and `Microsoft.HybridCompute`
 
 ## Important Notes
 
-- For successful onboarding and functioning, assign the same region to both Arc-enabled Server and Arc-enabled SQL Server resources
-- SQL Server enabled by Azure Arc is available in multiple Azure regions (see [documentation](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview?view=sql-server-ver16) for complete list)
-- Review the [architecture](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview?view=sql-server-ver16#architecture) and [prerequisites](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/connect-sql-server-azure-arc?view=sql-server-ver16) before deployment
+- The Arc-enabled SQL Server resource uses the same region and resource group as the Arc-enabled server resource on which the instance is discovered.
+- Auto-connect: In supported regions, SQL instances on Arc-enabled servers are automatically connected and discovered. For environments requiring manual control (or regions without auto-connect), you can connect instances explicitly.
+- A tag `ArcSQLServerExtensionDeployment = Disabled` on the Arc-enabled server resource prevents automatic SQL extension deployment.
+- Best Practices Assessment supports license types Paid or PAYG (not LicenseOnly) and currently runs on Windows hosts.
+- Review the architecture and prerequisites before deployment.
 
 ## Getting Started
 
@@ -66,10 +73,11 @@ This repository contains scripts for various Azure Arc-enabled SQL Server manage
 
 ## Learn More
 
-- [SQL Server enabled by Azure Arc - Overview](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview?view=sql-server-ver16)
-- [Connect your SQL Server to Azure Arc](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/connect-sql-server-azure-arc?view=sql-server-ver16)
-- [Configure SQL best practices assessment - SQL Server enabled by Azure Arc](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/sql-best-practices-assessment-azure-arc?view=sql-server-ver16)
-- [Monitor SQL Server enabled by Azure Arc (preview)](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/monitor-sql-server-azure-arc?view=sql-server-ver16)
+- [SQL Server enabled by Azure Arc - Overview](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview?view=sql-server-ver17)
+- [Connect your SQL Server to Azure Arc](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/connect?view=sql-server-ver17)
+- [Manage automatic connection (auto-connect)](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/manage-autodeploy?view=sql-server-ver17)
+- [Best practices assessment](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/assess?view=sql-server-ver17)
+- [Monitoring (preview)](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/sql-monitoring?view=sql-server-ver17)
 - [Azure Arc documentation](https://learn.microsoft.com/en-us/azure/azure-arc/)
 
 ## Security Best Practices
