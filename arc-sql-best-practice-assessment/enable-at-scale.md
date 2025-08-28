@@ -2,6 +2,40 @@
 
 This guide enables Best Practices Assessment (BPA) for many Arc-enabled SQL Server instances using a single Azure Policy assignment. It uses two resource groups: one for Arc resources and one dedicated to a Log Analytics workspace.
 
+## Table of Contents
+- [Overview](#overview)
+- [Quick Start](#quick-start)
+- [Architecture](#architecture)
+- [Important Notes](#important-notes)
+- [Prerequisites](#prerequisites)
+- [Steps (PowerShell)](#steps-powershell)
+- [Verification and Remediation](#verification-and-remediation)
+- [Monitoring and Management](#monitoring-and-management)
+- [Considerations](#considerations)
+- [References](#references)
+
+## Overview
+
+Best Practices Assessment provides automated recommendations for:
+- SQL Server and database configurations
+- Index management  
+- Deprecated features
+- Enabled or missing trace flags
+- Statistics
+
+**Assessment duration**: Few minutes to an hour (depending on environment size)  
+**Performance impact**: Up to 10% CPU during assessment runs  
+**Default schedule**: Every Sunday at 12:00 AM local time
+
+## Quick Start
+
+1. **Validate prerequisites**: Ensure Windows-only SQL instances with Paid/PAYG licensing
+2. **Test with dry-run**: Use the validation script below to test parameters
+3. **Deploy at scale**: Use Azure Policy to enable BPA across multiple servers
+4. **Monitor compliance**: Review Azure Policy compliance and remediation status
+
+> **⚠️ Important**: Always test with dry-run mode first!
+
 ## Architecture
 
 ```mermaid
@@ -33,23 +67,66 @@ flowchart LR
     class Policy policy
 ```
 
-Notes
-- BPA supports SQL Server license types Paid or PAYG; LicenseOnly isn’t supported.
-- Windows-only; Linux instances aren’t supported.
-- If the workspace is in a different resource group than the SQL resources (recommended separation), assign the policy at subscription scope.
+## Important Notes
+
+> **Licensing**: BPA supports SQL Server license types **Paid** or **PAYG** only. LicenseOnly isn't supported.
+> 
+> **Platform**: Windows-only; Linux instances aren't supported.
+> 
+> **Policy Scope**: If the workspace is in a different resource group than the SQL resources (recommended separation), assign the policy at **subscription scope**.
 
 ## Prerequisites
 
-- Roles at target scope (subscription or resource group): Resource Policy Contributor (for policy assignment). If creating a user-assigned identity, also User Access Administrator; this guide uses system-assigned identity.
-- Azure extension for SQL Server (WindowsAgent.SqlServer) minimum version: single-instance ≥ 1.1.2202.47; multi-instance > 1.1.2231.59.
-- Named instances require SQL Server Browser service to be running.
-- Azure Monitor Agent (AMA) used for data collection; ensure outbound TCP 443 to Azure Monitor endpoints such as: `global.handler.control.monitor.azure.com`, `*.handler.control.monitor.azure.com`, `<workspaceId>.ods.opinsights.azure.com`, `*.ingest.monitor.azure.com`.
+### Licensing Requirements
+- **Required license types**: Paid or PAYG only
+- **Not supported**: LicenseOnly instances must be changed first
+- See [Configure SQL Server enabled by Azure Arc](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/manage-configuration?view=sql-server-ver17) for license type changes
+
+### System Requirements
+- **Operating System**: Windows only (Linux instances not supported)
+- **Azure Extension for SQL Server** minimum versions:
+  - Single instance: ≥ 1.1.2202.47
+  - Multi-instance: > 1.1.2231.59
+- **SQL Server Browser**: Must be running for named instances
+- **NT AUTHORITY\SYSTEM**: Must be member of sysadmin role on all SQL instances
+- **TCP/IP**: Must be enabled on SQL Server instances
+
+### Azure Requirements
+- **Log Analytics workspace**: Same subscription as Arc-enabled SQL Server resources
+- **Azure Monitor Agent (AMA)**: Automatically installed if needed (proxy settings not auto-configured)
+
+### Required Permissions
+
+**For policy assignment**:
+- **Resource Policy Contributor** role at target scope (subscription/resource group)
+- **User Access Administrator** role (if creating user-assigned identity)
+
+**For configuration**:
+- **Log Analytics Contributor** role on workspace resource group/subscription
+- **Azure Connected Machine Resource Administrator** role on Arc-enabled server resource group/subscription  
+- **Monitoring Contributor** role on both Log Analytics and Arc machine resource groups/subscriptions
+
+**For viewing results**:
+- **Reader** role on SQL Server - Azure Arc resource
+- **Log Analytics Reader** role on workspace
+- **Monitoring Reader** role on workspace resource group/subscription
+
+### Network Requirements
+Outbound TCP 443 access to:
+- `global.handler.control.monitor.azure.com`
+- `*.handler.control.monitor.azure.com`  
+- `<workspaceId>.ods.opinsights.azure.com`
+- `*.ingest.monitor.azure.com`
+
+> **Note**: If using proxy servers, configure AMA proxy settings separately. BPA doesn't set proxy settings automatically.
 
 ## Steps (PowerShell)
 
 Replace placeholders in angle brackets and run in an elevated PowerShell session with Az modules installed.
 
-**Dry-run version** (validates without creating resources):
+### Step 1: Validate with Dry-run (Recommended)
+
+**Test your parameters first** (validates without creating resources):
 ```powershell
 # DRY RUN: BPA At-Scale Enablement - Validation Only
 param([switch]$Execute = $false)
@@ -154,6 +231,8 @@ if (-not $Execute) {
 }
 ```
 
+### Step 2: Execute for Production
+
 **Production version** (creates actual resources):
 ```powershell
 # 0) Sign in and select subscription
@@ -213,15 +292,53 @@ Get-AzPolicyAssignment -Name $policyAssignmentName -Scope $scope | Format-List N
 
 ## Verification and remediation
 
-- In Azure Policy, review Compliance for the assignment. Allow time for evaluation and remediation.
-- Don’t change extension configuration while remediation is running. Track remediation progress in Azure Policy.
-- If resources are noncompliant due to LicenseOnly, change license type to Paid or PAYG on the Arc SQL resource first.
+### Policy Compliance
+- In **Azure Policy**, review **Compliance** for the assignment
+- Allow time for evaluation and remediation (can take several minutes)
+- Track remediation progress: **Azure Policy > Assignments > [Your Assignment] > Remediation**
+
+### Common Issues
+- **LicenseOnly instances**: Change license type to Paid or PAYG first
+- **Extension conflicts**: Don't change extension configuration while remediation is running
+- **Permissions**: Verify all required roles are assigned
+
+### Assessment Results Timeline
+- **Assessment completion**: Few minutes to 1 hour (depending on environment)
+- **Results availability**: Up to 2 hours after assessment completion
+- **Default schedule**: Every Sunday at 12:00 AM local time
+
+## Monitoring and Management
+
+### Viewing Results
+After BPA is enabled, you can:
+- **Run on-demand assessment**: From the portal's "Best practices assessment" pane
+- **View results**: Available 2 hours after assessment completion
+- **Schedule changes**: Modify assessment frequency as needed
+- **Disable assessment**: Use Configuration > Disable assessment
+
+### Log Analytics Queries
+Access assessment data directly in Log Analytics workspace. See [Best practices assessment blog post](https://techcommunity.microsoft.com/t5/sql-server-blog/best-practices-assessment-arc-enabled-sql-server/ba-p/3715776) for sample queries.
+
+## Considerations
+
+- **Performance impact**: Up to 10% CPU during assessment runs
+- **Windows only**: Assessment doesn't work for SQL Server on Linux
+- **History loading**: May take a few seconds to populate previous execution history
+- **Policy remediation**: Don't make extension changes while Azure Policy is remediating resources
 
 ## References
 
-- Configure best practices assessment (PowerShell and portal)
-  - https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/assess?view=sql-server-ver17#enable-best-practices-assessment-at-scale-by-using-azure-policy
-- Manage configuration (license types)
-  - https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/manage-configuration?view=sql-server-ver17
-- AMA proxy configuration
-  - https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-data-collection-endpoint?tabs=ArmPolicy#proxy-configuration
+### Official Documentation
+- [Configure best practices assessment (PowerShell and portal)](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/assess?view=sql-server-ver17#enable-best-practices-assessment-at-scale-by-using-azure-policy)
+- [Manage configuration (license types)](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/manage-configuration?view=sql-server-ver17)
+- [Troubleshooting guide](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/troubleshoot-assessment?view=sql-server-ver17)
+- [Azure Policy documentation](https://learn.microsoft.com/en-us/azure/governance/policy)
+
+### Technical Resources
+- [AMA proxy configuration](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-data-collection-endpoint?tabs=ArmPolicy#proxy-configuration)
+- [Assessment API: 500 rules](https://github.com/microsoft/sql-server-samples/blob/master/samples/manage/sql-assessment-api/DefaultRuleset.csv)
+- [Best practices assessment blog post](https://techcommunity.microsoft.com/t5/sql-server-blog/best-practices-assessment-arc-enabled-sql-server/ba-p/3715776)
+
+### Related Arc SQL Features
+- [View inventory](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/view-inventory?view=sql-server-ver17)
+- [Microsoft Unified](https://www.microsoft.com/en-us/microsoft-unified)
