@@ -1,6 +1,18 @@
-# Overview
+# Install Pay-As-You-Go SQL Server with Azure Arc
 
-This script installs a pay-as-you-go SQL Server instance on your machine and automatically connects it to Azure using a downloaded SQL Server media.
+## Overview
+
+This script installs a pay-as-you-go (PAYG) SQL Server instance on your machine and automatically connects it to Azure Arc. The PAYG licensing model allows you to purchase SQL Server using an hourly billing model through Azure instead of purchasing traditional licenses.
+
+**Benefits of PAYG licensing:**
+- Variable demand: Great for SQL Server instances with variable compute capacity needs over time
+- Short-term usage: Ideal for servers needed for a limited time period
+- Cost optimization: Only pay for active usage; no charges when VM or SQL Server instance is stopped
+- Flexible scaling: Can scale down cores during less busy times
+- All SQL Server benefits: Includes Software Assurance benefits like free new version upgrades, HADR benefits, unlimited virtualization with Enterprise edition, and 180-day dual-use benefit
+- Available for all versions: SQL Server 2012 through SQL Server 2022
+
+**Important**: PAYG billing follows SQL Server licensing terms, including the four-core minimum. Billing granularity is one hour.
 
 # Prerequisites
 
@@ -45,25 +57,112 @@ curl https://raw.githubusercontent.com/microsoft/sql-server-samples/master/sampl
 
 The script must be run in an elevated PowerShell session. It accepts the following command line parameters:
 
-| **Parameter** &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  | **Value** &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; | **Description** |
+| **Parameter** | **Value** | **Description** |
 |:--|:--|:--|
-|-AzureSubscriptionId|subscription_id|Required: Subscription id that will contain the Arc-enabled machine and Arc-enable SQL Server resources. That subscription will be billed for SQL Server software using a pay-as-you-go method. |
-|-AzureResourceGroup |resource_group_name|Required: Resource group that will contain the Arc-enabled machine and Arc-enable SQL Server resource.|
-|-AzureRegion |region name| Required: the region to store the machuine and SQL Server meta-data. |
-|-SqlServerInstanceName | name of the instance|Optional: the machine name will be used if not specified|
-|-SqlServerAdminAccounts | SQL Server admin accounts | Optional. By default "BUILTIN\ADMINISTRATORS" will be used.|
-|-SqlServerSvcAccount| SQL Server services account |Optional. By default "NT AUTHORITY\NETWORK SERVICE" will be used.|
-|-SqlServerSvcPassword| SQL Server service account password| Required if a custom service account is specified.|
-|-AgtServerSvcAccount|SQL Agent service account|Optional. By default "NT AUTHORITY\NETWORK SERVICE" will be used.|
-|-AgtServerSvcPassword|SQL Agent service account password|Required if a custom service account is specified.|
-|-IsoFolder|Folder path|Required. The folder containing the files downloaded from the workspace.|
-|-Proxy|HTTP proxy URL|Optional. Needed if your networks is configured with an HTTP proxy.|
+|`-AzureSubscriptionId`|subscription_id|**Required**: Azure subscription ID that will contain the Arc-enabled machine and Arc-enabled SQL Server resources. This subscription will be billed for SQL Server software using PAYG. |
+|`-AzureResourceGroup`|resource_group_name|**Required**: Resource group that will contain the Arc-enabled machine and Arc-enabled SQL Server resource.|
+|`-AzureRegion`|region name|**Required**: The Azure region to store the machine and SQL Server metadata. Must be a [supported region](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview?view=sql-server-ver17#supported-azure-regions). |
+|`-SqlServerInstanceName`|instance name|**Optional**: Name of the SQL Server instance. If not specified, the machine name will be used.|
+|`-SqlServerAdminAccounts`|SQL Server admin accounts|**Optional**: SQL Server administrator accounts. Default: `BUILTIN\ADMINISTRATORS`.|
+|`-SqlServerSvcAccount`|service account|**Optional**: SQL Server service account. Default: `NT AUTHORITY\NETWORK SERVICE`.|
+|`-SqlServerSvcPassword`|password|**Required if** a custom service account is specified.|
+|`-AgtServerSvcAccount`|service account|**Optional**: SQL Agent service account. Default: `NT AUTHORITY\NETWORK SERVICE`.|
+|`-AgtServerSvcPassword`|password|**Required if** a custom service account is specified.|
+|`-IsoFolder`|folder path|**Required**: The folder containing the SQL Server installation media files downloaded from Microsoft.|
+|`-ConsentToRecurringPAYG`|"Yes" or "No"|**Required for CSP subscriptions**: Consent to recurring PAYG billing in CSP-managed subscriptions.|
+|`-ExcludedSqlInstances`|array of instance names|**Optional**: Array of SQL Server instance names to exclude from Azure Arc connection.|
+|`-Proxy`|HTTP proxy URL|**Optional**: HTTP proxy server URL if your network requires proxy configuration.|
 
-# Example
+# Examples
 
-The following command installs a SQL Server instance from the Downloads folder, connects it to subscription ID `<sub_id>`, resource group `<resource_group>` in the West US region, and configures it with LicenseType=PAYG. It uses the default admin and service accounts, and uses a direct connection to Azure.
+## Example 1: Basic PAYG Installation
+
+The following command installs a SQL Server instance from the Downloads folder, connects it to Azure Arc with PAYG licensing. It uses default admin and service accounts, and uses a direct connection to Azure.
 
 ```PowerShell
-.\install-payg-sql-server.ps1 -AzureSubscriptionId <sub_id> -AzureResourceGroup <resource_group> -AzureRegion westus -IsoFolder C:\Users\[YourUsername]\Downloads
-
+.\install-payg-sql-server.ps1 `
+  -AzureSubscriptionId <subscription_id> `
+  -AzureResourceGroup <resource_group> `
+  -AzureRegion westus `
+  -IsoFolder C:\Downloads
 ```
+
+## Example 2: PAYG with CSP Subscription
+
+For CSP-managed subscriptions, you must provide consent for recurring billing:
+
+```PowerShell
+.\install-payg-sql-server.ps1 `
+  -AzureSubscriptionId <subscription_id> `
+  -AzureResourceGroup <resource_group> `
+  -AzureRegion eastus `
+  -IsoFolder C:\SQLMedia `
+  -ConsentToRecurringPAYG Yes
+```
+
+## Example 3: Custom Instance with Exclusions
+
+Install with a custom instance name and exclude specific instances from Azure Arc:
+
+```PowerShell
+.\install-payg-sql-server.ps1 `
+  -AzureSubscriptionId <subscription_id> `
+  -AzureResourceGroup <resource_group> `
+  -AzureRegion westeurope `
+  -SqlServerInstanceName PROD01 `
+  -IsoFolder C:\SQLMedia `
+  -ExcludedSqlInstances @('MSSQLSERVER\TEST', 'MSSQLSERVER\DEV')
+```
+
+## Example 4: With Proxy Configuration
+
+For environments requiring proxy configuration:
+
+```PowerShell
+.\install-payg-sql-server.ps1 `
+  -AzureSubscriptionId <subscription_id> `
+  -AzureResourceGroup <resource_group> `
+  -AzureRegion westus2 `
+  -IsoFolder C:\SQLMedia `
+  -Proxy "http://proxy.contoso.com:8080"
+```
+
+# Post-Installation
+
+After successful installation:
+1. Verify the SQL Server instance is running
+2. Check Azure portal to confirm the Arc-enabled SQL Server resource is created
+3. Review the license type is set to PAYG
+4. Monitor billing in Azure Cost Management
+5. Consider enabling additional features:
+   - Best Practices Assessment (requires Paid or PAYG license)
+   - Migration Assessment (enabled by default)
+   - Performance Monitoring (preview, enabled by default)
+   - Microsoft Defender for Cloud
+   - Automated backups (preview)
+
+# Billing Information
+
+**When are you charged?**
+- Charges begin when the SQL Server instance is running and connected to Azure Arc
+- Billing granularity: 1 hour (charges apply for any usage within an hour)
+- No charges when VM or SQL Server instance is stopped
+
+**Billing rules:**
+- Minimum 4 cores per instance (SQL Server licensing terms)
+- Full core count of the machine is billed (affinity mask doesn't reduce charges)
+- Intermittent connectivity doesn't stop billing; usage is reported when connectivity is restored
+- Offline for >30 days: billing resumes when machine reconnects
+
+**Cost optimization tips:**
+- Stop SQL Server instances and VMs when not in use
+- Use scheduled start/stop for predictable workloads
+- Monitor usage in Arc-enabled SQL Server Billing dashboard
+- Subscribe to Activity Log events for billing notifications
+
+# Additional Resources
+
+- [SQL Server enabled by Azure Arc - Overview](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview?view=sql-server-ver17)
+- [Manage licensing and billing](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/manage-license-billing?view=sql-server-ver17)
+- [PAYG Billing FAQ](../arc-sql-faq#pay-as-you-go-billing)
+- [SQL Server Licensing Guide](https://www.microsoft.com/licensing/docs/view/SQL-Server)

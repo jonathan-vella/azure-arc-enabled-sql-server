@@ -3,16 +3,34 @@ services: Azure Arc-enabled SQL Server
 platforms: Azure
 author: anosov1960
 ms.author: sashan
-ms.date: 12/01/2024
+ms.date: 10/31/2025
 ---
 
 
-# Overview
+# Modify License Type for Azure Arc-enabled SQL Server
 
-This script provides a scaleable solution to set or change the license type and/or enable or disable the ESU policy on all Azure-connected SQL Servers in a specified scope.
+## Overview
 
-You can specify a single subscription to scan, or provide a list of subscriptions as a .CSV file.
-If not specified, all subscriptions your role has access to are scanned.
+This script provides a scalable solution to set or change the license type and/or enable or disable the ESU (Extended Security Updates) policy on all Azure Arc-connected SQL Servers in a specified scope.
+
+**Use cases:**
+- Transition from License Only to PAYG or Paid (with Software Assurance)
+- Enable or disable Extended Security Updates subscriptions
+- Configure unlimited virtualization with physical core licenses
+- Audit and update license compliance across your SQL Server estate
+- Bulk operations across subscriptions, resource groups, or individual machines
+
+**Scope flexibility:**
+- Single subscription
+- Multiple subscriptions from a CSV file
+- All subscriptions your role has access to (default)
+- Specific resource group
+- Individual machine
+
+**License types:**
+- **License Only**: You have a perpetual license but no Software Assurance or subscription
+- **Paid**: You have a license with active Software Assurance or SQL Server subscription
+- **PAYG** (Pay-As-You-Go): Hourly billing through Azure; no separate license purchase required
 
 # Prerequisites
 
@@ -24,15 +42,15 @@ If not specified, all subscriptions your role has access to are scanned.
 
 The script accepts the following command line parameters:
 
-| **Parameter** &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  | **Value** &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; | **Description** |
+| **Parameter** | **Value** | **Description** |
 |:--|:--|:--|
-|-SubId|subscription_id *or* a file_name|Optional: Subscription id or a .csv file with the list of subscriptions<sup>1</sup>. If not specified all subscriptions will be scanned|
-|-ResourceGroup |resource_group_name|Optional: Limits the scope  to a specific resource group|
-|-MachineName |machine_name|Optional: Limits the scope to a specific machine|
-|-LicenseType | "Paid", "PAYG" or "LicenseOnly"| Optional: Sets the license type to the specified value |
-|-UsePcoreLicense | "Yes", "No" | Optional. Enables unlimited virtualization license if the value is "Yes" or disables it if the value is "No". To enable, the license type must be "Paid" or "PAYG"|
-|-EnableESU | "Yes", "No" | Optional. Enables the ESU policy the value is "Yes" or disables it if the value is "No". To enable, the license type must be "Paid" or "PAYG"|
-|-Force| |Optional. Forces the change of the license type to the specified value on all installed extensions. If -Force is not specified, the -LicenseType value is set only if undefined. Ignored if -LicenseType  is not specified|
+|`-SubId`|subscription_id *or* file_name|**Optional**: Azure subscription ID or a .csv file with a list of subscriptions<sup>1</sup>. If not specified, all subscriptions your role has access to will be scanned.|
+|`-ResourceGroup`|resource_group_name|**Optional**: Limits the scope to a specific resource group within the subscription(s).|
+|`-MachineName`|machine_name|**Optional**: Limits the scope to a specific Arc-enabled machine.|
+|`-LicenseType`|"Paid", "PAYG", or "LicenseOnly"|**Optional**: Sets the license type to the specified value. Without `-Force`, only sets if currently undefined.|
+|`-UsePcoreLicense`|"Yes" or "No"|**Optional**: Enables (`Yes`) or disables (`No`) unlimited virtualization license using physical cores. Requires license type to be "Paid" or "PAYG".|
+|`-EnableESU`|"Yes" or "No"|**Optional**: Enables (`Yes`) or disables (`No`) the Extended Security Updates subscription. Requires license type to be "Paid" or "PAYG". Only applicable to SQL Server 2012 and 2014.|
+|`-Force`|Switch|**Optional**: Forces the change of license type to the specified value on all extensions, even if already set. If not specified, `-LicenseType` is only set when undefined. Ignored if `-LicenseType` is not specified.|
 
 <sup>1</sup>You can create a .csv file using the following command and then edit to remove the subscriptions you don't  want to scan.
 ```PowerShell
