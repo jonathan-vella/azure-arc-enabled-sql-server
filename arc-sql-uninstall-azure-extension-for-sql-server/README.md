@@ -3,15 +3,40 @@ services: Azure Arc-enabled SQL Server
 platforms: Azure
 author: anosov1960
 ms.author: sashan
-ms.date: 4/6/2023
+ms.date: 10/31/2025
 ---
 
 
-# Overview
+# Uninstall Azure Extension for SQL Server
 
-This script provides a scalable solution to uninstall Azure extension for SQL Server on a specific Arc-enabled server,
-all Arc-enabled servers in a specific resource group, specific subscription, a list of subscriptions or the entire account.  
-You can specify a single subscription to scan, or provide a list of subscriptions as a .CSV file. 
+## Overview
+
+This script provides a scalable solution to uninstall the Azure extension for SQL Server from Arc-enabled servers. You can target:
+- A specific Arc-enabled server
+- All servers in a specific resource group
+- All servers in a specific subscription
+- All servers in multiple subscriptions (from a .CSV file)
+- All subscriptions in your account
+
+**When to use this script:**
+- Decommissioning SQL Server instances
+- Troubleshooting extension issues (uninstall and reinstall)
+- Transitioning servers away from Azure Arc management
+- Cleaning up test/development environments
+- Resolving stuck extension states
+
+**What happens when you uninstall:**
+- The Azure extension for SQL Server is removed from the Arc-enabled machine
+- SQL Server - Azure Arc resources in Azure are no longer updated
+- Billing for PAYG licenses stops (if applicable)
+- Features like Best Practices Assessment, Monitoring, and ESU are disabled
+- The Arc agent remains installed; only the SQL Server extension is removed
+
+**Important considerations:**
+- Uninstalling the extension does not uninstall SQL Server itself
+- You can reinstall the extension later if needed
+- To fully disconnect from Azure Arc, you must also remove the Arc agent
+- ESU subscriptions will be terminated upon extension removal 
 
 # Prerequisites
 
