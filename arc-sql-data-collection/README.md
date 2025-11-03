@@ -120,7 +120,7 @@ You can control the monitoring data collection through the Azure portal:
 2. Select **Settings > Monitoring**
 3. Toggle data collection features on/off as needed
 
-For detailed information on monitoring configuration, see [Monitor SQL Server enabled by Azure Arc (preview)](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/monitor-sql-server-azure-arc?view=sql-server-ver16).
+For detailed information on monitoring configuration, see [Monitor SQL Server enabled by Azure Arc (preview)](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/sql-monitoring?view=sql-server-ver17).
 
 ## Security and Privacy
 
@@ -133,7 +133,7 @@ SQL Server enabled by Azure Arc adheres to strict security and privacy standards
 
 ## Related Documentation
 
-- [Monitor Azure Arc-enabled SQL Server](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/monitor-sql-server-azure-arc?view=sql-server-ver16)
+- [Monitor Azure Arc-enabled SQL Server](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/sql-monitoring?view=sql-server-ver17)
 - [Select the optimal Azure SQL target using Migration assessment](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/migration-assessment?view=sql-server-ver16)
-- [Configure best practices assessment](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/sql-best-practices-assessment-azure-arc?view=sql-server-ver16)
+- [Configure best practices assessment](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/assess?view=sql-server-ver17)
 - [Connected Machine agent network requirements](https://learn.microsoft.com/en-us/azure/azure-arc/servers/network-requirements?tabs=azure-cloud#urls)
