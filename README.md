@@ -51,6 +51,9 @@ This repository contains scripts for various Azure Arc-enabled SQL Server manage
 ### Onboarding Automation
 - [`arc-server-onboarding-automation`](arc-server-onboarding-automation): Scripts and documentation for automating the onboarding of servers to Azure Arc.
 
+### Hands-On Lab 🆕
+- [`arc-sql-hands-on-lab`](arc-sql-hands-on-lab): **Comprehensive 2-hour hands-on lab** covering end-to-end Azure Arc-enabled SQL Server deployment and management. Includes Bicep infrastructure templates, step-by-step guides for onboarding, license management, monitoring, Best Practices Assessment, and Azure Policy governance at scale. Perfect for IT Pros, System Administrators, and Cloud Architects.
+
 ### Learning Resources
 - [`arc-sql-faq`](arc-sql-faq): Comprehensive FAQ covering common questions about deployment, licensing, security, features, and troubleshooting.
 - [`arc-sql-videos`](arc-sql-videos): Collection of instructional videos about Azure Arc-enabled SQL Server, including overview, monitoring features, and migration assessment demonstrations.
