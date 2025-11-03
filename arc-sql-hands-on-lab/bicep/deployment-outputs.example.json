@@ -1,0 +1,36 @@
+{
+  "arcResourceGroupName": {
+    "type": "String",
+    "value": "arcsql-lab-arc-rg"
+  },
+  "monitoringResourceGroupName": {
+    "type": "String",
+    "value": "arcsql-lab-monitoring-rg"
+  },
+  "logAnalyticsWorkspaceId": {
+    "type": "String",
+    "value": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/arcsql-lab-monitoring-rg/providers/Microsoft.OperationalInsights/workspaces/arcsql-lab-law-dev"
+  },
+  "logAnalyticsWorkspaceName": {
+    "type": "String",
+    "value": "arcsql-lab-law-dev"
+  },
+  "logAnalyticsCustomerId": {
+    "type": "String",
+    "value": "00000000-0000-0000-0000-000000000000"
+  },
+  "location": {
+    "type": "String",
+    "value": "swedencentral"
+  },
+  "deploymentSummary": {
+    "type": "Object",
+    "value": {
+      "arcResourceGroup": "arcsql-lab-arc-rg",
+      "monitoringResourceGroup": "arcsql-lab-monitoring-rg",
+      "logAnalyticsWorkspace": "arcsql-lab-law-dev",
+      "location": "swedencentral",
+      "deploymentDate": "2025-11-03T10:30:00Z"
+    }
+  }
+}

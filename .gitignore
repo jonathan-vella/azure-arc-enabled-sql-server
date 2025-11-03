@@ -1,0 +1,189 @@
+# ============================================================================
+# Azure Arc-Enabled SQL Server - Git Ignore
+# ============================================================================
+
+# ============================================================================
+# Sensitive Credential Files
+# ============================================================================
+# Service principal credentials from Create-ArcServicePrincipal.ps1
+service-principal-credentials.json
+
+# Deployment outputs containing sensitive information (workspace keys, etc.)
+deployment-outputs.json
+
+# Any files containing secrets, keys, or passwords
+*secrets*.json
+*credentials*.json
+*password*.txt
+*key*.txt
+
+# ============================================================================
+# Azure CLI & PowerShell Output Files
+# ============================================================================
+# Connectivity test reports
+connectivity-report-*.json
+
+# Feature flag patched settings
+patchedJson.json
+patchedjson.json
+
+# SQL setup output logs
+setup-output.txt
+
+# ============================================================================
+# Log Files
+# ============================================================================
+*.log
+*.log.*
+InstallationLog.txt
+
+# ============================================================================
+# Temporary Files
+# ============================================================================
+*.tmp
+*.temp
+*~
+
+# ============================================================================
+# IDE & Editor Files
+# ============================================================================
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# JetBrains IDEs
+.idea/
+*.iml
+
+# ============================================================================
+# PowerShell
+# ============================================================================
+# PowerShell profile files
+Microsoft.PowerShell_profile.ps1
+
+# ============================================================================
+# Operating System Files
+# ============================================================================
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+.directory
+
+# ============================================================================
+# Azure & Cloud Provider Files
+# ============================================================================
+# Azure Functions
+local.settings.json
+*.publish.xml
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# ============================================================================
+# Build & Package Files
+# ============================================================================
+bin/
+obj/
+dist/
+build/
+out/
+*.dll
+*.exe
+
+# ============================================================================
+# Node.js (if any scripts use Node)
+# ============================================================================
+node_modules/
+package-lock.json
+yarn.lock
+
+# ============================================================================
+# Python (if any scripts use Python)
+# ============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# ============================================================================
+# Test & Coverage Reports
+# ============================================================================
+*.coverage
+htmlcov/
+.pytest_cache/
+
+# ============================================================================
+# Backup Files
+# ============================================================================
+*.bak
+*.backup
+*.old
+*.orig
+
+# ============================================================================
+# Documentation Build
+# ============================================================================
+_site/
+.jekyll-cache/
+.sass-cache/
+
+# ============================================================================
+# Custom Exclusions (Project-Specific)
+# ============================================================================
+# CMDB files with real customer data (keep the template)
+arc-server-onboarding-automation/scripts/test_cmdb.csv
+# Allow the template CMDB.csv to remain in repo
+!arc-server-onboarding-automation/scripts/CMDB.csv
+
+# Partner Center configuration with real credentials
+*partnercenter*.json
+!partnercenter.example.json
+
+# Any Arc onboarding scripts generated from portal
+OnboardingScript.ps1
+
+# SQL Server product keys
+productkey*.txt
+*-productkey.txt
+
+# Ignore filled-in output files from lab scripts but keep templates
+deployment-outputs.json
+!deployment-outputs.example.json
+service-principal-credentials.json
+!service-principal-credentials.example.json
+connectivity-report-*.json
+!connectivity-report.example.json
+
+# ============================================================================
+# Allow Specific Files (Override Above Rules)
+# ============================================================================
+# Allow example/template files even if they match patterns above
+!example-*.json
+!template-*.json
+!sample-*.json

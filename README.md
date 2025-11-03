@@ -148,6 +148,7 @@ Arc-enabled SQL Server is available in 25+ Azure regions including East US, West
 - Keep Azure Arc agents updated to the latest versions 
 - Regularly review security recommendations in Microsoft Defender for Cloud
 - Implement network security controls to protect SQL Server instances
+- **Never commit credentials or secrets to source control** - See [TEMPLATE-FILES.md](TEMPLATE-FILES.md) for details on our template file system
 
 ## Contributing
 
