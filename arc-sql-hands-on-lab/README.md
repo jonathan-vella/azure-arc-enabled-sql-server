@@ -149,53 +149,116 @@ Validate that your on-premises server can communicate with Azure Arc endpoints.
 
 ---
 
-### Module 2: Azure Arc Server Onboarding (15 minutes)
+### Module 2: Azure Arc Server Onboarding (20 minutes)
 
-Connect your on-premises Windows Server to Azure Arc.
+Connect your on-premises Windows Server to Azure Arc using Service Principal authentication.
 
 **Objectives:**
-- Generate Arc onboarding script from Azure portal
-- Install Azure Connected Machine agent
+- Create Service Principal for Arc onboarding
+- Grant required permissions to Service Principal
+- Install Azure Connected Machine agent using Service Principal
 - Register the server with Azure Arc
 - Verify server appears in Azure portal
 
 **Steps:**
 
-1. **Generate onboarding script** in Azure portal:
-   - Navigate to **Azure Arc** > **Infrastructure** > **Servers**
-   - Click **+ Add**
-   - Select **Add a single server** > **Generate script**
-   - Configure:
-     - **Subscription**: Your subscription
-     - **Resource group**: `arcsql-lab-arc-rg`
-     - **Region**: `Sweden Central`
-     - **Operating system**: `Windows`
-     - **Server name**: (optional - use your server hostname)
+#### Part A: Create Service Principal (5 minutes)
 
-2. **Download and review the script**:
-   - Save the PowerShell script to your on-premises server
-   - Review the script contents (DO NOT modify)
-
-3. **Run the onboarding script** on your on-premises server:
+1. **Run the service principal creation script** on your **workstation** (not the on-premises server):
    ```powershell
-   # Open elevated PowerShell prompt on the on-premises server
-   # Navigate to the script location
-   .\OnboardingScript.ps1
+   cd scripts
+   .\Create-ArcServicePrincipal.ps1 `
+       -ServicePrincipalName "Arc-SQL-Lab-Onboarding-SP" `
+       -Scope "Subscription"
    ```
 
-4. **Authenticate to Azure** when prompted:
-   - Follow the device code login flow
-   - Use an account with appropriate permissions
+2. **Securely save the output credentials**:
+   - **Application ID** (appId)
+   - **Secret** (password) - This is sensitive!
+   - **Tenant ID**
+   - **Subscription ID**
+   
+   **Important**: The secret is displayed only once and saved to `service-principal-credentials.json`. Store these credentials securely (e.g., Azure Key Vault, password manager) and delete the JSON file afterward.
 
-5. **Verify the server in Azure portal**:
+3. **Understand the role assignment**:
+   - Role: **Azure Connected Machine Onboarding**
+   - Scope: Subscription-level
+   - Permissions: Minimum required to onboard servers to Arc
+   - Service Principal is used ONLY during onboarding, not for ongoing management
+
+#### Part B: Onboard Server to Arc (15 minutes)
+
+1. **Download the Azure Connected Machine agent** on your on-premises server:
+   - Visit: https://aka.ms/AzureConnectedMachineAgent
+   - Or use PowerShell:
+   ```powershell
+   # On the on-premises server
+   $ProgressPreference = 'SilentlyContinue'
+   Invoke-WebRequest -Uri "https://aka.ms/AzureConnectedMachineAgent" `
+       -OutFile "$env:TEMP\AzureConnectedMachineAgent.msi"
+   ```
+
+2. **Install the agent** on your on-premises server:
+   ```powershell
+   # Run in elevated PowerShell on the on-premises server
+   msiexec /i "$env:TEMP\AzureConnectedMachineAgent.msi" /qn /l*v "$env:TEMP\InstallationLog.txt"
+   ```
+
+3. **Connect the server to Azure Arc using Service Principal**:
+   
+   Replace the placeholders with your actual values from the service principal creation:
+   
+   ```powershell
+   # Set variables (replace with your actual values)
+   $servicePrincipalAppId = "<Application-ID-from-previous-step>"
+   $servicePrincipalSecret = "<Secret-from-previous-step>"
+   $tenantId = "<Tenant-ID-from-previous-step>"
+   $subscriptionId = "<Subscription-ID-from-previous-step>"
+   $resourceGroup = "arcsql-lab-arc-rg"
+   $location = "swedencentral"
+   
+   # Connect to Azure Arc
+   & "$env:ProgramW6432\AzureConnectedMachineAgent\azcmagent.exe" connect `
+       --service-principal-id $servicePrincipalAppId `
+       --service-principal-secret $servicePrincipalSecret `
+       --tenant-id $tenantId `
+       --subscription-id $subscriptionId `
+       --resource-group $resourceGroup `
+       --location $location
+   ```
+
+4. **Verify agent installation**:
+   ```powershell
+   # Check agent status
+   & "$env:ProgramW6432\AzureConnectedMachineAgent\azcmagent.exe" show
+   ```
+   
+   Expected output should show:
+   - Agent Status: **Connected**
+   - Azure Resource Name
+   - Resource Group
+   - Subscription ID
+
+5. **Verify in Azure portal**:
    - Navigate to **Azure Arc** > **Infrastructure** > **Servers**
    - Confirm your server appears with status **Connected**
+   - Review server properties (OS, location, agent version)
+
+**Why Service Principal Instead of Interactive Login?**
+- ✅ **Automation-friendly**: No user interaction required
+- ✅ **Enterprise-ready**: Suitable for at-scale deployments
+- ✅ **Security**: Principle of least privilege with limited permissions
+- ✅ **Auditable**: All actions traced to service principal
+- ✅ **Repeatable**: Can be used for multiple servers
 
 **Validation:**
+- ✅ Service Principal created with Azure Connected Machine Onboarding role
+- ✅ Credentials stored securely
 - ✅ Azure Connected Machine agent installed successfully
 - ✅ Server visible in Azure portal under Arc > Servers
 - ✅ Server status shows as **Connected**
 - ✅ Server resource in `arcsql-lab-arc-rg` resource group
+- ✅ Agent reports status when running `azcmagent show`
 
 ---
 
