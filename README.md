@@ -15,6 +15,10 @@ Last updated: 2025-08-27
 - Enable advanced features such as Microsoft Defender for Cloud and Microsoft Purview integration
 - Access Extended Security Updates (ESUs) for end-of-support SQL Server versions
 
+### Architecture
+
+![SQL Server - Azure Arc Architecture](media/sql%20server%20-%20azure%20arc%20-%20architecture%20diagram.png)
+
 ## Repository Contents
 
 This repository contains scripts for various Azure Arc-enabled SQL Server management tasks:
