@@ -97,28 +97,53 @@ try {
     
     $templateFile = Join-Path $PSScriptRoot "main.bicep"
     
-    $deploymentParams = @{
-        Name              = $deploymentName
-        Location          = $Location
-        TemplateFile      = $templateFile
-        baseName          = $BaseName
-        location          = $Location
-        environment       = $Environment
-        Verbose           = $VerbosePreference
+    # Use Azure CLI to deploy Bicep (since Bicep CLI is installed via Azure CLI)
+    Write-LogMessage "Using Azure CLI for Bicep deployment..." -Level Info
+    
+    $azCliParams = @(
+        "deployment", "sub", "create",
+        "--name", $deploymentName,
+        "--location", $Location,
+        "--template-file", $templateFile,
+        "--parameters", "baseName=$BaseName",
+        "--parameters", "environment=$Environment",
+        "--parameters", "location=$Location",
+        "--output", "json",
+        "--only-show-errors"
+    )
+    
+    # Capture output and errors separately
+    $ErrorActionPreference = 'Continue'
+    $deploymentOutput = az @azCliParams 2>&1 | Out-String
+    $exitCode = $LASTEXITCODE
+    $ErrorActionPreference = 'Stop'
+    
+    if ($exitCode -ne 0) {
+        throw "Azure CLI deployment failed with exit code $exitCode. Output: $deploymentOutput"
     }
     
-    $deployment = New-AzDeployment @deploymentParams
+    # Filter out non-JSON lines (warnings, etc.)
+    $jsonLines = $deploymentOutput -split "`n" | Where-Object { $_ -match '^\s*[\{\[]' -or $_ -match '[\}\]]\s*$' -or ($_ -notmatch '^WARNING:' -and $_ -notmatch '^Command group' -and $_.Trim() -ne '') }
+    $deploymentJson = $jsonLines -join "`n"
     
-    if ($deployment.ProvisioningState -eq 'Succeeded') {
+    try {
+        $deployment = $deploymentJson | ConvertFrom-Json
+    } catch {
+        Write-LogMessage "Failed to parse deployment output. Raw output:" -Level Warning
+        Write-Host $deploymentOutput
+        throw "Failed to parse deployment JSON: $_"
+    }
+    
+    if ($deployment.properties.provisioningState -eq 'Succeeded') {
         Write-LogMessage "=============================================" -Level Success
         Write-LogMessage "Deployment completed successfully!" -Level Success
         Write-LogMessage "=============================================" -Level Success
         Write-LogMessage "" -Level Info
         Write-LogMessage "Deployment Outputs:" -Level Info
-        Write-LogMessage "  Arc Resource Group: $($deployment.Outputs.arcResourceGroupName.Value)" -Level Info
-        Write-LogMessage "  Monitoring Resource Group: $($deployment.Outputs.monitoringResourceGroupName.Value)" -Level Info
-        Write-LogMessage "  Log Analytics Workspace: $($deployment.Outputs.logAnalyticsWorkspaceName.Value)" -Level Info
-        Write-LogMessage "  Region: $($deployment.Outputs.location.Value)" -Level Info
+        Write-LogMessage "  Arc Resource Group: $($deployment.properties.outputs.arcResourceGroupName.value)" -Level Info
+        Write-LogMessage "  Monitoring Resource Group: $($deployment.properties.outputs.monitoringResourceGroupName.value)" -Level Info
+        Write-LogMessage "  Log Analytics Workspace: $($deployment.properties.outputs.logAnalyticsWorkspaceName.value)" -Level Info
+        Write-LogMessage "  Region: $($deployment.properties.outputs.location.value)" -Level Info
         Write-LogMessage "" -Level Info
         Write-LogMessage "Next Steps:" -Level Info
         Write-LogMessage "  1. Proceed to Module 1 of the lab guide" -Level Info
@@ -127,10 +152,10 @@ try {
         
         # Save outputs to file for reference
         $outputFile = Join-Path $PSScriptRoot "deployment-outputs.json"
-        $deployment.Outputs | ConvertTo-Json -Depth 10 | Out-File $outputFile
+        $deployment.properties.outputs | ConvertTo-Json -Depth 10 | Out-File $outputFile
         Write-LogMessage "Deployment outputs saved to: $outputFile" -Level Success
     } else {
-        Write-LogMessage "Deployment failed with state: $($deployment.ProvisioningState)" -Level Error
+        Write-LogMessage "Deployment failed with state: $($deployment.properties.provisioningState)" -Level Error
         exit 1
     }
     

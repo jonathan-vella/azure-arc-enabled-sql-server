@@ -55,25 +55,6 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09
 }
 
 // ============================================================================
-// Solutions for SQL Server Monitoring
-// ============================================================================
-
-resource sqlAssessmentSolution 'Microsoft.OperationsManagement/solutions@2015-11-01-preview' = {
-  name: 'SQLAssessment(${logAnalyticsWorkspace.name})'
-  location: location
-  tags: tags
-  plan: {
-    name: 'SQLAssessment(${logAnalyticsWorkspace.name})'
-    product: 'OMSGallery/SQLAssessment'
-    publisher: 'Microsoft'
-    promotionCode: ''
-  }
-  properties: {
-    workspaceResourceId: logAnalyticsWorkspace.id
-  }
-}
-
-// ============================================================================
 // Outputs
 // ============================================================================
 
@@ -85,6 +66,3 @@ output workspaceName string = logAnalyticsWorkspace.name
 
 @description('Customer ID (workspace ID) of the Log Analytics workspace')
 output workspaceCustomerId string = logAnalyticsWorkspace.properties.customerId
-
-@description('Primary shared key for the workspace')
-output workspacePrimaryKey string = logAnalyticsWorkspace.listKeys().primarySharedKey
