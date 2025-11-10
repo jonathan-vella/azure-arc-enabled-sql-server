@@ -1,6 +1,9 @@
 # Quick Start Guide
 
-This quick start guide provides a condensed version of the lab for experienced users who want to quickly complete the exercises.
+This quick start guide provides a condensed version of the **core lab modules** for experienced users who want to quickly complete the exercises.
+
+> [!NOTE]
+> This quick start covers **core modules only** (Modules 0-7). The lab also includes 4 optional preview modules (Modules 8-11) covering automated patching, advanced monitoring, backup management, and point-in-time restore. See the [full lab guide](README.md) for details on optional modules.
 
 ## Prerequisites Checklist
 
@@ -86,6 +89,16 @@ Portal: **SQL Server instance > Best practices assessment > Configure**
 cd scripts
 .\Cleanup-Lab.ps1 -SubscriptionId "<your-subscription-id>" -BaseName "arcsql-lab"
 ```
+
+## Optional Preview Modules
+
+The full lab includes 4 optional modules covering preview features:
+- **Module 8**: Automated Patching (~15 min)
+- **Module 9**: Advanced Monitoring (~15 min)
+- **Module 10**: Backup Management (~20 min)
+- **Module 11**: Point-in-Time Restore (~20 min)
+
+These modules are optional and can be skipped. See the [full lab guide](README.md) for detailed instructions.
 
 ## Key Commands Reference
 
