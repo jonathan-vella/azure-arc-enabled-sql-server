@@ -1,8 +1,46 @@
 # Azure Arc-Enabled SQL Server - Hands-On Lab
 
-**Duration:** 2 hours  
+**Duration:** 2 hours (Core) + 70 minutes (Optional)  
 **Level:** Intermediate  
 **Target Audience:** IT Professionals, System Administrators, Cloud Architects
+
+---
+
+## 📑 Table of Contents
+
+### Getting Started
+- [Overview](#overview)
+- [Lab Architecture](#lab-architecture)
+- [What You Will Learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [Progress Tracker](#progress-tracker)
+- [Quick Command Reference](#quick-command-reference)
+- [Lab Flow Diagram](#lab-flow-diagram)
+
+### Core Modules (2h 15m)
+- [Module 0: Infrastructure Setup (15 min)](#module-0-infrastructure-setup-15-minutes) - 🟢 Beginner
+- [Module 1: Network Connectivity Validation (10 min)](#module-1-network-connectivity-validation-10-minutes) - 🟢 Beginner
+- [Module 2: Azure Arc Server Onboarding (20 min)](#module-2-azure-arc-server-onboarding-20-minutes) - 🟡 Intermediate
+- [Module 3: SQL Server Extension Deployment (15 min)](#module-3-sql-server-extension-deployment--auto-discovery-15-minutes) - 🟢 Beginner
+- [Module 4: License Type Management (20 min)](#module-4-license-type-management-20-minutes) - 🟡 Intermediate
+- [Module 5: Basic Monitoring Setup (15 min)](#module-5-basic-monitoring-setup-15-minutes) - 🟢 Beginner
+- [Module 6: Best Practices Assessment (20 min)](#module-6-best-practices-assessment-20-minutes) - 🟡 Intermediate
+- [Module 7: Azure Policy for BPA (25 min)](#module-7-azure-policy-for-bpa-at-scale-25-minutes) - 🔴 Advanced
+
+### Optional Advanced Modules (+70m)
+- [Module 8: Configure Automatic Updates (10 min)](#module-8-optional-configure-automatic-updates-10-minutes) - 🟡 Intermediate | ⚠️ Preview
+- [Module 9: Advanced SQL Monitoring (20 min)](#module-9-optional-advanced-sql-monitoring-preview-20-minutes) - 🔴 Advanced | ⚠️ Preview
+- [Module 10: Automated Backups & PITR (40 min)](#module-10-optional-configure-automated-backups--point-in-time-restore-preview-40-minutes) - 🔴 Advanced | ⚠️ Preview
+
+### Wrap-Up
+- [Module 11: Lab Cleanup (10 min)](#module-11-lab-cleanup-10-minutes)
+- [Troubleshooting](#troubleshooting)
+- [Additional Resources](#additional-resources)
+- [Feedback and Support](#feedback-and-support)
+
+**Legend:** 🟢 Beginner | 🟡 Intermediate | 🔴 Advanced | ⚠️ Preview Feature
+
+---
 
 ## Overview
 
@@ -60,11 +98,164 @@ This comprehensive hands-on lab guides you through the complete lifecycle of man
   az bicep install
   ```
 
-#### Knowledge Prerequisites
+**Knowledge Prerequisites**
 - Basic understanding of SQL Server administration
 - Familiarity with PowerShell scripting
 - Basic knowledge of Azure concepts (resource groups, subscriptions)
 - Understanding of Azure Resource Manager (ARM) and Bicep
+
+---
+
+## 📋 Progress Tracker
+
+Track your progress through the lab by checking off completed modules:
+
+**Core Modules**
+- [ ] Module 0: Infrastructure Setup
+- [ ] Module 1: Network Connectivity Validation
+- [ ] Module 2: Azure Arc Server Onboarding
+- [ ] Module 3: SQL Server Extension Deployment
+- [ ] Module 4: License Type Management
+- [ ] Module 5: Basic Monitoring Setup
+- [ ] Module 6: Best Practices Assessment
+- [ ] Module 7: Azure Policy for BPA
+
+**Optional Advanced Modules**
+- [ ] Module 8: Configure Automatic Updates
+- [ ] Module 9: Advanced SQL Monitoring
+- [ ] Module 10: Automated Backups & PITR
+
+**Wrap-Up**
+- [ ] Module 11: Lab Cleanup
+
+---
+
+## ⚡ Quick Command Reference
+
+<details>
+<summary><b>Click to expand essential commands</b></summary>
+
+### Infrastructure Deployment
+```powershell
+# Deploy Bicep infrastructure
+cd bicep
+.\deploy.ps1 -BaseName "arcsql-lab" -Environment "dev"
+```
+
+### Arc Server Onboarding
+```powershell
+# Install Arc agent
+msiexec /i "$env:TEMP\AzureConnectedMachineAgent.msi" /qn
+
+# Connect to Azure Arc
+& "$env:ProgramW6432\AzureConnectedMachineAgent\azcmagent.exe" connect `
+    --service-principal-id <APP_ID> `
+    --service-principal-secret <SECRET> `
+    --tenant-id <TENANT_ID> `
+    --subscription-id <SUB_ID> `
+    --resource-group "arcsql-lab-arc-rg" `
+    --location "swedencentral"
+
+# Check status
+& "$env:ProgramW6432\AzureConnectedMachineAgent\azcmagent.exe" show
+```
+
+### SQL Extension Management
+```powershell
+# Deploy SQL Server extension
+New-AzConnectedMachineExtension `
+    -ResourceGroupName "arcsql-lab-arc-rg" `
+    -MachineName "<SERVER_NAME>" `
+    -Name "WindowsAgent.SqlServer" `
+    -Publisher "Microsoft.AzureData" `
+    -ExtensionType "WindowsAgent.SqlServer" `
+    -Location "swedencentral" `
+    -EnableAutomaticUpgrade
+```
+
+### License Management
+```powershell
+# Set license to PAYG
+Update-AzSqlInstanceArc `
+    -ResourceGroupName "arcsql-lab-arc-rg" `
+    -Name "<SQL_ARC_NAME>" `
+    -LicenseType "PAYG"
+
+# Set license to Paid (Software Assurance)
+Update-AzSqlInstanceArc `
+    -ResourceGroupName "arcsql-lab-arc-rg" `
+    -Name "<SQL_ARC_NAME>" `
+    -LicenseType "Paid"
+```
+
+### Monitoring & Backups (Optional Preview Features)
+```powershell
+# Enable advanced monitoring
+az resource update `
+    --ids "/subscriptions/<SUB>/resourceGroups/<RG>/providers/Microsoft.AzureArcData/SqlServerInstances/<NAME>" `
+    --set 'properties.monitoring.enabled=true' `
+    --api-version 2023-09-01-preview
+
+# Configure backup policy
+az sql server-arc backups-policy create `
+    --name "<SQL_ARC_NAME>" `
+    --resource-group "arcsql-lab-arc-rg" `
+    --retention-days 14 `
+    --full-backup-days 7 `
+    --diff-backup-hours 24 `
+    --tlog-backup-mins 5
+```
+
+### Cleanup
+```powershell
+# Disconnect and cleanup
+& "$env:ProgramW6432\AzureConnectedMachineAgent\azcmagent.exe" disconnect --force-local-only
+Remove-AzResourceGroup -Name "arcsql-lab-arc-rg" -Force
+Remove-AzResourceGroup -Name "arcsql-lab-monitoring-rg" -Force
+```
+
+</details>
+
+---
+
+## 🔄 Lab Flow Diagram
+
+```mermaid
+graph TD
+    A[Module 0: Infrastructure Setup] --> B[Module 1: Network Validation]
+    B --> C[Module 2: Arc Server Onboarding]
+    C --> D[Module 3: SQL Extension Deployment]
+    D --> E[Module 4: License Management]
+    E --> F[Module 5: Basic Monitoring]
+    F --> G[Module 6: Best Practices Assessment]
+    G --> H[Module 7: Azure Policy for BPA]
+    
+    H --> I{Optional Modules?}
+    I -->|Yes| J[Module 8: Automatic Updates]
+    I -->|Skip| N[Module 11: Cleanup]
+    
+    J --> K[Module 9: Advanced Monitoring]
+    K --> L[Module 10: Backups & PITR]
+    L --> N
+    
+    N --> O[Lab Complete]
+    
+    style A fill:#90EE90
+    style B fill:#90EE90
+    style C fill:#FFD700
+    style D fill:#90EE90
+    style E fill:#FFD700
+    style F fill:#90EE90
+    style G fill:#FFD700
+    style H fill:#FF6B6B
+    style J fill:#FFD700
+    style K fill:#FF6B6B
+    style L fill:#FF6B6B
+    style N fill:#87CEEB
+    style O fill:#98FB98
+```
+
+**Color Legend:** 🟢 Beginner (Green) | 🟡 Intermediate (Yellow) | 🔴 Advanced (Red) | 🔵 Cleanup (Blue)
 
 ---
 
@@ -73,6 +264,12 @@ This comprehensive hands-on lab guides you through the complete lifecycle of man
 ### Core Modules
 
 ### Module 0: Infrastructure Setup (15 minutes)
+
+> **📦 MODULE SUMMARY**  
+> **Duration:** 15 minutes | **Difficulty:** 🟢 Beginner  
+> **What you'll do:** Deploy Azure resource groups and Log Analytics workspace using Bicep  
+> **Key outcomes:** Infrastructure ready for Arc resources and monitoring  
+> **Prerequisites:** Azure subscription with Owner permissions, Bicep CLI installed
 
 Deploy the required Azure infrastructure using Bicep templates.
 
@@ -119,7 +316,17 @@ Deploy the required Azure infrastructure using Bicep templates.
 
 ---
 
+**[⬆️ Back to Top](#-table-of-contents)** | **[➡️ Next: Module 1 - Network Validation](#module-1-network-connectivity-validation-10-minutes)**
+
+---
+
 ### Module 1: Network Connectivity Validation (10 minutes)
+
+> **📦 MODULE SUMMARY**  
+> **Duration:** 10 minutes | **Difficulty:** 🟢 Beginner  
+> **What you'll do:** Test connectivity to Azure Arc endpoints and validate DNS resolution  
+> **Key outcomes:** Confirmed network connectivity for Arc agent communication  
+> **Prerequisites:** PowerShell access on on-premises server
 
 Validate that your on-premises server can communicate with Azure Arc endpoints.
 
@@ -160,7 +367,17 @@ Validate that your on-premises server can communicate with Azure Arc endpoints.
 
 ---
 
+**[⬅️ Previous: Module 0 - Infrastructure](#module-0-infrastructure-setup-15-minutes)** | **[⬆️ Back to Top](#-table-of-contents)** | **[➡️ Next: Module 2 - Arc Onboarding](#module-2-azure-arc-server-onboarding-20-minutes)**
+
+---
+
 ### Module 2: Azure Arc Server Onboarding (20 minutes)
+
+> **📦 MODULE SUMMARY**  
+> **Duration:** 20 minutes | **Difficulty:** 🟡 Intermediate  
+> **What you'll do:** Create Service Principal, install Arc agent, connect server to Azure  
+> **Key outcomes:** On-premises server visible in Azure portal as Arc-enabled server  
+> **Prerequisites:** Azure subscription, local admin access, network connectivity validated
 
 Connect your on-premises Windows Server to Azure Arc using Service Principal authentication.
 
@@ -273,7 +490,17 @@ Connect your on-premises Windows Server to Azure Arc using Service Principal aut
 
 ---
 
+**[⬅️ Previous: Module 1 - Network Validation](#module-1-network-connectivity-validation-10-minutes)** | **[⬆️ Back to Top](#-table-of-contents)** | **[➡️ Next: Module 3 - SQL Extension](#module-3-sql-server-extension-deployment--auto-discovery-15-minutes)**
+
+---
+
 ### Module 3: SQL Server Extension Deployment & Auto-Discovery (15 minutes)
+
+> **📦 MODULE SUMMARY**  
+> **Duration:** 15 minutes | **Difficulty:** 🟢 Beginner  
+> **What you'll do:** Deploy SQL Server extension and verify SQL instance auto-discovery  
+> **Key outcomes:** SQL Server instances visible in Azure Arc portal  
+> **Prerequisites:** Arc server connected (Module 2), SQL Server installed
 
 Deploy the Azure extension for SQL Server and enable automatic SQL instance discovery.
 
@@ -521,6 +748,12 @@ BPA evaluates your SQL Server configuration against Microsoft best practices:
 
 ### Module 7: Azure Policy for BPA at Scale (25 minutes)
 
+> **📦 MODULE SUMMARY**  
+> **Duration:** 25 minutes | **Difficulty:** 🔴 Advanced  
+> **What you'll do:** Deploy Azure Policy to auto-enable BPA across all SQL Server instances  
+> **Key outcomes:** Governance at scale with automated compliance enforcement  
+> **Prerequisites:** Module 6 completed, subscription-level permissions
+
 Deploy Azure Policy to automatically enable Best Practices Assessment across multiple SQL Server instances.
 
 **Objectives:**
@@ -637,6 +870,10 @@ You can assign policies at different scopes:
 
 ---
 
+**[⬅️ Previous: Module 6 - Best Practices Assessment](#module-6-best-practices-assessment-20-minutes)** | **[⬆️ Back to Top](#-table-of-contents)** | **[➡️ Next: Module 8 (Optional) - Automatic Updates](#module-8-optional-configure-automatic-updates-10-minutes) or [Module 11 - Cleanup](#module-11-lab-cleanup-10-minutes)**
+
+---
+
 ## Optional Advanced Modules
 
 > **⚠️ PREVIEW FEATURES NOTICE**  
@@ -646,6 +883,12 @@ You can assign policies at different scopes:
 ---
 
 ### Module 8 (Optional): Configure Automatic Updates (10 minutes)
+
+> **📦 MODULE SUMMARY**  
+> **Duration:** 10 minutes | **Difficulty:** 🟡 Intermediate | ⚠️ **Preview Feature**  
+> **What you'll do:** Configure automatic Windows and SQL Server patching via maintenance schedules  
+> **Key outcomes:** Automated patch management for critical and important updates  
+> **Prerequisites:** Arc server onboarded, Paid or PAYG license
 
 Enable automatic patching for Windows and SQL Server through Azure Arc.
 
@@ -750,11 +993,16 @@ New-AzConfigurationAssignment `
 
 **Troubleshooting:**
 
+<details>
+<summary><b>Click to expand troubleshooting guide</b></summary>
+
 | Issue | Solution |
 |-------|----------|
 | Automatic updates option grayed out | Verify license type is Paid or PAYG |
 | Updates not applying | Check maintenance window configuration and server connectivity |
 | License type change blocked | Disable automatic updates, wait 5 minutes, then change license type |
+
+</details>
 
 **Additional Resources:**
 - [Configure automatic updates - Microsoft Learn](https://learn.microsoft.com/sql/sql-server/azure-arc/update)
@@ -769,6 +1017,12 @@ New-AzConfigurationAssignment `
 ---
 
 ### Module 9 (Optional): Advanced SQL Monitoring (Preview) (20 minutes)
+
+> **📦 MODULE SUMMARY**  
+> **Duration:** 20 minutes | **Difficulty:** 🔴 Advanced | ⚠️ **Preview Feature**  
+> **What you'll do:** Enable DMV-based performance monitoring with 9 dataset types  
+> **Key outcomes:** Real-time SQL performance metrics, wait statistics, and session monitoring  
+> **Prerequisites:** Paid or PAYG license, SQL Server 2016 SP1+, Extension 1.1.2504.99+
 
 Enable advanced performance monitoring with DMV-based metrics collection and visualization.
 
@@ -905,12 +1159,17 @@ az resource show `
 
 **Troubleshooting:**
 
+<details>
+<summary><b>Click to expand troubleshooting guide</b></summary>
+
 | Issue | Solution |
 |-------|----------|
 | Performance Dashboard not loading | Verify all prerequisites met, check extension version |
 | No data appearing after 15 minutes | Verify connectivity to `*.arcdataservices.com`, check license type |
 | Monitoring toggle disabled | Confirm license type is Paid or PAYG, not LicenseOnly |
 | FCI not showing monitoring option | FCIs not supported for monitoring preview |
+
+</details>
 
 **Additional Resources:**
 - [Monitor SQL Server enabled by Azure Arc - Microsoft Learn](https://learn.microsoft.com/sql/sql-server/azure-arc/sql-monitoring)
@@ -926,6 +1185,12 @@ az resource show `
 ---
 
 ### Module 10 (Optional): Configure Automated Backups & Point-in-Time Restore (Preview) (40 minutes)
+
+> **📦 MODULE SUMMARY**  
+> **Duration:** 40 minutes | **Difficulty:** 🔴 Advanced | ⚠️ **Preview Feature**  
+> **What you'll do:** Configure automated backup policies and perform point-in-time database restores  
+> **Key outcomes:** Automated backup management with retention policies, PITR capability  
+> **Prerequisites:** Paid or PAYG license, SQL 2016+, Full Recovery Model databases
 
 Enable automated backups to local storage and perform point-in-time database restores.
 
@@ -1372,6 +1637,9 @@ az sql db-arc restore `
 
 **Troubleshooting:**
 
+<details>
+<summary><b>Click to expand troubleshooting guide</b></summary>
+
 | Issue | Solution |
 |-------|----------|
 | Backups not starting | Verify retention > 0, check permissions, ensure Full Recovery Model |
@@ -1379,6 +1647,8 @@ az sql db-arc restore `
 | Backup location error | Verify default backup path exists, `NT AUTHORITY\SYSTEM` has write access |
 | PITR restore fails | Ensure complete backup chain exists, verify no gap in log backups |
 | Database-level policy not applying | Check that retention > 0, verify not on FCI or AG replica |
+
+</details>
 
 **Additional Resources:**
 - [Manage automated backups - Microsoft Learn](https://learn.microsoft.com/sql/sql-server/azure-arc/backup-local)
@@ -1452,44 +1722,68 @@ az sql db-arc restore `
 
 ---
 
+**[⬅️ Previous: Module 10 (Optional) - Backups & PITR](#module-10-optional-configure-automated-backups--point-in-time-restore-preview-40-minutes) or [Module 7 - Azure Policy](#module-7-azure-policy-for-bpa-at-scale-25-minutes)** | **[⬆️ Back to Top](#-table-of-contents)**
+
+---
+
 ## Troubleshooting
 
 ### Common Issues and Solutions
 
-#### Issue: Arc agent installation fails
+<details>
+<summary><b>Issue: Arc agent installation fails</b></summary>
+
 **Solution:**
 - Verify network connectivity using `Test-ArcConnectivity.ps1`
 - Check firewall rules allow outbound HTTPS (port 443)
 - Ensure running PowerShell as Administrator
 - Review logs: `%ProgramData%\AzureConnectedMachineAgent\Log\azcmagent.log`
 
-#### Issue: SQL Server extension not auto-deploying
+</details>
+
+<details>
+<summary><b>Issue: SQL Server extension not auto-deploying</b></summary>
+
 **Solution:**
 - Verify SQL Server is installed and running
 - Check that resource group doesn't have tag `ArcSQLServerExtensionDeployment = Disabled`
 - Wait up to 30 minutes for auto-deployment
 - Manually deploy extension using PowerShell (see Module 3)
 
-#### Issue: BPA cannot be enabled (license type error)
+</details>
+
+<details>
+<summary><b>Issue: BPA cannot be enabled (license type error)</b></summary>
+
 **Solution:**
 - Verify license type is set to **Paid** or **PAYG** (not LicenseOnly)
 - Change license type in **Configuration** blade
 - Wait a few minutes and try enabling BPA again
 
-#### Issue: Policy remediation task fails
+</details>
+
+<details>
+<summary><b>Issue: Policy remediation task fails</b></summary>
+
 **Solution:**
 - Verify managed identity has required permissions on Log Analytics workspace
 - Check policy assignment parameters are correct
 - Review remediation task logs in Azure Policy > Remediation
 - Manually run remediation task again
 
-#### Issue: Monitoring data not appearing
+</details>
+
+<details>
+<summary><b>Issue: Monitoring data not appearing</b></summary>
+
 **Solution:**
 - Verify license type is **Paid** or **PAYG**
 - Check extension version is 1.1.2504.99 or later
 - Ensure connectivity to `*.swedencentral.arcdataservices.com`
 - Wait up to 15 minutes for data to appear
 - Review extension logs on the server
+
+</details>
 
 ---
 
