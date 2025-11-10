@@ -14,6 +14,7 @@ This comprehensive hands-on lab guides you through the complete lifecycle of man
 
 ### What You Will Learn
 
+**Core Modules:**
 - Deploy Azure infrastructure for Arc-enabled SQL Server using Bicep
 - Validate network connectivity requirements for Azure Arc
 - Onboard on-premises SQL Server to Azure Arc
@@ -23,6 +24,14 @@ This comprehensive hands-on lab guides you through the complete lifecycle of man
 - Enable and configure SQL Server monitoring
 - Implement Best Practices Assessment (BPA)
 - Deploy Azure Policy for BPA at scale
+
+**Optional Advanced Modules (Preview Features):**
+- Configure automatic Windows and SQL Server updates
+- Enable advanced performance monitoring with DMV metrics
+- Set up automated backups with custom retention policies
+- Perform point-in-time database restores
+
+**All Modules:**
 - Clean up and deprovision resources
 
 ### Prerequisites
@@ -60,6 +69,8 @@ This comprehensive hands-on lab guides you through the complete lifecycle of man
 ---
 
 ## Lab Modules
+
+### Core Modules
 
 ### Module 0: Infrastructure Setup (15 minutes)
 
@@ -626,9 +637,766 @@ You can assign policies at different scopes:
 
 ---
 
-### Module 8: Lab Cleanup (10 minutes)
+## Optional Advanced Modules
 
-Remove all lab resources to avoid ongoing charges.
+> **⚠️ PREVIEW FEATURES NOTICE**  
+> The following modules cover **preview features** subject to [Supplemental Terms of Use for Microsoft Azure Previews](https://azure.microsoft.com/support/legal/preview-supplemental-terms/).  
+> These modules are optional and can be skipped if time is limited. They demonstrate advanced capabilities for production-ready Arc-enabled SQL Server management.
+
+---
+
+### Module 8 (Optional): Configure Automatic Updates (10 minutes)
+
+Enable automatic patching for Windows and SQL Server through Azure Arc.
+
+**Objectives:**
+- Configure automatic updates for Arc-enabled SQL Server
+- Set maintenance schedule for patch deployment
+- Understand update scope and behavior
+
+**Prerequisites:**
+- Module 2 completed (Arc server onboarding)
+- License type: **Paid** or **PAYG** (not available for LicenseOnly)
+- Windows-based server only
+
+**Steps:**
+
+#### Part A: Understand Automatic Updates
+
+Automatic updates for Arc-enabled SQL Server:
+- Work at the **OS level** and apply to all SQL Server instances on the host
+- Only apply updates marked as **Important** or **Critical**
+- Updates occur only during configured maintenance window
+- Use Windows Update and Microsoft Update services
+- Service packs and non-critical cumulative updates must be installed manually
+
+#### Part B: Configure Updates via Azure Portal
+
+1. **Navigate to your Arc-enabled server**:
+   - Go to **Azure Arc** > **Infrastructure** > **Servers**
+   - Select your server
+
+2. **Open SQL Server Configuration**:
+   - Under **Operations**, select **SQL Server Configuration**
+   - Locate the **Update** section
+
+3. **Enable automatic updates**:
+   - Toggle **Automatic updates** to **Enable**
+   - Configure maintenance schedule:
+     - **Maintenance schedule**: Select day (e.g., Sunday)
+     - **Maintenance start hour**: Select time (e.g., 02:00)
+   - Click **Save**
+
+4. **Verify configuration**:
+   - Confirm settings saved successfully
+   - Note: First update cycle will occur during next maintenance window
+
+#### Part C: Configure Updates via Azure CLI
+
+Alternatively, configure updates programmatically:
+
+```powershell
+# Set variables
+$resourceGroup = "arcsql-lab-arc-rg"
+$serverName = "<your-arc-server-name>"
+
+# Enable automatic updates with maintenance schedule
+# Note: Use Azure Update Manager REST API for configuration
+# See: https://learn.microsoft.com/azure/update-manager/manage-arc-enabled-servers-programmatically
+
+# Example: Create maintenance configuration (requires Az.Maintenance module)
+Install-Module -Name Az.Maintenance -AllowClobber -Force
+
+# Create maintenance configuration
+$maintenanceConfig = New-AzMaintenanceConfiguration `
+    -ResourceGroupName $resourceGroup `
+    -Name "SQL-Sunday-Updates" `
+    -Location "swedencentral" `
+    -MaintenanceScope "InGuestPatch" `
+    -StartDateTime "2024-11-17 02:00" `
+    -Duration "03:00" `
+    -RecurEvery "Week Sunday"
+
+# Assign to Arc server
+New-AzConfigurationAssignment `
+    -ResourceGroupName $resourceGroup `
+    -Location "swedencentral" `
+    -ResourceName $serverName `
+    -ResourceType "Microsoft.HybridCompute/machines" `
+    -ProviderName "Microsoft.Maintenance" `
+    -ConfigurationAssignmentName "SQL-Updates-Assignment" `
+    -MaintenanceConfigurationId $maintenanceConfig.Id
+```
+
+#### Part D: Verify Update Configuration
+
+1. **Check extension status**:
+   ```powershell
+   Get-AzConnectedMachineExtension `
+       -ResourceGroupName $resourceGroup `
+       -MachineName $serverName `
+       | Where-Object {$_.Name -eq "WindowsAgent.SqlServer"}
+   ```
+
+2. **Monitor update history**:
+   - Navigate to **Server - Azure Arc** resource
+   - Go to **Update management** blade
+   - View update history and compliance status
+
+**Important Notes:**
+- Changing license type to **LicenseOnly** disables automatic updates
+- To change license type, first unsubscribe from automatic updates
+- Wait ~5 minutes after saving before changing license type
+
+**Troubleshooting:**
+
+| Issue | Solution |
+|-------|----------|
+| Automatic updates option grayed out | Verify license type is Paid or PAYG |
+| Updates not applying | Check maintenance window configuration and server connectivity |
+| License type change blocked | Disable automatic updates, wait 5 minutes, then change license type |
+
+**Additional Resources:**
+- [Configure automatic updates - Microsoft Learn](https://learn.microsoft.com/sql/sql-server/azure-arc/update)
+- [Azure Update Manager documentation](https://learn.microsoft.com/azure/update-manager/)
+
+**Validation:**
+- ✅ Automatic updates enabled via portal
+- ✅ Maintenance schedule configured (day and time)
+- ✅ Configuration visible in SQL Server Configuration blade
+- ✅ Update management shows compliance status
+
+---
+
+### Module 9 (Optional): Advanced SQL Monitoring (Preview) (20 minutes)
+
+Enable advanced performance monitoring with DMV-based metrics collection and visualization.
+
+**Objectives:**
+- Enable advanced SQL Server performance monitoring
+- Configure DMV data collection
+- Explore Performance Dashboard with detailed metrics
+- Understand monitoring datasets and collection intervals
+
+**Prerequisites:**
+- Module 4 completed (license configured as Paid or PAYG)
+- SQL Server 2016 SP1 or later
+- SQL Server Standard or Enterprise edition
+- Extension version 1.1.2504.99 or later
+- Windows Server 2016 or later
+- Connectivity to `*.<region>.arcdataservices.com`
+
+**Important Limitations:**
+- ⚠️ Failover Cluster Instances (FCI) not supported
+- ⚠️ Windows Server 2012 R2 and older not supported
+- ⚠️ Preview feature - subject to change
+
+**Steps:**
+
+#### Part A: Understand Advanced Monitoring
+
+Advanced monitoring for Arc-enabled SQL Server collects:
+
+| Dataset | Collection Frequency | Description |
+|---------|---------------------|-------------|
+| Active Sessions | 30 seconds | Sessions running requests, blockers, open transactions |
+| CPU Utilization | 10 seconds | CPU usage by SQL Server and other processes |
+| Memory Utilization | 10 seconds | Memory clerks and consumption |
+| Storage I/O | 10 seconds | IOPS, throughput, latency per database file |
+| Database Properties | 5 minutes | Config options, encryption, recovery model |
+| Database Storage | 1 minute | Data/log file sizes, version store |
+| Performance Counters (Common) | 1 minute | Buffer cache, locks, transactions, connections |
+| Performance Counters (Detailed) | 1 minute | Wait times, backup throughput, version store |
+| Wait Statistics | 10 seconds | Wait types, wait times, resource waits |
+
+Data is sent to Azure telemetry pipeline for near real-time processing (no Log Analytics required for visualization).
+
+#### Part B: Enable Monitoring via Azure Portal
+
+1. **Navigate to SQL Server Arc resource**:
+   - Go to **Azure Arc** > **Data services** > **SQL Server instances**
+   - Select your SQL Server instance
+
+2. **Access Performance Dashboard**:
+   - Select **Performance Dashboard (preview)**
+   - If monitoring not enabled, you'll see a configuration prompt
+
+3. **Configure monitoring**:
+   - Click **Configure** at the top of the Performance Dashboard
+   - On the **Configure monitoring settings** pane:
+     - Toggle monitoring to **On**
+   - Click **Apply settings**
+
+4. **Wait for data collection**:
+   - Initial data may take 5-15 minutes to appear
+   - Dashboard auto-refreshes
+
+5. **Explore Performance Dashboard**:
+   - **CPU tab**: View SQL vs. system CPU usage over time
+   - **Memory tab**: See memory clerk allocations
+   - **Storage I/O tab**: Monitor IOPS, throughput, latency by database
+   - **Database tab**: Review database properties and storage
+   - **Active Sessions tab**: Identify blocking and long-running sessions
+   - **Wait Statistics tab**: Analyze wait types (not visualized yet)
+
+#### Part C: Enable/Disable Monitoring via Azure CLI
+
+**Enable monitoring:**
+
+```powershell
+# Set variables
+$subscriptionId = "<your-subscription-id>"
+$resourceGroup = "arcsql-lab-arc-rg"
+$sqlServerArcName = "<your-sql-server-arc-name>"
+
+# Enable monitoring
+az resource update `
+    --ids "/subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.AzureArcData/SqlServerInstances/$sqlServerArcName" `
+    --set 'properties.monitoring.enabled=true' `
+    --api-version 2023-09-01-preview
+```
+
+**Disable monitoring:**
+
+```powershell
+# Disable monitoring
+az resource update `
+    --ids "/subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.AzureArcData/SqlServerInstances/$sqlServerArcName" `
+    --set 'properties.monitoring.enabled=false' `
+    --api-version 2023-09-01-preview
+```
+
+**Verify monitoring status:**
+
+```powershell
+# Get monitoring configuration
+az resource show `
+    --ids "/subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.AzureArcData/SqlServerInstances/$sqlServerArcName" `
+    --api-version 2023-09-01-preview `
+    --query "properties.monitoring"
+```
+
+#### Part D: Analyze Performance Metrics
+
+1. **Review CPU trends**:
+   - Identify peak usage periods
+   - Compare SQL Server CPU vs. other processes
+   - Look for consistent high CPU (>80%)
+
+2. **Analyze memory usage**:
+   - Check buffer pool allocation
+   - Review memory clerk consumption
+   - Identify memory pressure indicators
+
+3. **Investigate storage I/O**:
+   - Find high-latency databases
+   - Identify IOPS bottlenecks
+   - Review throughput patterns
+
+4. **Identify active sessions issues**:
+   - Look for blocking chains
+   - Find long-running transactions
+   - Identify sessions with open transactions
+
+**Understanding Data Privacy:**
+- No personal data or customer content is collected
+- Only DMV metadata and performance metrics collected
+- All data subject to Microsoft privacy policies
+
+**Troubleshooting:**
+
+| Issue | Solution |
+|-------|----------|
+| Performance Dashboard not loading | Verify all prerequisites met, check extension version |
+| No data appearing after 15 minutes | Verify connectivity to `*.arcdataservices.com`, check license type |
+| Monitoring toggle disabled | Confirm license type is Paid or PAYG, not LicenseOnly |
+| FCI not showing monitoring option | FCIs not supported for monitoring preview |
+
+**Additional Resources:**
+- [Monitor SQL Server enabled by Azure Arc - Microsoft Learn](https://learn.microsoft.com/sql/sql-server/azure-arc/sql-monitoring)
+- [System DMVs documentation](https://learn.microsoft.com/sql/relational-databases/system-dynamic-management-views/system-dynamic-management-views)
+
+**Validation:**
+- ✅ Advanced monitoring enabled via portal or CLI
+- ✅ Performance Dashboard displaying metrics
+- ✅ Multiple dataset tabs populated with data
+- ✅ Data refreshing automatically
+- ✅ Can view historical trends (time range selector)
+
+---
+
+### Module 10 (Optional): Configure Automated Backups & Point-in-Time Restore (Preview) (40 minutes)
+
+Enable automated backups to local storage and perform point-in-time database restores.
+
+> **Note:** This module combines backup configuration and restore operations as they form a complete workflow.
+
+**Objectives:**
+- Enable automated backups for SQL Server instances and databases
+- Configure retention policies and backup schedules
+- Understand instance-level vs. database-level policies
+- Perform point-in-time restore from Azure portal
+
+**Prerequisites:**
+- Module 4 completed (license type: Paid or PAYG)
+- SQL Server 2016 or later
+- User databases in **Full Recovery Model**
+- Extension version 1.1.2504.99 or later (for automatic permissions)
+- Default backup location configured on SQL Server instance
+
+**Important Limitations:**
+- ⚠️ Failover Cluster Instances (FCI) not supported
+- ⚠️ Always On Availability Group replicas not supported
+- ⚠️ Databases not in Full Recovery Model are skipped
+- ⚠️ Backup to URL not currently available
+- ⚠️ Only applies to Paid or PAYG licenses
+
+---
+
+#### Part A: Understand Automated Backups (5 minutes)
+
+**Backup Architecture:**
+- Backups written to SQL Server **default backup location** (local or network share)
+- Native SQL Server backups (viewable in `msdb.dbo.backupset`)
+- Backup service uses `NT AUTHORITY\SYSTEM` (or `NT Service\SQLServerExtension` for least privilege)
+- Automatic permission grants for extension 1.1.2504.99+
+
+**Backup Schedule Levels:**
+
+1. **Instance-level**: Default schedule applied to all databases
+2. **Database-level**: Override instance schedule for specific databases
+3. **Hierarchy**: Database-level takes precedence over instance-level
+
+**Configurable Settings:**
+
+| Setting | Options | Description |
+|---------|---------|-------------|
+| Retention Days | 0-35 days | 0 = disabled, 1-35 = active retention |
+| Full Backup | Daily or Weekly | Complete database backup |
+| Differential Backup | Every 12h or 24h | Incremental since last full |
+| Transaction Log Backup | 5-minute increments | Point-in-time recovery capability |
+
+**Default Schedule:**
+- Retention: 7 days
+- Full: Weekly
+- Differential: Every 24 hours
+- Transaction Log: Every 5 minutes
+
+**Safety Rules:**
+- Minimum retention: One full backup cycle + retention days
+- Dropping a database immediately deletes its automated backups
+
+---
+
+#### Part B: Verify/Assign Permissions (5 minutes)
+
+**For Extension Version 1.1.2504.99 or Later:**
+
+Permissions are granted automatically. Skip to Part C.
+
+**For Earlier Extensions Only:**
+
+1. **Grant server-level permissions**:
+
+```sql
+-- Connect to SQL Server via SSMS or sqlcmd
+USE master;
+GO
+
+-- Create login for NT AUTHORITY\SYSTEM
+CREATE LOGIN [NT AUTHORITY\SYSTEM] FROM WINDOWS 
+    WITH DEFAULT_DATABASE = [master];
+GO
+
+-- Add to dbcreator role
+ALTER SERVER ROLE [dbcreator] ADD MEMBER [NT AUTHORITY\SYSTEM];
+GO
+```
+
+2. **Grant database-level permissions** (run for each database):
+
+```sql
+-- For each user database (except tempdb)
+USE [YourDatabaseName];
+GO
+
+CREATE USER [NT AUTHORITY\SYSTEM] FOR LOGIN [NT AUTHORITY\SYSTEM];
+GO
+
+ALTER ROLE [db_backupoperator] ADD MEMBER [NT AUTHORITY\SYSTEM];
+GO
+```
+
+3. **Verify permissions**:
+
+```sql
+-- Check server role membership
+SELECT 
+    sp.name AS [LoginName],
+    sr.name AS [ServerRole]
+FROM sys.server_principals sp
+JOIN sys.server_role_members srm ON sp.principal_id = srm.member_principal_id
+JOIN sys.server_principals sr ON srm.role_principal_id = sr.principal_id
+WHERE sp.name = 'NT AUTHORITY\SYSTEM';
+
+-- Check database role membership
+SELECT 
+    dp.name AS [UserName],
+    dr.name AS [DatabaseRole]
+FROM sys.database_principals dp
+JOIN sys.database_role_members drm ON dp.principal_id = drm.member_principal_id
+JOIN sys.database_principals dr ON drm.role_principal_id = dr.principal_id
+WHERE dp.name = 'NT AUTHORITY\SYSTEM';
+```
+
+---
+
+#### Part C: Configure Instance-Level Automated Backups (10 minutes)
+
+**Option 1: Azure Portal**
+
+1. **Navigate to SQL Server Arc resource**:
+   - Go to **Azure Arc** > **Data services** > **SQL Server instances**
+   - Select your instance
+
+2. **Open Backups blade**:
+   - Select **Backups** from the left menu
+
+3. **Configure backup policy**:
+   - Click **Configure policies**
+   - Set **Retention days**: `14` (1-35 days)
+   - Configure schedules:
+     - **Full backup**: `Every 7 days` (weekly)
+     - **Differential backup**: `Every 24 hours`
+     - **Transaction log backup**: `Every 5 minutes`
+   - Click **Apply**
+
+4. **Verify configuration**:
+   - Backup policy shows as **Configured**
+   - Settings reflected in Backups blade
+
+**Option 2: Azure CLI**
+
+```powershell
+# Set variables
+$resourceGroup = "arcsql-lab-arc-rg"
+$sqlServerArcName = "<your-sql-server-arc-name>"
+
+# Configure instance-level backup policy
+az sql server-arc backups-policy create `
+    --name $sqlServerArcName `
+    --resource-group $resourceGroup `
+    --retention-days 14 `
+    --full-backup-days 7 `
+    --diff-backup-hours 24 `
+    --tlog-backup-mins 5
+```
+
+**View current policy:**
+
+```powershell
+# Show backup policy
+az sql server-arc backups-policy show `
+    --name $sqlServerArcName `
+    --resource-group $resourceGroup
+```
+
+**Expected output:**
+
+```json
+{
+  "differentialBackupHours": 24,
+  "fullBackupDays": 7,
+  "instanceName": "MSSQLSERVER",
+  "retentionPeriodDays": 14,
+  "transactionLogBackupMinutes": 5
+}
+```
+
+---
+
+#### Part D: Configure Database-Level Backup Policy (10 minutes)
+
+Override instance-level settings for specific databases.
+
+**Option 1: Azure Portal**
+
+1. **Navigate to SQL Server instance** in Azure portal
+
+2. **Select database**:
+   - Under the instance, browse databases
+   - Select a specific database
+
+3. **Configure database backup**:
+   - Under **Data management**, select **Backup (preview)**
+   - Click **Configure database backup policies (Preview)**
+   - Click **Configure policies**
+   - Set custom values:
+     - **Retention days**: `21`
+     - **Full backup**: `Daily`
+     - **Differential backup**: `Every 12 hours`
+     - **Transaction log backup**: `Every 10 minutes`
+   - Click **Apply**
+
+4. **Verify database-level policy**:
+   - Database backup policy shows custom schedule
+   - Instance-level policy still applies to other databases
+
+**Option 2: Azure CLI**
+
+```powershell
+# Set variables
+$resourceGroup = "arcsql-lab-arc-rg"
+$sqlServerArcName = "<your-sql-server-arc-name>"
+$databaseName = "<database-name>"
+
+# Configure database-level backup policy
+az sql db-arc backups-policy create `
+    --name $databaseName `
+    --server $sqlServerArcName `
+    --resource-group $resourceGroup `
+    --retention-days 21 `
+    --full-backup-days 1 `
+    --diff-backup-hours 12 `
+    --tlog-backup-mins 10
+```
+
+**View database policy:**
+
+```powershell
+az sql db-arc backups-policy show `
+    --name $databaseName `
+    --server $sqlServerArcName `
+    --resource-group $resourceGroup
+```
+
+---
+
+#### Part E: Verify Backups are Running (5 minutes)
+
+1. **Check default backup location**:
+
+```sql
+-- For SQL Server 2019 and later
+SELECT SERVERPROPERTY('InstanceDefaultBackupPath') AS DefaultBackupPath;
+```
+
+For earlier versions, check registry or SSMS:
+- Connect to SQL Server in SSMS
+- Right-click server > **Properties** > **Database Settings** > **Database default locations**
+
+2. **Verify backup files**:
+
+```powershell
+# On the SQL Server host, check backup location
+$backupPath = "C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\Backup"
+Get-ChildItem -Path $backupPath -Recurse | 
+    Where-Object {$_.Extension -in '.bak','.trn','.dif'} |
+    Select-Object Name, Length, LastWriteTime |
+    Sort-Object LastWriteTime -Descending
+```
+
+3. **Query backup history**:
+
+```sql
+-- View recent backups
+SELECT TOP 20
+    bs.database_name,
+    bs.backup_start_date,
+    bs.backup_finish_date,
+    CASE bs.type
+        WHEN 'D' THEN 'Full'
+        WHEN 'I' THEN 'Differential'
+        WHEN 'L' THEN 'Transaction Log'
+    END AS BackupType,
+    bs.backup_size / 1024 / 1024 AS BackupSizeMB,
+    bmf.physical_device_name
+FROM msdb.dbo.backupset bs
+JOIN msdb.dbo.backupmediafamily bmf ON bs.media_set_id = bmf.media_set_id
+ORDER BY bs.backup_start_date DESC;
+```
+
+4. **Monitor in Azure portal**:
+   - SQL Server Arc resource > **Backups** blade
+   - View backup status and history
+
+---
+
+#### Part F: Disable or Delete Backup Policies (5 minutes)
+
+**Disable (Retain Policy):**
+
+```powershell
+# Disable by setting retention to 0 (keeps policy config)
+az sql server-arc backups-policy update `
+    --name $sqlServerArcName `
+    --resource-group $resourceGroup `
+    --retention-days 0
+```
+
+**Delete Instance-Level Policy:**
+
+```powershell
+# Completely remove instance-level policy
+az sql server-arc backups-policy delete `
+    --name $sqlServerArcName `
+    --resource-group $resourceGroup
+```
+
+**Delete Database-Level Policy:**
+
+Portal: Database > Backup > **Revert backup policy to instance level**
+
+CLI:
+```powershell
+# Remove database-level policy (reverts to instance-level)
+az sql db-arc backups-policy delete `
+    --name $databaseName `
+    --server $sqlServerArcName `
+    --resource-group $resourceGroup
+```
+
+---
+
+#### Part G: Point-in-Time Restore (PITR) (10 minutes)
+
+Restore a database to a previous point-in-time as a new database.
+
+**Prerequisites:**
+- Automated backups enabled and running
+- At least one full backup completed
+- Database in Full Recovery Model
+- Backups taken by Arc automated backup (not external tools)
+
+**Option 1: Azure Portal**
+
+1. **Navigate to SQL Server Arc resource**:
+   - Go to **Azure Arc** > **Data services** > **SQL Server instances**
+   - Select your instance
+
+2. **Open Backups blade**:
+   - Select **Backups**
+
+3. **Initiate restore**:
+   - In the databases list, find the database to restore
+   - Click **Restore** button for that database
+
+4. **Configure restore**:
+   - **Point-in-time**: Select date and time within retention window
+     - Use slider or enter specific timestamp
+   - **New database name**: `<OriginalName>_PITR_<timestamp>` (e.g., `MyDB_PITR_20241110`)
+   - Review source database details
+
+5. **Submit restore deployment**:
+   - Click **Review + create**
+   - Review settings
+   - Click **Create** to start restore
+
+6. **Monitor restore progress**:
+   - Deployment blade shows progress
+   - Or check SQL Server Activity Monitor / error log
+
+7. **Verify restored database**:
+   ```sql
+   -- Connect to SQL Server
+   SELECT name, create_date, state_desc
+   FROM sys.databases
+   WHERE name LIKE '%PITR%';
+   
+   -- Verify data at restored point-in-time
+   USE [MyDB_PITR_20241110];
+   GO
+   SELECT COUNT(*) FROM [YourTable];
+   ```
+
+**Option 2: Azure CLI**
+
+```powershell
+# Set variables
+$resourceGroup = "arcsql-lab-arc-rg"
+$sqlServerArcName = "<your-sql-server-arc-name>"
+$sourceDatabaseName = "<source-database>"
+$targetDatabaseName = "${sourceDatabaseName}_PITR_$(Get-Date -Format 'yyyyMMddHHmm')"
+$restorePointInTime = "2024-11-10T14:30:00Z"  # ISO 8601 format
+
+# Initiate point-in-time restore
+az sql db-arc restore `
+    --name $targetDatabaseName `
+    --server $sqlServerArcName `
+    --resource-group $resourceGroup `
+    --source-database $sourceDatabaseName `
+    --restore-point-in-time $restorePointInTime
+```
+
+**Understanding PITR:**
+- Creates **new database** (does not overwrite source)
+- Restores from full + differential + transaction log backups
+- Point-in-time must be within retention window
+- Uses SQL Server native restore chain
+- Source database remains online and unchanged
+
+---
+
+#### Part H: Backup Best Practices
+
+1. **Test restores regularly**:
+   - Perform PITR monthly to validate backup chain
+   - Verify restored data integrity
+
+2. **Monitor backup storage**:
+   - Check disk space on backup location
+   - Plan for growth based on retention policy
+
+3. **Recovery Model**:
+   ```sql
+   -- Verify databases in Full Recovery Model
+   SELECT name, recovery_model_desc
+   FROM sys.databases
+   WHERE database_id > 4  -- Skip system databases
+      AND recovery_model_desc <> 'FULL';
+   
+   -- Change to Full Recovery Model if needed
+   ALTER DATABASE [YourDatabase] SET RECOVERY FULL;
+   ```
+
+4. **Backup location considerations**:
+   - Use fast storage (SSD preferred)
+   - Consider network shares for centralized backup storage
+   - Ensure `NT AUTHORITY\SYSTEM` has write permissions on UNC paths
+
+5. **System database backups**:
+   - System databases (`master`, `model`, `msdb`) are backed up automatically
+   - Only full backups for system databases (no differential or log)
+
+---
+
+**Troubleshooting:**
+
+| Issue | Solution |
+|-------|----------|
+| Backups not starting | Verify retention > 0, check permissions, ensure Full Recovery Model |
+| Database skipped in backups | Confirm database in Full Recovery Model, not part of AG replica |
+| Backup location error | Verify default backup path exists, `NT AUTHORITY\SYSTEM` has write access |
+| PITR restore fails | Ensure complete backup chain exists, verify no gap in log backups |
+| Database-level policy not applying | Check that retention > 0, verify not on FCI or AG replica |
+
+**Additional Resources:**
+- [Manage automated backups - Microsoft Learn](https://learn.microsoft.com/sql/sql-server/azure-arc/backup-local)
+- [Point-in-time restore - Microsoft Learn](https://learn.microsoft.com/sql/sql-server/azure-arc/point-in-time-restore)
+- [SQL Server Recovery Models](https://learn.microsoft.com/sql/relational-databases/backup-restore/recovery-models-sql-server)
+
+**Validation:**
+- ✅ Instance-level backup policy configured
+- ✅ Database-level backup policy configured (optional)
+- ✅ Backup files appearing in default backup location
+- ✅ Backup history visible in `msdb.dbo.backupset`
+- ✅ Successfully performed point-in-time restore
+- ✅ Restored database contains data from specified point-in-time
+- ✅ Both portal and CLI methods tested
+
+---
+
+### Module 11: Lab Cleanup (10 minutes)
 
 **Objectives:**
 - Disconnect SQL Server from Azure Arc
@@ -728,11 +1496,19 @@ Remove all lab resources to avoid ongoing charges.
 ## Additional Resources
 
 ### Microsoft Learn Documentation
+
+**Core Features:**
 - [SQL Server enabled by Azure Arc - Overview](https://learn.microsoft.com/sql/sql-server/azure-arc/overview)
 - [Connect your SQL Server to Azure Arc](https://learn.microsoft.com/sql/sql-server/azure-arc/connect)
 - [Manage licensing and billing](https://learn.microsoft.com/sql/sql-server/azure-arc/manage-license-billing)
 - [Best practices assessment](https://learn.microsoft.com/sql/sql-server/azure-arc/assess)
 - [Azure Policy for Arc SQL Server](https://learn.microsoft.com/azure/governance/policy/samples/built-in-policies#sql-server)
+
+**Optional Advanced Features:**
+- [Configure automatic updates](https://learn.microsoft.com/sql/sql-server/azure-arc/update)
+- [Monitor SQL Server enabled by Azure Arc (preview)](https://learn.microsoft.com/sql/sql-server/azure-arc/sql-monitoring)
+- [Manage automated backups (preview)](https://learn.microsoft.com/sql/sql-server/azure-arc/backup-local)
+- [Point-in-time restore (preview)](https://learn.microsoft.com/sql/sql-server/azure-arc/point-in-time-restore)
 
 ### Tools and Scripts
 - [Azure Arc Jumpstart](https://azurearcjumpstart.io/)
@@ -759,6 +1535,8 @@ If you encounter issues or have suggestions for improving this lab:
 Congratulations! You have completed the Azure Arc-enabled SQL Server hands-on lab.
 
 **What you accomplished:**
+
+**Core Modules:**
 - ✅ Deployed Azure infrastructure using Bicep
 - ✅ Validated network connectivity to Azure Arc
 - ✅ Onboarded on-premises Windows Server to Azure Arc
@@ -767,6 +1545,14 @@ Congratulations! You have completed the Azure Arc-enabled SQL Server hands-on la
 - ✅ Enabled monitoring for SQL Server performance and health
 - ✅ Ran Best Practices Assessment and reviewed recommendations
 - ✅ Deployed Azure Policy for BPA at scale
+
+**Optional Advanced Modules (if completed):**
+- ✅ Configured automatic Windows and SQL Server updates
+- ✅ Enabled advanced performance monitoring with DMV metrics
+- ✅ Set up automated backups with custom retention policies
+- ✅ Performed point-in-time database restores
+
+**Cleanup:**
 - ✅ Successfully cleaned up all lab resources
 
 **Key takeaways:**
@@ -776,12 +1562,13 @@ Congratulations! You have completed the Azure Arc-enabled SQL Server hands-on la
 - Built-in monitoring and best practices assessment
 - Azure Policy enables governance at scale
 - Centralized management through Azure portal
+- Preview features provide advanced capabilities for backup, restore, and patching
 
 **Next steps:**
 - Apply these concepts to your production environment
 - Explore advanced monitoring and alerting
 - Integrate with Microsoft Defender for Cloud
-- Configure automated backups
+- Configure automated backups for production databases
 - Implement Microsoft Entra ID authentication
 
 ---
