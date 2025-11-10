@@ -278,6 +278,9 @@ Deploy the required Azure infrastructure using Bicep templates.
 - Create Log Analytics workspace for monitoring and BPA
 - Register required resource providers
 
+<details>
+<summary><b>📋 Click to expand step-by-step instructions</b></summary>
+
 **Steps:**
 
 1. **Clone the repository** (if you haven't already):
@@ -309,6 +312,8 @@ Deploy the required Azure infrastructure using Bicep templates.
      - `arcsql-lab-arc-rg` (for Arc resources)
      - `arcsql-lab-monitoring-rg` (for Log Analytics workspace)
 
+</details>
+
 **Validation:**
 - ✅ Two resource groups created in Sweden Central
 - ✅ Log Analytics workspace deployed with SQL Assessment solution
@@ -335,6 +340,9 @@ Validate that your on-premises server can communicate with Azure Arc endpoints.
 - Test DNS resolution for Arc services
 - Validate firewall and proxy configuration
 
+<details>
+<summary><b>📋 Click to expand step-by-step instructions</b></summary>
+
 **Steps:**
 
 1. **Run the network connectivity test**:
@@ -359,6 +367,8 @@ Validate that your on-premises server can communicate with Azure Arc endpoints.
 - `*.guestconfiguration.azure.com`
 - `*.his.arc.azure.com`
 - `*.swedencentral.arcdataservices.com`
+
+</details>
 
 **Validation:**
 - ✅ All Azure Arc endpoints are accessible
@@ -388,9 +398,10 @@ Connect your on-premises Windows Server to Azure Arc using Service Principal aut
 - Register the server with Azure Arc
 - Verify server appears in Azure portal
 
-**Steps:**
+<details>
+<summary><b>📋 Part A: Create Service Principal (5 minutes) - Click to expand</b></summary>
 
-#### Part A: Create Service Principal (5 minutes)
+**Steps:**
 
 1. **Run the service principal creation script** on your **workstation** (not the on-premises server):
    ```powershell
@@ -414,7 +425,12 @@ Connect your on-premises Windows Server to Azure Arc using Service Principal aut
    - Permissions: Minimum required to onboard servers to Arc
    - Service Principal is used ONLY during onboarding, not for ongoing management
 
-#### Part B: Onboard Server to Arc (15 minutes)
+</details>
+
+<details>
+<summary><b>📋 Part B: Onboard Server to Arc (15 minutes) - Click to expand</b></summary>
+
+**Steps:**
 
 1. **Download the Azure Connected Machine agent** on your on-premises server:
    - Visit: https://aka.ms/AzureConnectedMachineAgent
@@ -472,6 +488,8 @@ Connect your on-premises Windows Server to Azure Arc using Service Principal aut
    - Confirm your server appears with status **Connected**
    - Review server properties (OS, location, agent version)
 
+</details>
+
 **Why Service Principal Instead of Interactive Login?**
 - ✅ **Automation-friendly**: No user interaction required
 - ✅ **Enterprise-ready**: Suitable for at-scale deployments
@@ -509,6 +527,9 @@ Deploy the Azure extension for SQL Server and enable automatic SQL instance disc
 - Deploy Azure extension for SQL Server
 - Verify SQL instances are discovered and registered
 - Review SQL Server resources in Azure
+
+<details>
+<summary><b>📋 Click to expand step-by-step instructions</b></summary>
 
 **Steps:**
 
@@ -549,6 +570,8 @@ Deploy the Azure extension for SQL Server and enable automatic SQL instance disc
    - Click on a SQL Server instance
    - Review **Overview** page
    - Note: Edition, Version, vCores, License Type (initially "Configuration needed")
+
+</details>
 
 **Validation:**
 - ✅ WindowsAgent.SqlServer extension deployed and running
