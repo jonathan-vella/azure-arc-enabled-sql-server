@@ -10,6 +10,10 @@ This lab provides end-to-end experience with Azure Arc-enabled SQL Server, cover
 - License management (PAYG & Software Assurance)
 - Monitoring and Best Practices Assessment
 - Governance at scale with Azure Policy
+- **Optional preview features:** Automated patching, advanced monitoring, backup management, and point-in-time restore
+
+> [!IMPORTANT]
+> **Preview Features:** This lab includes 4 optional modules (Modules 8-11) that cover preview features. These features are subject to [Supplemental Terms of Use for Microsoft Azure Previews](https://azure.microsoft.com/support/legal/preview-supplemental-terms/). If you are time-limited, you may skip these optional modules and proceed directly to Module 12 (Lab Cleanup).
 
 ## 🎯 Prerequisites
 
@@ -33,7 +37,7 @@ For detailed step-by-step guidance, see the [full lab guide](README.md).
 
 ```
 arc-sql-hands-on-lab/
-├── README.md                      # Full lab guide (8 modules)
+├── README.md                      # Full lab guide (12 modules + cleanup)
 ├── QUICKSTART.md                  # Quick start for experienced users
 ├── bicep/
 │   ├── main.bicep                # Main infrastructure template
@@ -47,6 +51,7 @@ arc-sql-hands-on-lab/
 
 ## 📚 Lab Modules
 
+### Core Modules
 1. **Module 0**: Infrastructure Setup (15 min)
 2. **Module 1**: Network Connectivity Validation (10 min)
 3. **Module 2**: Azure Arc Server Onboarding (15 min)
@@ -55,9 +60,18 @@ arc-sql-hands-on-lab/
 6. **Module 5**: Basic Monitoring Setup (15 min)
 7. **Module 6**: Best Practices Assessment (20 min)
 8. **Module 7**: Azure Policy for BPA at Scale (25 min)
-9. **Module 8**: Lab Cleanup (10 min)
 
-**Total Duration:** ~2 hours
+### Optional Modules (Preview Features)
+9. **Module 8**: Automated Patching (15 min) ⚠️ **Preview** - *Skip if time is limited*
+10. **Module 9**: Advanced Monitoring (15 min) ⚠️ **Preview** - *Skip if time is limited*
+11. **Module 10**: Backup Management (20 min) ⚠️ **Preview** - *Skip if time is limited*
+12. **Module 11**: Point-in-Time Restore (20 min) ⚠️ **Preview** - *Skip if time is limited*
+
+### Cleanup
+13. **Module 12**: Lab Cleanup (10 min)
+
+**Core Duration:** ~2 hours  
+**With Optional Modules:** ~3 hours 10 minutes
 
 ## 🏁 Getting Started
 
@@ -119,6 +133,12 @@ After completing this lab, you will understand:
 ✅ Best Practices Assessment configuration and results  
 ✅ Using Azure Policy for governance at scale  
 ✅ Complete lifecycle management
+
+**Optional preview features:**
+✅ Automated patching for SQL Server  
+✅ Advanced performance monitoring with detailed metrics  
+✅ Automated backup management and scheduling  
+✅ Point-in-time database restore capabilities
 
 ## 🔗 Additional Resources
 
