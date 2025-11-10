@@ -591,9 +591,10 @@ Configure and transition between different SQL Server license types.
 - Transition to Paid (Software Assurance/Azure Hybrid Benefit)
 - Understand billing implications
 
-**Steps:**
+<details>
+<summary><b>📋 Part A: Configure PAYG License (5 minutes) - Click to expand</b></summary>
 
-#### Part A: Configure PAYG (Pay-As-You-Go) License
+**Steps:**
 
 1. **Navigate to your SQL Server instance** in Azure portal:
    - **Azure Arc** > **Data services** > **SQL Server instances**
@@ -609,9 +610,14 @@ Configure and transition between different SQL Server license types.
    - Confirm license type updated to **Pay-as-you-go**
    - Check the **Billing information** section
 
-#### Part B: Transition to Paid (Software Assurance)
+</details>
+
+<details>
+<summary><b>📋 Part B: Transition to Paid (Software Assurance) - Click to expand</b></summary>
 
 Since your SQL Server is already licensed with Software Assurance, transition to the Paid license type to unlock advanced features.
+
+**Steps:**
 
 1. **Update license type to Paid**:
    - Navigate to **Configuration** blade
@@ -622,7 +628,10 @@ Since your SQL Server is already licensed with Software Assurance, transition to
    - Check that **Best Practices Assessment** is now configurable
    - Verify **Monitoring** features are enabled
 
-#### Part C: Using PowerShell for License Management
+</details>
+
+<details>
+<summary><b>📋 Part C: PowerShell for License Management - Click to expand</b></summary>
 
 For managing licenses at scale:
 
@@ -651,6 +660,8 @@ Update-AzSqlInstanceArc `
 | **Paid** | License with Software Assurance | Full features, use existing licenses | No SQL license charges, only management services |
 | **LicenseOnly** | Bring your own license (no SA) | Limited features, basic management only | No charges |
 
+</details>
+
 **Validation:**
 - ✅ Successfully configured PAYG license type
 - ✅ Successfully transitioned to Paid license type
@@ -668,6 +679,9 @@ Enable basic monitoring for your Arc-enabled SQL Server instance.
 - Enable basic monitoring features
 - Review monitoring dashboards
 - Understand data collection
+
+<details>
+<summary><b>📋 Click to expand step-by-step instructions</b></summary>
 
 **Steps:**
 
@@ -698,6 +712,8 @@ Enable basic monitoring for your Arc-enabled SQL Server instance.
 
 **Note:** Advanced monitoring configuration (custom queries, alerts, dashboards) is out of scope for this lab.
 
+</details>
+
 **Validation:**
 - ✅ Monitoring enabled on SQL Server Arc resource
 - ✅ Performance dashboards displaying data
@@ -715,6 +731,9 @@ Enable and run SQL Server Best Practices Assessment to identify configuration im
 - Configure BPA to use Log Analytics workspace
 - Run an assessment
 - Review assessment results and recommendations
+
+<details>
+<summary><b>📋 Click to expand step-by-step instructions</b></summary>
 
 **Steps:**
 
@@ -752,6 +771,8 @@ Enable and run SQL Server Best Practices Assessment to identify configuration im
    - Click **Export** to download results as CSV or JSON
    - Use for reporting or tracking remediation progress
 
+</details>
+
 **Understanding BPA Results:**
 
 BPA evaluates your SQL Server configuration against Microsoft best practices:
@@ -786,9 +807,10 @@ Deploy Azure Policy to automatically enable Best Practices Assessment across mul
 - Create remediation tasks
 - Verify policy compliance
 
-**Steps:**
+<details>
+<summary><b>📋 Part A: Understand the Policy (5 minutes) - Click to expand</b></summary>
 
-#### Part A: Understand the Policy
+**Steps:**
 
 1. **Review the built-in policy**:
    - Policy name: **Configure Arc-enabled Servers with SQL Server extension installed to enable or disable SQL best practices assessment**
@@ -801,7 +823,12 @@ Deploy Azure Policy to automatically enable Best Practices Assessment across mul
    - Requires Log Analytics workspace
    - Creates remediation tasks for non-compliant resources
 
-#### Part B: Assign the Policy
+</details>
+
+<details>
+<summary><b>📋 Part B: Assign the Policy (10 minutes) - Click to expand</b></summary>
+
+**Steps:**
 
 1. **Navigate to Azure Policy** in Azure portal:
    - Search for "Policy" in the top search bar
@@ -840,7 +867,12 @@ Deploy Azure Policy to automatically enable Best Practices Assessment across mul
      - Review all settings
      - Click **Create**
 
-#### Part C: Monitor Policy Compliance
+</details>
+
+<details>
+<summary><b>📋 Part C: Monitor Policy Compliance (5 minutes) - Click to expand</b></summary>
+
+**Steps:**
 
 1. **View policy assignment**:
    - Go to **Azure Policy** > **Assignments**
@@ -871,12 +903,19 @@ Deploy Azure Policy to automatically enable Best Practices Assessment across mul
    - Go to **Best practices assessment** blade
    - Confirm BPA is enabled with correct Log Analytics workspace
 
-#### Part D: Testing Policy Enforcement
+</details>
+
+<details>
+<summary><b>📋 Part D: Testing Policy Enforcement (5 minutes) - Click to expand</b></summary>
+
+**Steps:**
 
 1. **Simulate policy enforcement** (optional):
    - If you have another SQL Server to onboard, connect it to Arc
    - Policy should automatically enable BPA within 15-30 minutes
    - Verify in the portal that BPA was configured automatically
+
+</details>
 
 **Understanding Policy Scope:**
 
@@ -925,9 +964,8 @@ Enable automatic patching for Windows and SQL Server through Azure Arc.
 - License type: **Paid** or **PAYG** (not available for LicenseOnly)
 - Windows-based server only
 
-**Steps:**
-
-#### Part A: Understand Automatic Updates
+<details>
+<summary><b>📋 Part A: Understand Automatic Updates (2 minutes) - Click to expand</b></summary>
 
 Automatic updates for Arc-enabled SQL Server:
 - Work at the **OS level** and apply to all SQL Server instances on the host
@@ -936,7 +974,12 @@ Automatic updates for Arc-enabled SQL Server:
 - Use Windows Update and Microsoft Update services
 - Service packs and non-critical cumulative updates must be installed manually
 
-#### Part B: Configure Updates via Azure Portal
+</details>
+
+<details>
+<summary><b>📋 Part B: Configure Updates via Azure Portal (3 minutes) - Click to expand</b></summary>
+
+**Steps:**
 
 1. **Navigate to your Arc-enabled server**:
    - Go to **Azure Arc** > **Infrastructure** > **Servers**
@@ -957,7 +1000,10 @@ Automatic updates for Arc-enabled SQL Server:
    - Confirm settings saved successfully
    - Note: First update cycle will occur during next maintenance window
 
-#### Part C: Configure Updates via Azure CLI
+</details>
+
+<details>
+<summary><b>📋 Part C: Configure Updates via Azure CLI (3 minutes) - Click to expand</b></summary>
 
 Alternatively, configure updates programmatically:
 
@@ -994,7 +1040,12 @@ New-AzConfigurationAssignment `
     -MaintenanceConfigurationId $maintenanceConfig.Id
 ```
 
-#### Part D: Verify Update Configuration
+</details>
+
+<details>
+<summary><b>📋 Part D: Verify Update Configuration (2 minutes) - Click to expand</b></summary>
+
+**Steps:**
 
 1. **Check extension status**:
    ```powershell
@@ -1008,6 +1059,8 @@ New-AzConfigurationAssignment `
    - Navigate to **Server - Azure Arc** resource
    - Go to **Update management** blade
    - View update history and compliance status
+
+</details>
 
 **Important Notes:**
 - Changing license type to **LicenseOnly** disables automatic updates
@@ -1068,9 +1121,8 @@ Enable advanced performance monitoring with DMV-based metrics collection and vis
 - ⚠️ Windows Server 2012 R2 and older not supported
 - ⚠️ Preview feature - subject to change
 
-**Steps:**
-
-#### Part A: Understand Advanced Monitoring
+<details>
+<summary><b>📋 Part A: Understand Advanced Monitoring (5 minutes) - Click to expand</b></summary>
 
 Advanced monitoring for Arc-enabled SQL Server collects:
 
@@ -1088,7 +1140,10 @@ Advanced monitoring for Arc-enabled SQL Server collects:
 
 Data is sent to Azure telemetry pipeline for near real-time processing (no Log Analytics required for visualization).
 
-#### Part B: Enable Monitoring via Azure Portal
+</details>
+
+<details>
+<summary><b>📋 Part B: Enable Monitoring via Azure Portal (5 minutes) - Click to expand</b></summary>
 
 1. **Navigate to SQL Server Arc resource**:
    - Go to **Azure Arc** > **Data services** > **SQL Server instances**
@@ -1116,7 +1171,10 @@ Data is sent to Azure telemetry pipeline for near real-time processing (no Log A
    - **Active Sessions tab**: Identify blocking and long-running sessions
    - **Wait Statistics tab**: Analyze wait types (not visualized yet)
 
-#### Part C: Enable/Disable Monitoring via Azure CLI
+</details>
+
+<details>
+<summary><b>📋 Part C: Enable/Disable Monitoring via Azure CLI (5 minutes) - Click to expand</b></summary>
 
 **Enable monitoring:**
 
@@ -1153,7 +1211,12 @@ az resource show `
     --query "properties.monitoring"
 ```
 
-#### Part D: Analyze Performance Metrics
+</details>
+
+<details>
+<summary><b>📋 Part D: Analyze Performance Metrics (5 minutes) - Click to expand</b></summary>
+
+**Steps:**
 
 1. **Review CPU trends**:
    - Identify peak usage periods
@@ -1174,6 +1237,8 @@ az resource show `
    - Look for blocking chains
    - Find long-running transactions
    - Identify sessions with open transactions
+
+</details>
 
 **Understanding Data Privacy:**
 - No personal data or customer content is collected
@@ -1241,7 +1306,8 @@ Enable automated backups to local storage and perform point-in-time database res
 
 ---
 
-#### Part A: Understand Automated Backups (5 minutes)
+<details>
+<summary><b>📋 Part A: Understand Automated Backups (5 minutes) - Click to expand</b></summary>
 
 **Backup Architecture:**
 - Backups written to SQL Server **default backup location** (local or network share)
@@ -1274,9 +1340,12 @@ Enable automated backups to local storage and perform point-in-time database res
 - Minimum retention: One full backup cycle + retention days
 - Dropping a database immediately deletes its automated backups
 
+</details>
+
 ---
 
-#### Part B: Verify/Assign Permissions (5 minutes)
+<details>
+<summary><b>📋 Part B: Verify/Assign Permissions (5 minutes) - Click to expand</b></summary>
 
 **For Extension Version 1.1.2504.99 or Later:**
 
@@ -1337,9 +1406,12 @@ JOIN sys.database_principals dr ON drm.role_principal_id = dr.principal_id
 WHERE dp.name = 'NT AUTHORITY\SYSTEM';
 ```
 
+</details>
+
 ---
 
-#### Part C: Configure Instance-Level Automated Backups (10 minutes)
+<details>
+<summary><b>📋 Part C: Configure Instance-Level Automated Backups (10 minutes) - Click to expand</b></summary>
 
 **Option 1: Azure Portal**
 
@@ -1401,9 +1473,12 @@ az sql server-arc backups-policy show `
 }
 ```
 
+</details>
+
 ---
 
-#### Part D: Configure Database-Level Backup Policy (10 minutes)
+<details>
+<summary><b>📋 Part D: Configure Database-Level Backup Policy (10 minutes) - Click to expand</b></summary>
 
 Override instance-level settings for specific databases.
 
@@ -1458,9 +1533,12 @@ az sql db-arc backups-policy show `
     --resource-group $resourceGroup
 ```
 
+</details>
+
 ---
 
-#### Part E: Verify Backups are Running (5 minutes)
+<details>
+<summary><b>📋 Part E: Verify Backups are Running (5 minutes) - Click to expand</b></summary>
 
 1. **Check default backup location**:
 
@@ -1508,9 +1586,12 @@ ORDER BY bs.backup_start_date DESC;
    - SQL Server Arc resource > **Backups** blade
    - View backup status and history
 
+</details>
+
 ---
 
-#### Part F: Disable or Delete Backup Policies (5 minutes)
+<details>
+<summary><b>📋 Part F: Disable or Delete Backup Policies (5 minutes) - Click to expand</b></summary>
 
 **Disable (Retain Policy):**
 
@@ -1544,9 +1625,12 @@ az sql db-arc backups-policy delete `
     --resource-group $resourceGroup
 ```
 
+</details>
+
 ---
 
-#### Part G: Point-in-Time Restore (PITR) (10 minutes)
+<details>
+<summary><b>📋 Part G: Point-in-Time Restore (PITR) (10 minutes) - Click to expand</b></summary>
 
 Restore a database to a previous point-in-time as a new database.
 
@@ -1621,11 +1705,16 @@ az sql db-arc restore `
 - Restores from full + differential + transaction log backups
 - Point-in-time must be within retention window
 - Uses SQL Server native restore chain
-- Source database remains online and unchanged
+   - Source database remains online and unchanged
+
+</details>
 
 ---
 
-#### Part H: Backup Best Practices
+<details>
+<summary><b>📋 Part H: Backup Best Practices (5 minutes) - Click to expand</b></summary>
+
+**Steps:**
 
 1. **Test restores regularly**:
    - Perform PITR monthly to validate backup chain
@@ -1655,6 +1744,8 @@ az sql db-arc restore `
 5. **System database backups**:
    - System databases (`master`, `model`, `msdb`) are backed up automatically
    - Only full backups for system databases (no differential or log)
+
+</details>
 
 ---
 
@@ -1697,6 +1788,9 @@ az sql db-arc restore `
 - Delete Azure resources
 - Verify complete cleanup
 
+<details>
+<summary><b>📋 Click to expand step-by-step instructions</b></summary>
+
 **Steps:**
 
 1. **Run the cleanup script**:
@@ -1736,6 +1830,8 @@ az sql db-arc restore `
      Get-Service -Name himds -ErrorAction SilentlyContinue
      # Should return nothing if uninstalled
      ```
+
+</details>
 
 **Validation:**
 - ✅ SQL Server disconnected from Azure Arc
