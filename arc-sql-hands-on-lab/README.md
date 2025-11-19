@@ -74,35 +74,21 @@ This comprehensive hands-on lab guides you through the complete lifecycle of man
 
 ### Prerequisites
 
-#### Azure Requirements
-- Active Azure subscription with **Owner** permissions
-- No pre-existing resource groups (you will create your own)
-- Resource providers registered: `Microsoft.HybridCompute`, `Microsoft.AzureArcData`, `Microsoft.OperationalInsights`
+📋 **Before starting this lab, ensure you meet all prerequisites:**
 
-#### On-Premises Environment
-- **Windows Server**: 2022 or higher
-- **SQL Server**: 2017 or higher (Standard or Enterprise edition)
-- SQL Server **already installed and licensed**
-- Local administrator access to the server
-- Network connectivity to Azure (outbound HTTPS on TCP port 443)
+👉 **[View Detailed Prerequisites](PREREQUISITES.md)**
 
-#### Tools & Software
-- **PowerShell**: 7.0 or higher
-- **Azure PowerShell Module**: Latest version
-  ```powershell
-  Install-Module -Name Az -AllowClobber -Force
-  ```
-- **Azure CLI** (optional): Latest version
-- **Bicep CLI**: Latest version
-  ```powershell
-  az bicep install
-  ```
+The prerequisites are organized into four key sections:
+1. **Management Workstation Requirements** - Your Windows/macOS machine setup
+2. **Azure Subscription Requirements** - Azure environment preparation
+3. **Target Server Requirements** - The on-premises SQL Server to be onboarded
+4. **Knowledge Prerequisites** - Required and recommended skills
 
-**Knowledge Prerequisites**
-- Basic understanding of SQL Server administration
-- Familiarity with PowerShell scripting
-- Basic knowledge of Azure concepts (resource groups, subscriptions)
-- Understanding of Azure Resource Manager (ARM) and Bicep
+**Quick Checklist:**
+- ✅ Windows 11 or macOS with PowerShell 7.4+, Azure CLI, and Bicep installed
+- ✅ Azure subscription with Owner role (or Contributor + User Access Administrator)
+- ✅ Windows Server 2016+ with SQL Server 2012+ already installed
+- ✅ Network connectivity from server to Azure (outbound HTTPS/443)
 
 ---
 
