@@ -143,7 +143,6 @@ Get-AzResourceProvider -ProviderNamespace Microsoft.GuestConfiguration
 - **Windows Server 2016 or higher**
   - Windows Server 2019 (recommended)
   - Windows Server 2022 (recommended)
-- **Note**: Linux is supported for Azure Arc but not covered in this lab
 
 ### SQL Server
 - **Version**: SQL Server 2012 or higher
