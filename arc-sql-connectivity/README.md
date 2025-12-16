@@ -1,13 +1,40 @@
-# Check if network connectivity for Azure Connected Machine Agent is blocked - Azure Arc
+# Network Connectivity for Azure Arc
 
-Version: v1.2025.12
+Version: v1.2025.12  
 Last updated: 2025-12-16
 
-To onboard a server to Azure Arc and utilize its capabilities you need to install the Azure Connected Machine agent.
+## Overview
 
-The Azure Connected Machine agent communicates from your non-Azure environment to Azure using several URLs. For more information on those URLs please refer to the [official documentation](https://learn.microsoft.com/en-us/azure/azure-arc/servers/network-requirements).
+The Azure Connected Machine agent communicates from your non-Azure environment to Azure using
+several URLs. If outbound connectivity is restricted by a firewall or proxy, you must allow the
+required endpoints.
 
-If outbound connectivity from your environment is restricted by your firewall or proxy server, you need to ensure that the correct URLs are not blocked.
+For the full list of required URLs, see the
+[official network requirements][learn-network].
+
+## When to use
+
+- Before onboarding servers to Azure Arc, to validate network readiness
+- When troubleshooting connectivity issues with Arc-enabled servers
+- After firewall or proxy changes, to confirm endpoints remain reachable
+
+## Prerequisites
+
+- Azure Connected Machine agent installed on the server
+- PowerShell or Command Prompt access on the server
+- Knowledge of your Azure region (e.g., `eastus`, `westeurope`)
+
+## Quick start
+
+Run the built-in connectivity check:
+
+```powershell
+azcmagent check --location "<your-region>"
+```
+
+The output shows whether each required endpoint is reachable.
+
+[learn-network]: https://learn.microsoft.com/azure/azure-arc/servers/network-requirements
 
 At the very minimum, the agent needs to be able to communicate with URLs such as:
 
@@ -31,35 +58,39 @@ To use the azcmagent CLI tool log onto a server that has the Azure Connected Mac
 Launch a command prompt or PowerShell terminal window.
 
 Type in
-```
+```powershell
 azcmagent check --location "ukwest"
 ```
 
 The command outputs a table showing connectivity test results for each required endpoint. In this example, all URLs are reachable and are going directly to the URLs.
 
-![Azcmagent check output](/arc-sql-connectivity/media/azcmagent-output-1.png)
+![Azcmagent check output](media/azcmagent-output-1.png)
 
-> 💡 If you are using a different Azure region, ensure you input the correct name for your region. If you are unsure of the region name you can run the command `az account list-locations -o table` from Azure CLI to get a list.
+> [!NOTE]
+> If you are using a different Azure region, ensure you input the correct name.
+> Run `az account list-locations -o table` to get a list of region names.
 
 ## Check Azure Arc connectivity using private endpoints
 
 If you are using private endpoints for connectivity you can use the following command to check:
 
-```
+```powershell
 azcmagent check --location "useast" --enable-pls-check
 ```
 
-> 💡 If you are using a different Azure region, ensure you input the correct name for your region. If you are unsure of the region name you can run the command `az account list-locations -o table` from Azure CLI to get a list.
+> [!NOTE]
+> If you are using a different Azure region, ensure you input the correct name.
+> Run `az account list-locations -o table` to get a list of region names.
 
 ## Check Azure Arc connectivity using a proxy
 
 If you are using a proxy to route traffic the command you would check network connectivity is the same as if you are using public endpoints.
 
-```
+```powershell
 azcmagent check --location "westeurope"
 ```
 
-![azcmagent output](/arc-sql-connectivity/media/azcmagent-output-2.png)
+![Azcmagent check output with proxy](media/azcmagent-output-2.png)
 
 In this example, you can see from the table the traffic is going through a proxy server and some of the URLs are unreachable.
 

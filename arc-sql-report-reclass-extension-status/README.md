@@ -5,7 +5,18 @@ Last updated: 2025-12-16
 
 ## Overview
 
-This script provides a report of the Azure Arc SQL resources that generate SQL Reclass, including the following information from each resource in a CSV format:
+This script generates a CSV report of Azure Arc SQL Server resources, including license type,
+extension version, and provisioning state. Use it to audit your Arc-enabled SQL estate and
+identify resources that may need attention.
+
+## When to use
+
+- You need to audit license types across subscriptions
+- You want to identify servers with outdated extension versions
+- You are preparing a compliance or billing report
+- You need to troubleshoot extension provisioning issues
+
+## Report columns
 
 
 

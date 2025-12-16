@@ -5,7 +5,9 @@ Last updated: 2025-12-16
 
 This quick start guide provides a condensed version of the lab for experienced users who want to quickly complete the exercises.
 
-> **Note:** This guide includes both **core modules** and **optional advanced modules** (preview features). Skip optional modules if time is limited.
+> [!NOTE]
+> This guide includes both **core modules** and **optional advanced modules** (preview features).
+> Skip optional modules if time is limited.
 
 ## Prerequisites Checklist
 
@@ -100,7 +102,10 @@ cd scripts
 
 ## Optional Advanced Modules (Preview Features)
 
-> ⚠️ **Preview Features Notice**: These modules use preview features subject to [Azure Preview Terms](https://azure.microsoft.com/support/legal/preview-supplemental-terms/). Skip if time is limited.
+> [!WARNING]
+> **Preview features**: These modules use preview features subject to
+> [Azure Preview Terms](https://azure.microsoft.com/support/legal/preview-supplemental-terms/).
+> Skip if time is limited.
 
 ---
 

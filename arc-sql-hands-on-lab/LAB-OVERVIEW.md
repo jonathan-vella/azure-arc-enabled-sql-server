@@ -73,7 +73,9 @@ arc-sql-hands-on-lab/
 
 ### Optional Advanced Modules (Preview Features)
 
-> ⚠️ **Preview Features Notice**: These modules use preview features subject to [Azure Preview Terms](https://azure.microsoft.com/support/legal/preview-supplemental-terms/).  
+> [!WARNING]
+> **Preview features**: These modules use preview features subject to
+> [Azure Preview Terms](https://azure.microsoft.com/support/legal/preview-supplemental-terms/).
 > Skip if time is limited or production preview restrictions apply.
 
 9. **Module 8 (Optional)**: Configure Automatic Updates (10 min)

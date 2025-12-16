@@ -123,7 +123,9 @@ Outbound TCP 443 access to:
 - `<workspaceId>.ods.opinsights.azure.com`
 - `*.ingest.monitor.azure.com`
 
-> **Note**: If using proxy servers, configure AMA proxy settings separately. BPA doesn't set proxy settings automatically.
+> [!NOTE]
+> If using proxy servers, configure AMA proxy settings separately.
+> BPA doesn't set proxy settings automatically.
 
 ## Steps (PowerShell)
 

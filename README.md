@@ -2,186 +2,205 @@
 
 ![Azure Arc-Enabled SQL Server](media/azure-arc-sql-banner.gif)
 
-Version: v1.2025.12
+Version: v1.2025.12  
 Last updated: 2025-12-16
 
-This repository contains scripts and utilities for managing SQL Server instances enabled by Azure Arc.
+Extend Azure management to SQL Server instances running anywhere—on-premises, edge, or other clouds.
+
+![PowerShell](https://img.shields.io/badge/PowerShell-5391FE?logo=powershell&logoColor=white)
+![Bicep](https://img.shields.io/badge/Bicep-0078D4?logo=microsoft-azure&logoColor=white)
+![Last updated](https://img.shields.io/badge/updated-2025--12-blue)
+
+---
+
+## 🚀 Most common tasks
+
+| Task | Link |
+|------|------|
+| Onboard a server to Azure Arc | [Hands-on lab Module 2][lab-module2] |
+| Change license type (PAYG ↔ Paid) | [License management](arc-sql-modify-license-type/README.md) |
+| Enable Best Practices Assessment | [BPA setup](arc-sql-best-practice-assessment/README.md) |
+| Troubleshoot connectivity | [Connectivity guide](arc-sql-connectivity/README.md) |
+
+---
+
+## 📖 Start here
+
+Use the links below to find the right documentation for your task.
+
+### 1. Get started / prerequisites
+
+[Prerequisites](arc-sql-hands-on-lab/PREREQUISITES.md) – What you need before onboarding
+
+### 2. Onboard Azure Arc servers
+
+[Module 2: Arc onboarding][lab-module2] – Connect on-premises servers to Azure Arc
+
+### 3. Install / configure SQL extension
+
+[Module 3: SQL extension][lab-module3] – Deploy the Azure extension for SQL Server
+
+### 4. Licensing (PAYG / Paid / ESU)
+
+[License management](arc-sql-modify-license-type/README.md) – Manage license types and billing
+
+### 5. Best Practices Assessment
+
+[BPA guide](arc-sql-best-practice-assessment/README.md) – Run and review SQL best practices
+
+### 6. Monitoring / feature flags
+
+[Monitoring](arc-sql-monitoring/README.md) – Enable advanced monitoring and feature flags
+
+### 7. Reporting / audits
+
+[Extension status report](arc-sql-report-reclass-extension-status/README.md) – Generate reports
+
+### 8. Hands-on lab
+
+[Full lab](arc-sql-hands-on-lab/README.md) – End-to-end guided lab (~2 hours)
+
+### 9. Troubleshooting / connectivity
+
+[Connectivity](arc-sql-connectivity/README.md) – Diagnose and fix connectivity issues
+
+### 10. Reference
+
+- [FAQ](arc-sql-faq/README.md)
+- [Videos](arc-sql-videos/README.md)
+- [Presentations](arc-sql-presentation-files/README.md)
+
+---
 
 ## Why Azure Arc for SQL Server?
 
-Azure Arc extends Azure management capabilities to SQL Server instances running anywhere—on-premises, edge locations, or other clouds. **[Explore the value proposition →](arc-sql-value-proposition/)**
+Azure Arc extends Azure management capabilities to SQL Server instances running anywhere.
+**[Explore the value proposition →](arc-sql-value-proposition/README.md)**
 
-**Key benefits**:
-- **Unified management**: Single control plane for your entire SQL Server estate
-- **Flexible licensing**: Pay-as-you-go billing and license mobility options
-- **Enhanced security**: Microsoft Defender, Entra ID authentication, and unified governance
-- **Modernization path**: Migration assessment and ESU coverage for end-of-support versions
+**Key benefits:**
 
-| Document | Description |
-|----------|-------------|
-| [Value Proposition Overview](arc-sql-value-proposition/) | Executive summary and benefits by role |
-| [Business Case](arc-sql-value-proposition/business-case.md) | Operational and cost flexibility analysis |
-| [Use Cases](arc-sql-value-proposition/use-cases.md) | Real-world implementation scenarios |
-| [Security Benefits](arc-sql-value-proposition/security-benefits.md) | Security and compliance capabilities |
+- **Unified management** – Single control plane for your entire SQL Server estate
+- **Flexible licensing** – Pay-as-you-go billing and license mobility options
+- **Enhanced security** – Microsoft Defender, Microsoft Entra ID authentication, unified governance
+- **Modernization path** – Migration assessment and ESU coverage for end-of-support versions
 
-## Overview
-
-**SQL Server enabled by Azure Arc** extends Azure services to SQL Server instances hosted outside of Azure: in your data center, in edge site locations like retail stores, or any public cloud or hosting provider. Managing SQL Server through Azure Arc can also be configured for SQL Server VMs in Azure VMware Solution.
-
-With Azure Arc, you can:
-
-- **Manage at scale**: Manage all SQL Server instances from a single point of control in Azure, with detailed inventory of instances and databases
-- **Auto-connect**: Automatically connect SQL Server instances discovered on Arc-enabled servers in supported regions
-- **Best practices assessment**: Optimize configuration for performance and security with automated assessments
-- **Migration assessment**: Automatically assess migration readiness with cloud readiness analysis, risk identification, and Azure SQL configuration recommendations
-- **Performance monitoring (preview)**: Monitor SQL Server performance from Azure portal with built-in dashboards
-- **Microsoft Entra authentication**: Utilize modern centralized identity and access management (requires SQL Server 2022 or later)
-- **Microsoft Defender for Cloud**: Discover and mitigate database vulnerabilities with threat protection
-- **Microsoft Purview integration**: Unified data governance with access policies and easier connection to Purview
-- **Pay-as-you-go licensing**: Purchase SQL Server using a pay-as-you-go model instead of traditional licenses (available for SQL Server 2012-2025)
-- **Extended Security Updates (ESUs)**: Access security updates for up to three years after end-of-support
-- **Automated backups (preview)**: Automatically perform backups to local storage or network shares
-- **Point-in-time restore (preview)**: Restore databases to a specific point in time
-- **Least privilege mode**: Operate with minimum required permissions for enhanced security
-
-### Architecture
-
-![SQL Server - Azure Arc Architecture](media/sql%20server%20-%20azure%20arc%20-%20architecture%20diagram.png)
-
-## Repository Contents
-
-This repository contains documentation and scripts for various Azure Arc-enabled SQL Server management tasks:
-
-### Licensing Management
-- [`arc-sql-modify-license-type`](arc-sql-modify-license-type): Modify license type, enable P-Core licensing, and manage ESU for SQL Server instances in Azure Arc.
-
-### Monitoring and Management
-- [`arc-sql-monitoring`](arc-sql-monitoring): Configure monitoring features for Azure Arc-enabled SQL Server.
-- [`arc-sql-data-collection`](arc-sql-data-collection): Documentation on the data collection process and categories for SQL Server enabled by Azure Arc, including usage metrics, monitoring data, and privacy considerations.
-- [`arc-sql-report-reclass-extension-status`](arc-sql-report-reclass-extension-status): Report on SQL Azure Arc reclassification status.
-- [`arc-sql-connectivity`](arc-sql-connectivity): Documentation and tools for checking network connectivity for Azure Connected Machine Agent, essential for Azure Arc-enabled SQL Server functionality.
-- [`arc-sql-best-practice-assessment`](arc-sql-best-practice-assessment): Enable and manage SQL Best Practices Assessment; includes an at-scale Azure Policy guide.
-
-### Hands-On Lab 🆕
-- [`arc-sql-hands-on-lab`](arc-sql-hands-on-lab): **Comprehensive 2-hour hands-on lab** covering end-to-end Azure Arc-enabled SQL Server deployment and management. Includes Bicep infrastructure templates, step-by-step guides for onboarding, license management, monitoring, Best Practices Assessment, and Azure Policy governance at scale. Perfect for IT Pros, System Administrators, and Cloud Architects.
-
-### Learning Resources
-- [`arc-sql-faq`](arc-sql-faq): Comprehensive FAQ covering common questions about deployment, licensing, security, features, and troubleshooting.
-- [`arc-sql-videos`](arc-sql-videos): Collection of instructional videos about Azure Arc-enabled SQL Server, including overview, monitoring features, and migration assessment demonstrations.
-- [`arc-sql-presentation-files`](arc-sql-presentation-files): Presentation materials related to Azure Arc-enabled SQL Server, suitable for technical briefings, customer presentations, and education.
+---
 
 ## Prerequisites
 
-- **Azure subscription**: Active subscription required ([create free account](https://azure.microsoft.com/pricing/purchase-options/azure-account?icid=azurefreeaccount))
-- **Supported SQL Server versions**: SQL Server 2012 (11.x) and later (64-bit only)
-- **Operating systems**:
-  - Windows: Windows 10/11, Windows Server 2012 and later
-  - Linux: Ubuntu 20.04 (x64), RHEL 8 (x64), SLES 15 (x64)
-- **.NET Framework**: .NET Framework 4.7.2 or later on Windows (for extension version 1.1.2504.99+)
-- **PowerShell**: PowerShell 7.0 or higher for automation scripts
-- **Azure PowerShell module**: Required for script-based management
-- **Azure RBAC permissions**: 
-  - Azure Connected Machine Onboarding role
-  - Contributor or Owner role for full management
-- **Network connectivity**: 
-  - Outbound HTTPS on TCP port 443
-  - Access to `*.<region>.arcdataservices.com`
-- **Resource providers**: `Microsoft.AzureArcData` and `Microsoft.HybridCompute` must be registered
-- **Arc Connected Machine agent**: Must be installed and running in full mode
+Before you begin, ensure you have:
 
-## Unsupported Configurations
+- **Azure subscription** – [Create a free account][azure-free]
+- **SQL Server 2012 or later** – 64-bit only
+- **Supported OS** – Windows Server 2012+ or Windows 10/11; Linux (Ubuntu 20.04, RHEL 8, SLES 15)
+- **.NET Framework 4.7.2+** – Windows only (extension 1.1.2504.99+)
+- **PowerShell 7.0+** – For automation scripts
+- **Network** – Outbound HTTPS (TCP 443) to `*.<region>.arcdataservices.com`
+- **Azure RBAC** – Azure Connected Machine Onboarding role (minimum)
 
-The following configurations are **not supported** by Azure Arc-enabled SQL Server:
+For full details, see [Prerequisites on Microsoft Learn][learn-prereqs].
+
+---
+
+## Unsupported configurations
+
+The following are **not supported**:
 
 - SQL Server running in containers
-- SQL Server editions: Business Intelligence
-- SQL Server 2008 (10.0.x), SQL Server 2008 R2 (10.50.x), and older versions
-- SQL Server in Azure Virtual Machines (use native Azure management instead)
-- SQL Server instance names containing a `#` symbol
-- An Always On availability group where one or more replicas is on a failover cluster instance
-- SQL Server Reporting Services (SharePoint Mode)
-- Private Link connections to the Azure Arc data processing service (`<region>.arcdataservices.com`)
-- Multiple instances of SQL Server installed on the same host with the same instance name
-- DBCC CLONEDATABASE on default extension installation (requires [least privilege mode](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/configure-least-privilege))
+- SQL Server 2008 / 2008 R2 or older
+- SQL Server in Azure VMs (use native Azure management)
+- Instance names containing `#`
+- Multiple instances with the same name on the same host
 
-For detailed information, see [Unsupported configurations](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview#unsupported-configurations).
+For the complete list, see [Unsupported configurations][learn-unsupported].
 
-## Important Notes
+---
 
-### Auto-Connect and Extension Deployment
-- **Auto-connect**: Azure Arc automatically installs the Azure extension for SQL Server when a server connected to Azure Arc has SQL Server installed. All SQL Server instance resources are automatically created in Azure.
-- The Arc-enabled SQL Server resource uses the same region and resource group as the Arc-enabled server resource.
-- A tag `ArcSQLServerExtensionDeployment = Disabled` on the Arc-enabled server resource prevents automatic SQL extension deployment.
+## Repository contents
 
-### Feature Availability
-- **Best Practices Assessment**: Supports license types Paid or PAYG (not LicenseOnly) and currently runs on Windows hosts only.
-- **Monitoring (preview)**: Available for Enterprise and Standard editions on Windows (requires SQL Server 2016 SP1 or later for SQL 2016).
-- **Microsoft Entra authentication**: Requires SQL Server 2022 (16.x) or later.
-- **Most features**: Available on Windows; limited feature set on Linux (see documentation for details).
+| Folder | Description |
+|--------|-------------|
+| [arc-sql-best-practice-assessment](arc-sql-best-practice-assessment/) | SQL Best Practices Assessment |
+| [arc-sql-connectivity](arc-sql-connectivity/) | Network connectivity validation tools |
+| [arc-sql-data-collection](arc-sql-data-collection/) | Data collection categories and privacy info |
+| [arc-sql-faq](arc-sql-faq/) | Frequently asked questions |
+| [arc-sql-hands-on-lab](arc-sql-hands-on-lab/) | End-to-end hands-on lab with Bicep templates |
+| [arc-sql-modify-license-type](arc-sql-modify-license-type/) | Modify license type, P-Core, and ESU settings |
+| [arc-sql-monitoring](arc-sql-monitoring/) | Configure monitoring and feature flags |
+| [arc-sql-presentation-files](arc-sql-presentation-files/) | Slide decks and presentation materials |
+| [arc-sql-report-reclass-extension-status](arc-sql-report-reclass-extension-status/) | Extension status reports |
+| [arc-sql-value-proposition](arc-sql-value-proposition/) | Business case and security benefits |
+| [arc-sql-videos](arc-sql-videos/) | Instructional videos |
 
-### Supported Regions
-Arc-enabled SQL Server is available in 25+ Azure regions including East US, West US, West Europe, UK South, Australia East, and more. For successful onboarding, assign the same region to both Arc-enabled Server and Arc-enabled SQL Server.
+---
 
-### Unsupported Configurations
-- Windows Server 2012 or older (TLS requirements)
-- SQL Server in containers
-- SQL Server 2008 and older versions
-- SQL Server in Azure Virtual Machines
-- Multiple instances with same name on same host
-- Instance names containing `#` symbol
+## Microsoft Learn documentation
 
-## Getting Started
+### Getting started
 
-1. Clone this repository:
-   ```
-   git clone https://github.com/microsoft/azure-arc-enabled-sql-server.git
-   cd azure-arc-enabled-sql-server
-   ```
+- [Overview][learn-overview]
+- [Prerequisites][learn-prereqs]
+- [Deployment options][learn-deploy]
+- [Connect your SQL Server to Azure Arc][learn-connect]
 
-2. Navigate to the script directory for your desired task.
-3. Follow the instructions in the script or README for that specific task.
+### Key features
 
-## Learn More
-
-### Getting Started
-- [SQL Server enabled by Azure Arc - Overview](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview?view=sql-server-ver17)
-- [Prerequisites](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/prerequisites?view=sql-server-ver17)
-- [Deployment options](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/deployment-options?view=sql-server-ver17)
-- [Connect your SQL Server to Azure Arc](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/connect?view=sql-server-ver17)
-- [Manage automatic connection (auto-connect)](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/manage-autodeploy?view=sql-server-ver17)
-
-### Key Features
-- [Best practices assessment](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/assess?view=sql-server-ver17)
-- [Migration assessment](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/migration-assessment?view=sql-server-ver17)
-- [Monitoring (preview)](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/sql-monitoring?view=sql-server-ver17)
-- [Microsoft Entra authentication](https://learn.microsoft.com/en-us/sql/relational-databases/security/authentication-access/azure-ad-authentication-sql-server-overview?view=sql-server-ver17)
-- [Extended Security Updates](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/extended-security-updates?view=sql-server-ver17)
+- [Best practices assessment][learn-bpa]
+- [Migration assessment][learn-migration]
+- [Monitoring (preview)][learn-monitoring]
+- [Microsoft Entra authentication][learn-entra]
+- [Extended Security Updates][learn-esu]
 
 ### Management
-- [Manage licensing and billing](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/manage-license-billing?view=sql-server-ver17)
-- [Configure least privilege mode](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/configure-least-privilege?view=sql-server-ver17)
-- [View inventory](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/view-inventory?view=sql-server-ver17)
 
-### Additional Resources
-- [Frequently Asked Questions](arc-sql-faq)
-- [Release notes](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/release-notes?view=sql-server-ver17)
-- [Known issues](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/known-issues?view=sql-server-ver17)
-- [Troubleshooting](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/troubleshoot-deployment?view=sql-server-ver17)
-- [Azure Arc documentation](https://learn.microsoft.com/en-us/azure/azure-arc/)
+- [Manage licensing and billing][learn-license]
+- [Configure least privilege mode][learn-lpp]
+- [View inventory][learn-inventory]
 
-## Security Best Practices
+### Troubleshooting
 
-- Always follow the principle of least privilege when assigning permissions
+- [Troubleshooting guide][learn-troubleshoot]
+- [Known issues][learn-known-issues]
+- [Release notes][learn-release-notes]
+
+---
+
+## Security best practices
+
+- Follow the principle of least privilege when assigning permissions
 - Use Managed Identity for authentication when possible
-- Keep Azure Arc agents updated to the latest versions 
-- Regularly review security recommendations in Microsoft Defender for Cloud
-- Implement network security controls to protect SQL Server instances
-- **Never commit credentials or secrets to source control** - See [TEMPLATE-FILES.md](TEMPLATE-FILES.md) for details on our template file system
+- Keep Azure Arc agents updated to the latest versions
+- Review security recommendations in Microsoft Defender for Cloud
+- **Never commit credentials or secrets** – See [TEMPLATE-FILES.md](TEMPLATE-FILES.md)
+
+---
 
 ## Contributing
 
-This project welcomes contributions and suggestions. Please follow the standard GitHub pull request process.
+This project welcomes contributions and suggestions. Please follow the standard GitHub pull request
+process.
 
 ---
 
 © Microsoft Corporation. Licensed under the Apache License, Version 2.0.
+
+<!-- Reference links -->
+[azure-free]: https://azure.microsoft.com/pricing/purchase-options/azure-account?icid=azurefreeaccount
+[lab-module2]: arc-sql-hands-on-lab/README.md#module-2-arc-server-onboarding-15-minutes
+[lab-module3]: arc-sql-hands-on-lab/README.md#module-3-sql-server-extension-deployment--auto-discovery-15-minutes
+[learn-overview]: https://learn.microsoft.com/sql/sql-server/azure-arc/overview?view=sql-server-ver17
+[learn-prereqs]: https://learn.microsoft.com/sql/sql-server/azure-arc/prerequisites?view=sql-server-ver17
+[learn-deploy]: https://learn.microsoft.com/sql/sql-server/azure-arc/deployment-options?view=sql-server-ver17
+[learn-connect]: https://learn.microsoft.com/sql/sql-server/azure-arc/connect?view=sql-server-ver17
+[learn-bpa]: https://learn.microsoft.com/sql/sql-server/azure-arc/assess?view=sql-server-ver17
+[learn-migration]: https://learn.microsoft.com/sql/sql-server/azure-arc/migration-assessment?view=sql-server-ver17
+[learn-monitoring]: https://learn.microsoft.com/sql/sql-server/azure-arc/sql-monitoring?view=sql-server-ver17
+[learn-entra]: https://learn.microsoft.com/sql/relational-databases/security/authentication-access/azure-ad-authentication-sql-server-overview?view=sql-server-ver17
+[learn-esu]: https://learn.microsoft.com/sql/sql-server/azure-arc/extended-security-updates?view=sql-server-ver17
+[learn-license]: https://learn.microsoft.com/sql/sql-server/azure-arc/manage-license-billing?view=sql-server-ver17
+[learn-lpp]: https://learn.microsoft.com/sql/sql-server/azure-arc/configure-least-privilege?view=sql-server-ver17
+[learn-inventory]: https://learn.microsoft.com/sql/sql-server/azure-arc/view-inventory?view=sql-server-ver17
+[learn-troubleshoot]: https://learn.microsoft.com/sql/sql-server/azure-arc/troubleshoot-deployment?view=sql-server-ver17
+[learn-known-issues]: https://learn.microsoft.com/sql/sql-server/azure-arc/known-issues?view=sql-server-ver17
+[learn-release-notes]: https://learn.microsoft.com/sql/sql-server/azure-arc/release-notes?view=sql-server-ver17
+[learn-unsupported]: https://learn.microsoft.com/sql/sql-server/azure-arc/overview?view=sql-server-ver17#unsupported-configurations

@@ -7,11 +7,35 @@ This guide explains how to enable, run, and review the Best Practices Assessment
 
 ## Overview
 
-- BPA is available for SQL Server instances with license type Paid (Software Assurance/subscription) or PAYG. Instances set to LicenseOnly must be changed before enabling BPA.
-- Windows-only at this time; Linux instances aren't supported.
-- **Windows Server 2012 R2 and older are not supported** for Best Practices Assessment.
-- Assessments run at the machine scope and include all SQL Server instances and databases on that host.
-- Default schedule runs weekly (Sunday, 12:00 AM local time). You can also run on‑demand.
+Best Practices Assessment (BPA) evaluates your SQL Server instances and databases and provides
+prioritized recommendations to improve security, reliability, and performance.
+
+- Available for SQL Server instances with license type **Paid** or **PAYG** (not LicenseOnly)
+- Windows-only; Linux instances are not supported
+- Windows Server 2012 R2 and older are not supported
+- Assessments run at the machine scope and include all SQL Server instances on that host
+- Default schedule: weekly (Sunday, 12:00 AM local time); on-demand runs also available
+
+## When to use
+
+- You want to identify configuration issues affecting performance, security, or reliability
+- You need to track improvement over time with scheduled assessments
+- You are preparing for a migration and want to remediate issues first
+- You want to enforce best practices at scale using Azure Policy
+
+## Quick start
+
+Enable BPA on a single Arc-enabled SQL Server using Azure CLI:
+
+```bash
+az sql server-arc extension feature-flag set \
+  --name "BestPracticesAssessment" \
+  --resource-group "<resource-group>" \
+  --machine-name "<machine-name>" \
+  --enable true
+```
+
+Or use the portal: **Azure Arc > SQL Server instances > Best practices assessment > Enable**.
 
 ## Prerequisites
 

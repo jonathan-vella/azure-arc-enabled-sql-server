@@ -90,7 +90,8 @@ Set-AzSecurityPricing -Name "SqlServerVirtualMachines" -PricingTier "Standard"
 
 ### Modern Identity for SQL Server
 
-SQL Server 2022 and later supports Microsoft Entra ID (formerly Azure AD) authentication when connected through Azure Arc. This eliminates the need for SQL-specific credentials.
+SQL Server 2022 and later supports Microsoft Entra ID authentication when connected through
+Azure Arc. This eliminates the need for SQL-specific credentials.
 
 **Benefits of Entra ID authentication**:
 

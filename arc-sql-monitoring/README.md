@@ -1,13 +1,43 @@
-# Set Feature Flags for SQL Server Extension
+# SQL Server Monitoring and Feature Flags
 
-Version: v1.2025.12
+Version: v1.2025.12  
 Last updated: 2025-12-16
 
 ## Overview
 
-This script enables or disables feature flags on the Azure extension for SQL Server on a specific Arc-enabled machine. Feature flags control which capabilities are enabled for SQL Server monitoring and discovery.
+This folder contains tools for configuring monitoring and feature flags on the Azure extension
+for SQL Server. Feature flags control which capabilities are enabled for monitoring, discovery,
+and telemetry.
 
-## Available Feature Flags
+> [!NOTE]
+> Advanced SQL monitoring is a **preview feature**. Review the
+> [preview terms][preview-terms] before enabling in production.
+
+## When to use
+
+- You want to enable or disable SQL Server monitoring features
+- You need to discover Always On Availability Groups or Failover Cluster Instances
+- You are configuring monitoring at scale across multiple Arc-enabled servers
+
+## Prerequisites
+
+- Azure PowerShell modules: `Az.Accounts`, `Az.ConnectedMachine`
+- Azure Connected Machine Resource Administrator role on the target machine
+- Logged in to Azure (`Connect-AzAccount`)
+
+## Quick start
+
+Enable SQL monitoring on a single machine:
+
+```powershell
+.\set-feature-flags.ps1 `
+    -Subscription "<subscription-id>" `
+    -ResourceGroup "<resource-group>" `
+    -MachineName "<machine-name>" `
+    -FeatureFlagsToEnable "SqlManagement"
+```
+
+## Available feature flags
 
 | Feature Flag | Description |
 |--------------|-------------|
@@ -15,13 +45,9 @@ This script enables or disables feature flags on the Azure extension for SQL Ser
 | `AvailabilityGroupDiscovery` | Enables discovery of Always On Availability Groups |
 | `SqlFailoverClusterInstanceDiscovery` | Enables discovery of SQL Server Failover Cluster Instances |
 
-## Prerequisites
+## Script: set-feature-flags.ps1
 
-- Azure PowerShell modules installed (`Az.Accounts`, `Az.ConnectedMachine`)
-- Azure Connected Machine Resource Administrator role on the target machine
-- Logged in to Azure (`Connect-AzAccount`)
-
-## Parameters
+### Parameters
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -33,7 +59,7 @@ This script enables or disables feature flags on the Azure extension for SQL Ser
 | `-Force` | No | Proceed even if unrecognized feature flags are provided |
 | `-DryRun` | No | Preview changes without applying them |
 
-## Examples
+### Examples
 
 ### Example 1: Enable SQL Management
 
@@ -92,7 +118,21 @@ This script enables or disables feature flags on the Azure extension for SQL Ser
 - Use `-DryRun` to verify changes before applying them
 - Feature flag changes require the extension to update, which may take a few minutes
 
-## Related Documentation
+## Troubleshooting
 
-- [Configure SQL Server enabled by Azure Arc](https://learn.microsoft.com/sql/sql-server/azure-arc/manage-configuration)
-- [Monitor SQL Server enabled by Azure Arc](https://learn.microsoft.com/sql/sql-server/azure-arc/sql-monitoring)
+| Symptom | Cause | Resolution |
+|---------|-------|------------|
+| Feature flag not taking effect | Extension update pending | Wait a few minutes for extension to update |
+| Unknown feature flag warning | Typo or unsupported flag | Verify flag name; use `-Force` if intentional |
+| Permission denied | Missing RBAC role | Ensure Azure Connected Machine Resource Administrator role |
+
+## Related documentation
+
+- [Configure SQL Server enabled by Azure Arc][learn-config]
+- [Monitor SQL Server enabled by Azure Arc][learn-monitoring]
+- [Preview terms][preview-terms]
+
+<!-- Reference links -->
+[learn-config]: https://learn.microsoft.com/sql/sql-server/azure-arc/manage-configuration
+[learn-monitoring]: https://learn.microsoft.com/sql/sql-server/azure-arc/sql-monitoring
+[preview-terms]: https://azure.microsoft.com/support/legal/preview-supplemental-terms/
