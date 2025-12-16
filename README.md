@@ -1,5 +1,7 @@
 # Azure Arc-Enabled SQL Server
 
+![Azure Arc-Enabled SQL Server](media/azure-arc-sql-banner.gif)
+
 Version: v1.2025.12
 Last updated: 2025-12-16
 
