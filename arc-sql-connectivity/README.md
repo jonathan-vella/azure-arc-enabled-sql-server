@@ -1,5 +1,8 @@
 # Check if network connectivity for Azure Connected Machine Agent is blocked - Azure Arc
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 To onboard a server to Azure Arc and utilize its capabilities you need to install the Azure Connected Machine agent.
 
 The Azure Connected Machine agent communicates from your non-Azure environment to Azure using several URLs. For more information on those URLs please refer to the [official documentation](https://learn.microsoft.com/en-us/azure/azure-arc/servers/network-requirements).

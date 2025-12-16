@@ -1,0 +1,88 @@
+name: Update Documentation Metadata
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.md'
+      - '!.github/**'
+
+permissions:
+  contents: write
+
+jobs:
+  update-metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get changed markdown files
+        id: changed-files
+        run: |
+          # Get list of changed .md files from the last commit
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD -- '*.md' | grep -v '^\.github/' || true)
+          echo "Changed markdown files:"
+          echo "$CHANGED_FILES"
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Update metadata in changed files
+        run: |
+          # Get current date in ISO 8601 format
+          CURRENT_DATE=$(date +%Y-%m-%d)
+          # Get version in v1.YYYY.MM format
+          CURRENT_VERSION="v1.$(date +%Y.%m)"
+          
+          echo "Updating metadata with:"
+          echo "  Date: $CURRENT_DATE"
+          echo "  Version: $CURRENT_VERSION"
+          
+          # Read changed files
+          while IFS= read -r file; do
+            # Skip empty lines and non-existent files
+            [ -z "$file" ] && continue
+            [ ! -f "$file" ] && continue
+            
+            echo "Processing: $file"
+            
+            # Check if file has metadata section (Version: and Last updated:)
+            if grep -q "^Version: v1\." "$file" && grep -q "^Last updated:" "$file"; then
+              echo "  Updating existing metadata..."
+              
+              # Update Version line
+              sed -i "s/^Version: v1\.[0-9]\{4\}\.[0-9]\{2\}$/Version: $CURRENT_VERSION/" "$file"
+              
+              # Update Last updated line
+              sed -i "s/^Last updated: [0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}$/Last updated: $CURRENT_DATE/" "$file"
+              
+              echo "  ✓ Metadata updated"
+            else
+              echo "  ⚠ No metadata section found - skipping (add manually first)"
+            fi
+          done <<< "${{ steps.changed-files.outputs.files }}"
+
+      - name: Check for changes
+        id: check-changes
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No metadata changes to commit"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Metadata changes detected"
+            git diff --stat
+          fi
+
+      - name: Commit and push changes
+        if: steps.check-changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "[skip ci] Update documentation metadata"
+          git push

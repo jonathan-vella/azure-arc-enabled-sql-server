@@ -1,12 +1,9 @@
----
-services: Azure Arc-enabled SQL Server
-platforms: Azure
-author: racarb
-ms.date: 24/8/2023
----
+# Azure Arc SQL Reclass Report
 
-## Azure Arc SQL Reclass Report
-# Overview
+Version: v1.2025.12
+Last updated: 2025-12-16
+
+## Overview
 
 This script provides a report of the Azure Arc SQL resources that generate SQL Reclass, including the following information from each resource in a CSV format:
 

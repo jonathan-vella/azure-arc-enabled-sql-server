@@ -1,13 +1,7 @@
----
-services: Azure Arc-enabled SQL Server
-platforms: Azure
-author: anosov1960
-ms.author: sashan
-ms.date: 10/31/2025
----
-
-
 # Uninstall Azure Extension for SQL Server
+
+Version: v1.2025.12
+Last updated: 2025-12-16
 
 ## Overview
 

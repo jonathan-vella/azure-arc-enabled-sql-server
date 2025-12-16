@@ -1,5 +1,8 @@
 # Azure Arc-Enabled SQL Server - Hands-On Lab
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 A comprehensive hands-on lab for IT Professionals, System Administrators, and Cloud Architects to learn Azure Arc-enabled SQL Server management.
 
 ## 📋 Overview

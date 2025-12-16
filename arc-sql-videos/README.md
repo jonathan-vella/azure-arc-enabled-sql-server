@@ -1,5 +1,8 @@
 # Azure Arc-Enabled SQL Server Videos
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 This page contains helpful videos demonstrating features and capabilities of Azure Arc-enabled SQL Server.
 
 ## Official Microsoft Videos

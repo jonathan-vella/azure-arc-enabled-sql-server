@@ -1,8 +1,26 @@
 # Azure Arc-Enabled SQL Server
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 This repository contains scripts and utilities for managing SQL Server instances enabled by Azure Arc.
 
-Last updated: 2025-10-31
+## Why Azure Arc for SQL Server?
+
+Azure Arc extends Azure management capabilities to SQL Server instances running anywhere—on-premises, edge locations, or other clouds. **[Explore the value proposition →](arc-sql-value-proposition/)**
+
+**Key benefits**:
+- **Unified management**: Single control plane for your entire SQL Server estate
+- **Flexible licensing**: Pay-as-you-go billing and license mobility options
+- **Enhanced security**: Microsoft Defender, Entra ID authentication, and unified governance
+- **Modernization path**: Migration assessment and ESU coverage for end-of-support versions
+
+| Document | Description |
+|----------|-------------|
+| [Value Proposition Overview](arc-sql-value-proposition/) | Executive summary and benefits by role |
+| [Business Case](arc-sql-value-proposition/business-case.md) | Operational and cost flexibility analysis |
+| [Use Cases](arc-sql-value-proposition/use-cases.md) | Real-world implementation scenarios |
+| [Security Benefits](arc-sql-value-proposition/security-benefits.md) | Security and compliance capabilities |
 
 ## Overview
 

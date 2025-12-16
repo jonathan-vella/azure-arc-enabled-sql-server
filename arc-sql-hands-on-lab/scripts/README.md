@@ -1,5 +1,8 @@
 # Lab Scripts Directory
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 This directory contains PowerShell scripts for the Azure Arc-enabled SQL Server hands-on lab.
 
 ## Scripts

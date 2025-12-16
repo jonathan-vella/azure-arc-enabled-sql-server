@@ -1,5 +1,8 @@
 # Azure Arc Automation
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 This repository contains scripts and resources to automate the process of enabling Azure Arc on servers across multiple customers. The scripts have been developed with a CSP Direct Bill partner in mind. However, the principles demonstrated can be adapted to meet the needs of other partners or customers as well. 
 
 The automation includes creating customer tenants, adding subscriptions, enabling GDAP, installing the Arc agent, and configuring the servers.

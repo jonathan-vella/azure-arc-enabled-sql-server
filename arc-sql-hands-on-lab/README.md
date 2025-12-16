@@ -1,5 +1,8 @@
 # Azure Arc-Enabled SQL Server - Hands-On Lab
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 **Duration:** 2 hours (Core) + 70 minutes (Optional)  
 **Level:** Intermediate  
 **Target Audience:** IT Professionals, System Administrators, Cloud Architects

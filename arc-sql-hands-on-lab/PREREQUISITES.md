@@ -1,5 +1,8 @@
 # Prerequisites
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 This lab requires three distinct environments to be properly configured before you begin.
 
 ---

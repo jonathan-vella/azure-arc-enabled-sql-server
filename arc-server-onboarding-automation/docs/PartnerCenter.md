@@ -1,4 +1,7 @@
-## Creating Customer Tenants in Partner Center Using the Partner Center API
+# Creating Customer Tenants in Partner Center Using the Partner Center API
+
+Version: v1.2025.12
+Last updated: 2025-12-16
 
 To create customer tenants in Partner Center using the Partner Center API, follow these steps:
 

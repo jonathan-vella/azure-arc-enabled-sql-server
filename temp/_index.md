@@ -1,10 +1,7 @@
----
-type: docs
-title: "Azure Arc Connectivity Check"
-linkTitle: "Azure Arc Connectivity Check"
-weight: 1
-description: >
----
+# Azure Arc Connectivity Check
+
+Version: v1.2025.12
+Last updated: 2025-12-16
 
 ## Overview  
 

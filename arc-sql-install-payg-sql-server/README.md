@@ -1,5 +1,8 @@
 # Install Pay-As-You-Go SQL Server with Azure Arc
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 ## Overview
 
 This script installs a pay-as-you-go (PAYG) SQL Server instance on your machine and automatically connects it to Azure Arc. The PAYG licensing model allows you to purchase SQL Server using an hourly billing model through Azure instead of purchasing traditional licenses.

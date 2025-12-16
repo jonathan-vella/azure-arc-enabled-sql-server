@@ -1,5 +1,8 @@
 # Data Collection and Reporting for SQL Server enabled by Azure Arc
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 This guide provides detailed information about the data that SQL Server enabled by Azure Arc collects and transmits to Microsoft. Understanding this data collection is essential for compliance, security, and performance monitoring objectives.
 
 ## Overview

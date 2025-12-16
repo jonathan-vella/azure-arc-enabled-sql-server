@@ -1,5 +1,8 @@
 # Best Practices Assessment for SQL Server enabled by Azure Arc
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 This guide explains how to enable, run, and review the Best Practices Assessment (BPA) for Arc-enabled SQL Server. BPA evaluates your SQL Server instances and databases and provides prioritized recommendations to improve security, reliability, and performance.
 
 ## Overview

@@ -1,5 +1,8 @@
 # Lab Bicep Templates
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 This directory contains Infrastructure as Code (IaC) templates for deploying the Azure Arc-enabled SQL Server hands-on lab infrastructure.
 
 ## Files

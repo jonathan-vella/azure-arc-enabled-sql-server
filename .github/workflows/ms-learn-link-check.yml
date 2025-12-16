@@ -1,14 +1,94 @@
-name: Microsoft Learn Link Monitor
+name: Documentation Link Validation
 
 on:
-  workflow_dispatch: # Manual trigger only
+  workflow_dispatch: # Manual trigger for full scan
+  pull_request:
+    paths:
+      - '**/*.md'
 
 permissions:
   contents: read
   issues: write
+  pull-requests: write
 
 jobs:
+  check-links-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Get changed markdown files
+        id: changed-files
+        run: |
+          # Get list of changed .md files in the PR
+          CHANGED_FILES=$(gh pr diff ${{ github.event.pull_request.number }} --name-only | grep '\.md$' || true)
+          echo "Changed markdown files:"
+          echo "$CHANGED_FILES"
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "has_files=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_files=true" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install markdown-link-check
+        if: steps.changed-files.outputs.has_files == 'true'
+        run: npm install -g markdown-link-check
+
+      - name: Check links in changed files
+        if: steps.changed-files.outputs.has_files == 'true'
+        id: link-check
+        run: |
+          BROKEN_COUNT=0
+          echo "# Link Check Results" > link-report.md
+          echo "" >> link-report.md
+          
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            [ ! -f "$file" ] && continue
+            
+            echo "Checking: $file"
+            echo "## $file" >> link-report.md
+            
+            # Run markdown-link-check and capture output
+            if ! markdown-link-check "$file" --config .github/workflows/link-check-config.json 2>&1 | tee -a link-report.md; then
+              BROKEN_COUNT=$((BROKEN_COUNT + 1))
+            fi
+            echo "" >> link-report.md
+          done <<< "${{ steps.changed-files.outputs.files }}"
+          
+          echo "broken_count=$BROKEN_COUNT" >> $GITHUB_OUTPUT
+          
+          if [ $BROKEN_COUNT -gt 0 ]; then
+            echo "❌ Found broken links in $BROKEN_COUNT file(s)"
+            exit 1
+          else
+            echo "✅ All links valid"
+          fi
+
+      - name: Comment on PR with results
+        if: failure() && steps.changed-files.outputs.has_files == 'true'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('link-report.md', 'utf8');
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## 🔗 Link Validation Failed\n\n${report}\n\n---\n\nPlease fix the broken links before merging.`
+            });
+
   check-ms-learn:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -57,8 +137,50 @@ jobs:
             echo "## ✅ All Microsoft Learn links working!" >> link-report.md
           fi
 
+      - name: Check internal links and images
+        run: |
+          echo "" >> link-report.md
+          echo "# Internal Link and Image Check" >> link-report.md
+          echo "" >> link-report.md
+          
+          INTERNAL_BROKEN=0
+          
+          # Find all markdown files and check relative links
+          for md_file in $(find . -type f -name "*.md" ! -path "./.git/*"); do
+            dir=$(dirname "$md_file")
+            
+            # Extract relative links (not http/https)
+            grep -oE '\[([^]]+)\]\(([^)]+)\)' "$md_file" | while read -r match; do
+              link=$(echo "$match" | sed 's/.*](\([^)]*\)).*/\1/' | sed 's/#.*//')
+              
+              # Skip external URLs and anchors
+              [[ "$link" =~ ^https?:// ]] && continue
+              [[ "$link" =~ ^# ]] && continue
+              [[ -z "$link" ]] && continue
+              
+              # Resolve relative path
+              if [[ "$link" =~ ^/ ]]; then
+                target=".${link}"
+              else
+                target="${dir}/${link}"
+              fi
+              
+              # Check if file exists
+              if [ ! -e "$target" ]; then
+                echo "❌ Broken: $md_file -> $link" >> link-report.md
+                INTERNAL_BROKEN=$((INTERNAL_BROKEN + 1))
+              fi
+            done
+          done
+          
+          if [ $INTERNAL_BROKEN -eq 0 ]; then
+            echo "✅ All internal links valid!" >> link-report.md
+          fi
+          
+          echo "INTERNAL_BROKEN=$INTERNAL_BROKEN" >> $GITHUB_ENV
+
       - name: Create issue if broken links found
-        if: env.BROKEN_COUNT != '0'
+        if: env.BROKEN_COUNT != '0' || env.INTERNAL_BROKEN != '0'
         uses: actions/github-script@v8
         with:
           script: |
@@ -67,12 +189,14 @@ jobs:
             github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: '🔗 Microsoft Learn Links Need Update',
-              body: `${report}\n\n---\n\n**Action Required:**\n1. Search for each broken URL in the \`docs/\` folder\n2. Find the updated URL on Microsoft Learn\n3. Update the markdown files\n4. Test the new links\n\n**Note:** Microsoft Learn URLs may have been redirected, moved, or retired.\n\n**Workflow Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
-              labels: ['maintenance', 'microsoft-learn', 'broken-links']
+              title: '🔗 Documentation Links Need Update',
+              body: `${report}\n\n---\n\n**Action Required:**\n1. Search for each broken URL in the repository\n2. Find the updated URL or fix the relative path\n3. Update the markdown files\n4. Test the new links\n\n**Workflow Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              labels: ['maintenance', 'documentation', 'broken-links']
             })
 
       - name: Report success
-        if: env.BROKEN_COUNT == '0'
+        if: env.BROKEN_COUNT == '0' && env.INTERNAL_BROKEN == '0'
         run: |
-          echo "✅ SUCCESS: All ${{ env.LINK_COUNT }} Microsoft Learn links are working!"
+          echo "✅ SUCCESS: All links are working!"
+          echo "  - Microsoft Learn links: ${{ env.LINK_COUNT }}"
+          echo "  - Internal links: All valid"

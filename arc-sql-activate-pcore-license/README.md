@@ -1,14 +1,11 @@
----
-services: Azure SQL
-platforms: Azure
-author: anosov1960
-ms.author: sashan
-ms.date: 06/24/2024
----
+# Activate P-Core License for SQL Server
 
-# Overview
+Version: v1.2025.12
+Last updated: 2025-12-16
 
-This script performes a scheduled activation of a SQL Server p-core license.
+## Overview
+
+This script performs a scheduled activation of a SQL Server p-core license.
 
 # Required permissions
 

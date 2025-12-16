@@ -1,8 +1,9 @@
 # Frequently Asked Questions - SQL Server enabled by Azure Arc
 
-This document provides answers to commonly asked questions about SQL Server enabled by Azure Arc.
+Version: v1.2025.12
+Last updated: 2025-12-16
 
-Last updated: 2025-10-31
+This document provides answers to commonly asked questions about SQL Server enabled by Azure Arc.
 
 ## Table of Contents
 

@@ -1,5 +1,8 @@
 # CMDB
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 The file `CMDB.csv` is used as a CMDB to store information about the customers such as company name, address, servers, etc.
 
 The CMDB file is used as an example, and the information within it will be utilized by the scripts for configuration and provisioning. It is recommended to modify the methods for connecting to and updating the CMDB according to your specific setup.

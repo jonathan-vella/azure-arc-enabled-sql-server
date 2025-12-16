@@ -1,5 +1,8 @@
 # Azure Arc-Enabled SQL Server Presentations
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 This folder contains presentation materials related to SQL Server enabled by Azure Arc. These resources are designed to help you understand, explain, and demonstrate Azure Arc capabilities for SQL Server instances.
 
 ## Contents

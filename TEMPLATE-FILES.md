@@ -1,5 +1,8 @@
 # Template Files and Security
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 This document explains the template file system used in this repository to prevent accidental commits of sensitive data while maintaining helpful examples.
 
 ## Overview

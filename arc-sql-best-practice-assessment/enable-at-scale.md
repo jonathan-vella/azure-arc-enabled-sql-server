@@ -1,5 +1,8 @@
 # Enable Best Practices Assessment at scale (Azure Policy + PowerShell)
 
+Version: v1.2025.12
+Last updated: 2025-12-16
+
 This guide enables Best Practices Assessment (BPA) for many Arc-enabled SQL Server instances using a single Azure Policy assignment. It uses two resource groups: one for Arc resources and one dedicated to a Log Analytics workspace.
 
 ## Table of Contents
