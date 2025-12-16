@@ -87,12 +87,14 @@ flowchart LR
 
 ### System Requirements
 - **Operating System**: Windows only (Linux instances not supported)
+- **Windows Server 2012 R2 and older**: Not supported for BPA
 - **Azure Extension for SQL Server** minimum versions:
   - Single instance: ≥ 1.1.2202.47
   - Multi-instance: > 1.1.2231.59
 - **SQL Server Browser**: Must be running for named instances
-- **NT AUTHORITY\SYSTEM**: Must be member of sysadmin role on all SQL instances
+- **NT AUTHORITY\SYSTEM**: Must be member of `sysadmin` role on all SQL instances
 - **TCP/IP**: Must be enabled on SQL Server instances
+- **Databases**: All databases must be online and updateable
 
 ### Azure Requirements
 - **Log Analytics workspace**: Same subscription as Arc-enabled SQL Server resources

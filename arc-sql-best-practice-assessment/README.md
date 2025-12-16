@@ -8,7 +8,8 @@ This guide explains how to enable, run, and review the Best Practices Assessment
 ## Overview
 
 - BPA is available for SQL Server instances with license type Paid (Software Assurance/subscription) or PAYG. Instances set to LicenseOnly must be changed before enabling BPA.
-- Windows-only at this time; Linux instances aren’t supported.
+- Windows-only at this time; Linux instances aren't supported.
+- **Windows Server 2012 R2 and older are not supported** for Best Practices Assessment.
 - Assessments run at the machine scope and include all SQL Server instances and databases on that host.
 - Default schedule runs weekly (Sunday, 12:00 AM local time). You can also run on‑demand.
 
@@ -22,6 +23,10 @@ This guide explains how to enable, run, and review the Best Practices Assessment
 - Permissions (minimum typical):
 	- To configure: Log Analytics Contributor on the workspace scope, Azure Connected Machine Resource Administrator on the Arc SQL resource scope, and Monitoring Contributor on both the workspace and Arc-enabled machine scopes. Contributor/Owner also works.
 	- To view results: Reader on the Arc SQL resource scope, Log Analytics Reader on the workspace scope, and Monitoring Reader on the workspace scope.
+- **SQL Server requirements**:
+	- `NT AUTHORITY\SYSTEM` must be a member of the `sysadmin` server role on all SQL Server instances
+	- TCP/IP must be enabled on SQL Server instances
+	- All databases must be online and updateable
 - Network/agent:
 	- Allow outbound TCP 443 to: `global.handler.control.monitor.azure.com`, `*.handler.control.monitor.azure.com`, `<workspaceId>.ods.opinsights.azure.com`, `*.ingest.monitor.azure.com`
 	- Azure Monitor Agent (AMA) is used for BPA. If AMA is already installed, existing proxy settings are reused. If installed by BPA, proxy isn’t auto-configured—re‑deploy AMA to set a proxy.

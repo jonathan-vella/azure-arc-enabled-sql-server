@@ -28,7 +28,7 @@ This lab requires three distinct environments to be properly configured before y
 - **Verify**: `pwsh --version` (should show 7.4.0 or higher)
 
 #### Azure CLI (version 2.50.0 or higher)
-- **Download**: [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
+- **Download**: [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli)
 - **Installation**:
   - **Windows**: Download and run the MSI installer
   - **macOS**: `brew install azure-cli`

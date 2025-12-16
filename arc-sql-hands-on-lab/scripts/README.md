@@ -8,7 +8,7 @@ This directory contains PowerShell scripts for the Azure Arc-enabled SQL Server 
 ## Scripts
 
 ### `Create-ArcServicePrincipal.ps1`
-Creates an Azure AD Service Principal with the Azure Connected Machine Onboarding role for Arc server onboarding.
+Creates a Microsoft Entra ID Service Principal with the Azure Connected Machine Onboarding role for Arc server onboarding.
 
 **Output:** `service-principal-credentials.json` (sensitive - not committed to repo)
 

@@ -36,7 +36,7 @@ With Azure Arc, you can:
 - **Microsoft Entra authentication**: Utilize modern centralized identity and access management (requires SQL Server 2022 or later)
 - **Microsoft Defender for Cloud**: Discover and mitigate database vulnerabilities with threat protection
 - **Microsoft Purview integration**: Unified data governance with access policies and easier connection to Purview
-- **Pay-as-you-go licensing**: Purchase SQL Server using a pay-as-you-go model instead of traditional licenses (available for SQL Server 2012-2022)
+- **Pay-as-you-go licensing**: Purchase SQL Server using a pay-as-you-go model instead of traditional licenses (available for SQL Server 2012-2025)
 - **Extended Security Updates (ESUs)**: Access security updates for up to three years after end-of-support
 - **Automated backups (preview)**: Automatically perform backups to local storage or network shares
 - **Point-in-time restore (preview)**: Restore databases to a specific point in time
@@ -48,26 +48,17 @@ With Azure Arc, you can:
 
 ## Repository Contents
 
-This repository contains scripts for various Azure Arc-enabled SQL Server management tasks:
-
-### Arc SQL Server Resource Management
-- [`arc-sql-namespace-migration/migrate-to-azure-arc-data.ps1`](arc-sql-namespace-migration/migrate-to-azure-arc-data.ps1): Migrate SQL Server - Azure Arc resources from legacy `Microsoft.AzureData` namespace to current `Microsoft.AzureArcData` namespace.
+This repository contains documentation and scripts for various Azure Arc-enabled SQL Server management tasks:
 
 ### Licensing Management
-- [`arc-sql-activate-pcore-license`](arc-sql-activate-pcore-license): Scripts and guidance for activating P-Core licensing for SQL Server in Azure Arc.
-- [`arc-sql-install-payg-sql-server`](arc-sql-install-payg-sql-server): Install SQL Server with Pay-As-You-Go licensing via Azure Arc.
-- [`arc-sql-modify-license-type`](arc-sql-modify-license-type): Modify license type for existing SQL Server instances in Azure Arc.
+- [`arc-sql-modify-license-type`](arc-sql-modify-license-type): Modify license type, enable P-Core licensing, and manage ESU for SQL Server instances in Azure Arc.
 
 ### Monitoring and Management
 - [`arc-sql-monitoring`](arc-sql-monitoring): Configure monitoring features for Azure Arc-enabled SQL Server.
 - [`arc-sql-data-collection`](arc-sql-data-collection): Documentation on the data collection process and categories for SQL Server enabled by Azure Arc, including usage metrics, monitoring data, and privacy considerations.
 - [`arc-sql-report-reclass-extension-status`](arc-sql-report-reclass-extension-status): Report on SQL Azure Arc reclassification status.
-- [`arc-sql-uninstall-azure-extension-for-sql-server`](arc-sql-uninstall-azure-extension-for-sql-server): Uninstall Azure extension for SQL Server.
 - [`arc-sql-connectivity`](arc-sql-connectivity): Documentation and tools for checking network connectivity for Azure Connected Machine Agent, essential for Azure Arc-enabled SQL Server functionality.
 - [`arc-sql-best-practice-assessment`](arc-sql-best-practice-assessment): Enable and manage SQL Best Practices Assessment; includes an at-scale Azure Policy guide.
-
-### Onboarding Automation
-- [`arc-server-onboarding-automation`](arc-server-onboarding-automation): Scripts and documentation for automating the onboarding of servers to Azure Arc.
 
 ### Hands-On Lab 🆕
 - [`arc-sql-hands-on-lab`](arc-sql-hands-on-lab): **Comprehensive 2-hour hands-on lab** covering end-to-end Azure Arc-enabled SQL Server deployment and management. Includes Bicep infrastructure templates, step-by-step guides for onboarding, license management, monitoring, Best Practices Assessment, and Azure Policy governance at scale. Perfect for IT Pros, System Administrators, and Cloud Architects.
@@ -95,6 +86,23 @@ This repository contains scripts for various Azure Arc-enabled SQL Server manage
   - Access to `*.<region>.arcdataservices.com`
 - **Resource providers**: `Microsoft.AzureArcData` and `Microsoft.HybridCompute` must be registered
 - **Arc Connected Machine agent**: Must be installed and running in full mode
+
+## Unsupported Configurations
+
+The following configurations are **not supported** by Azure Arc-enabled SQL Server:
+
+- SQL Server running in containers
+- SQL Server editions: Business Intelligence
+- SQL Server 2008 (10.0.x), SQL Server 2008 R2 (10.50.x), and older versions
+- SQL Server in Azure Virtual Machines (use native Azure management instead)
+- SQL Server instance names containing a `#` symbol
+- An Always On availability group where one or more replicas is on a failover cluster instance
+- SQL Server Reporting Services (SharePoint Mode)
+- Private Link connections to the Azure Arc data processing service (`<region>.arcdataservices.com`)
+- Multiple instances of SQL Server installed on the same host with the same instance name
+- DBCC CLONEDATABASE on default extension installation (requires [least privilege mode](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/configure-least-privilege))
+
+For detailed information, see [Unsupported configurations](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview#unsupported-configurations).
 
 ## Important Notes
 

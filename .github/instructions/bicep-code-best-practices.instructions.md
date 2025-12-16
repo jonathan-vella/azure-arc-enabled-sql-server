@@ -208,7 +208,7 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
 - Enable HTTPS-only traffic: `supportsHttpsTrafficOnly: true`
 - Require TLS 1.2 minimum: `minimumTlsVersion: 'TLS1_2'`
 - Disable public blob access: `allowBlobPublicAccess: false`
-- Use Azure AD authentication for SQL Server (Azure AD-only auth)
+- Use Microsoft Entra ID authentication for SQL Server (Entra ID-only auth)
 - Never include secrets or keys in outputs
 - Use managed identities instead of connection strings
 
@@ -341,7 +341,7 @@ resource storageBlobDataOwner 'Microsoft.Authorization/roleAssignments@2022-04-0
 
 ### SQL Server Policies
 
-- **Azure AD-only authentication**: Use `azureADOnlyAuthentication: true`
+- **Microsoft Entra ID-only authentication**: Use `azureADOnlyAuthentication: true`
 - **Diagnostic settings**: SQL Server itself doesn't support `SQLSecurityAuditEvents` category
   - Use `Microsoft.Sql/servers/auditingSettings` resource for auditing
   - Don't create diagnostic settings for SQL Server (only for databases)

@@ -244,7 +244,7 @@ try {
     Write-Host "  ⚠ Store in Azure Key Vault or secure password manager" -ForegroundColor Gray
     Write-Host "  ⚠ Rotate secrets before expiration ($($output.SecretExpiresOn))" -ForegroundColor Gray
     Write-Host "  ⚠ Use minimum required permissions (already configured)" -ForegroundColor Gray
-    Write-Host "  ⚠ Monitor service principal usage in Azure AD logs" -ForegroundColor Gray
+    Write-Host "  ⚠ Monitor service principal usage in Microsoft Entra ID logs" -ForegroundColor Gray
     Write-Host ""
     
 } catch {

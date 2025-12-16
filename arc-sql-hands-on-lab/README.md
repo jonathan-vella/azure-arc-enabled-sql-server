@@ -93,6 +93,8 @@ The prerequisites are organized into four key sections:
 - ✅ Windows Server 2016+ with SQL Server 2012+ already installed
 - ✅ Network connectivity from server to Azure (outbound HTTPS/443)
 
+> **Note:** For Best Practices Assessment and Monitoring features, Windows Server 2012 R2 and older versions are not supported.
+
 ---
 
 ## 📋 Progress Tracker

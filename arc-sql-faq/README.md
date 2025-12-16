@@ -64,6 +64,8 @@ Yes, you can deploy SQL Server enabled by Azure Arc in VMware VMs running in Azu
 
 No, intermittent internet connectivity doesn't stop the pay-as-you-go billing. The usage is reported and accounted for by the billing logic when the connectivity is restored.
 
+**Built-in resilience**: The system tolerates intermittent connectivity disruptions for up to 30 consecutive days without affecting billing accuracy. As long as connectivity is not interrupted for more than 30 days, your billing remains correct—even if there are short, intermittent disconnections. If the machine stays disconnected for more than 30 days, the pay-as-you-go subscription expires.
+
 ### Do I get charged if my virtual machine is stopped?
 
 No. When the VM is stopped, the usage data isn't collected. Therefore, you won't be charged for the time the VM was stopped.
@@ -167,9 +169,13 @@ To enable least privilege mode, review [Least privilege mode](https://learn.micr
 
 ### Is least privilege mode supported for SQL Server enabled by Azure Arc?
 
-Yes, least privilege mode is supported and recommended for SQL Server enabled by Azure Arc. 
+Yes, least privilege mode is supported and **recommended** for SQL Server enabled by Azure Arc. 
 
-**Important**: Existing servers with extension version `1.1.2859.223` or greater (released November 2024) will eventually have the least privileged configuration applied automatically. To prevent the automatic application of least privilege, block extension upgrades after `1.1.2859.223`.
+**Important**: 
+- Least privilege mode is available for all license types (PAYG, Paid, License Only)
+- Existing servers with extension version `1.1.2859.223` or greater will eventually have the least privileged configuration applied automatically
+- To prevent automatic application of least privilege, block extension upgrades after `1.1.2859.223`
+- Least privilege is required to run `DBCC CLONEDATABASE` without errors
 
 Learn more about the permissions assigned at [Configure Windows service accounts and permissions for Azure extension for SQL Server](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/configure-windows-accounts-agent?view=sql-server-ver17).
 
@@ -183,14 +189,29 @@ Least privilege mode uses minimum permissions to deploy SQL Server enabled by Az
 
 ### How does SQL Server enabled by Azure Arc license management work with associated services?
 
-The associated services (such as SSRS, SSIS, SSAS, and Power BI Report Server) are represented as SQL Server instances in Azure Resource Manager (ARM) with a `service_type` property reflecting if it is an engine or an associated service installation.
+The associated services are represented as SQL Server instances in Azure Resource Manager (ARM) with a `service_type` property:
 
-Key points:
-- Associated services can be connected to Azure Arc
-- Pay-as-you-go billing is available for all service types
-- ESU subscriptions are available for all service types
-- SQL Server inventory includes all service types
-- Most advanced features (Best Practices Assessment, Migration Assessment, etc.) are available only for SQL Server Database Engine
+**Supported associated services:**
+- SQL Server Analysis Services (SSAS)
+- SQL Server Integration Services (SSIS)
+- SQL Server Reporting Services (SSRS)
+- Power BI Report Server
+
+**Key billing points:**
+- Associated services **require a separate license only when installed as a standalone instance** (without SQL Server Database Engine on the same machine)
+- When installed with SQL Server Database Engine, no separate license is required
+- If a p-core license is activated as PAYG in the corresponding scope and the machine is configured to use it, standalone associated services are **not individually billed**
+
+**Feature availability:**
+- ✅ Connect to Azure Arc
+- ✅ Pay-as-you-go billing
+- ✅ ESU subscriptions
+- ✅ SQL Server inventory
+- ✅ Automatic updates
+- ✅ Operate with least privilege
+- ❌ Best Practices Assessment (Database Engine only)
+- ❌ Migration Assessment (Database Engine only)
+- ❌ Monitoring (Database Engine only)
 
 Review [Manage licensing and billing](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/manage-license-billing?view=sql-server-ver17) and [Extended Security Updates](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/extended-security-updates?view=sql-server-ver17) for details.
 
@@ -201,6 +222,12 @@ Review [Manage licensing and billing](https://learn.microsoft.com/en-us/sql/sql-
 ### What are Extended Security Updates?
 
 Extended Security Updates (ESUs) provide security updates for SQL Server instances that have reached the end of their support lifecycle. ESUs can extend support for up to three years after the end-of-support date.
+
+**Supported versions for ESU**: SQL Server 2012 and SQL Server 2014 (versions that have reached end-of-support).
+
+**ESU Timeline**:
+- SQL Server 2012: ESU ended July 12, 2025 (3 years of coverage completed)
+- SQL Server 2014: ESU Year 1 started July 10, 2024; coverage available through July 2027
 
 ### How do I subscribe to ESUs?
 
@@ -230,6 +257,10 @@ There are two ways to get ESUs:
 **For physical servers**:
 - Billed for all physical cores of the machine (minimum 4 cores)
 - Physical servers eligible for failover rights are not billable
+
+**Bill-back charges**:
+- If you enroll after the end-of-support date, you'll receive a **one-time bill-back charge** for the months missed since the start of the current ESU year
+- This ensures coverage is continuous from the ESU year start date
 
 **Bill-back charges**:
 - If you enroll after the end-of-support date, you'll receive a one-time bill-back charge for the months missed since the start of the current ESU year
@@ -283,11 +314,12 @@ Yes, you can use the `excludedInstances` setting in Azure Policy or extension co
 
 ### What SQL Server versions and editions are supported?
 
-**Versions**: SQL Server 2012 (11.x) and later (64-bit only)
+**Versions**: SQL Server 2012 (11.x) through SQL Server 2025 (17.x) — 64-bit only
 
 **Editions**: Enterprise, Standard, Web, Express, Developer, Evaluation
 - Note: Business Intelligence edition is not supported
 - Express LocalDB is not supported
+- **Web edition is not available in SQL Server 2025 and later versions**
 
 ### What operating systems are supported?
 
@@ -320,18 +352,29 @@ No. SQL Server running in containers is not currently supported.
 |---------|-------------|--------------------------------|---------------|
 | Connect to Azure Arc | Yes | Yes | Yes |
 | SQL Server inventory | Yes | Yes | Yes |
+| Detailed inventory | Yes | Yes | Yes |
 | Migration readiness | Yes | Yes | Yes |
-| Database migration (preview) | Yes | Yes | Yes |
+| Database migration | Yes | Yes | Yes |
 | Microsoft Entra authentication | Yes | Yes | Yes |
 | Microsoft Defender for Cloud | Yes | Yes | Yes |
 | Microsoft Purview | Yes | Yes | Yes |
+| Failover cluster instances | Yes | Yes | Yes |
+| Always On availability groups | Yes | Yes | Yes |
+| **Operate with least privilege** | Yes | Yes | Yes |
+| Free Power BI Report Server license¹ | Yes | Yes | Yes |
 | Best practices assessment | No | Yes | Yes |
 | ESU subscription | No | Yes | Yes |
 | Automated backups (preview) | No | Yes | Yes |
 | Point-in-time restore | No | Yes | Yes |
 | Automatic updates | No | Yes | Yes |
 | Monitoring (preview) | No | Yes | Yes |
-| Client connection summary | No | Yes | Yes |
+| **Client connection summary** | No | Yes | Yes |
+| Free new version upgrade | No | Yes | Yes |
+| HADR benefit (free passive replicas) | No | Yes | Yes |
+| Unlimited virtualization (Enterprise) | No | Yes | Yes |
+| 180-day dual-use benefit | No | Yes | Yes |
+
+¹ For SQL Server 2022 and earlier: Enterprise Edition with SA only. For SQL Server 2025: Standard and Enterprise with all license types.
 
 ### What is the difference between monitoring and best practices assessment?
 
@@ -339,8 +382,13 @@ No. SQL Server running in containers is not currently supported.
 - Real-time performance monitoring from Azure portal
 - Built-in performance dashboards
 - Tracks active connections, database I/O, CPU, and memory usage
-- Available for Enterprise and Standard editions on Windows
-- Requires SQL Server 2016 SP1 or later
+- Available for Enterprise and Standard editions on Windows only
+- **Current limitation**: Failover cluster instances (FCIs) are not supported
+- **Version requirements**:
+  - SQL Server 2012: Not available
+  - SQL Server 2014: Not available
+  - SQL Server 2016 SP1 or later: Supported
+  - SQL Server 2019 and later: Supported
 
 **Best Practices Assessment**:
 - Evaluates configuration against Microsoft best practices
@@ -478,4 +526,4 @@ For support:
 
 ---
 
-**Note**: This FAQ is based on the latest Microsoft Learn documentation as of October 2025. Features and capabilities are subject to change. For the most up-to-date information, always refer to the official [Microsoft Learn documentation](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/).
+**Note**: This FAQ is based on the latest Microsoft Learn documentation as of December 2025. Features and capabilities are subject to change. For the most up-to-date information, always refer to the official [Microsoft Learn documentation](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/).

@@ -41,4 +41,4 @@ For hands-on implementation and management, refer to other folders in this repos
 ## Learn More
 
 For the latest documentation on Azure Arc-enabled SQL Server, visit:
-[Microsoft Learn - SQL Server enabled by Azure Arc](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview?view=sql-server-ver16)
+[Microsoft Learn - SQL Server enabled by Azure Arc](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview?view=sql-server-ver17)

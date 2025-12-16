@@ -26,6 +26,6 @@ This video demonstrates how to use the migration assessment features in Azure Ar
 
 For more information on Azure Arc-enabled SQL Server, please visit:
 
-- [SQL Server enabled by Azure Arc - Documentation](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview?view=sql-server-ver16)
+- [SQL Server enabled by Azure Arc - Documentation](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview?view=sql-server-ver17)
 - [Azure Arc Official Documentation](https://learn.microsoft.com/en-us/azure/azure-arc/)
 - [Azure SQL Blog](https://techcommunity.microsoft.com/t5/azure-sql-blog/bg-p/AzureSQLBlog)
