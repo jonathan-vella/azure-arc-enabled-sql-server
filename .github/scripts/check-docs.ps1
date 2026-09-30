@@ -31,7 +31,11 @@ function Add-Issue([string]$File, [int]$Line, [string]$Message) {
 }
 
 $files = Get-ChildItem -Path $Root -Recurse -File -Filter *.md |
-    Where-Object { $_.FullName -notmatch '[\\/](\.git|node_modules)[\\/]' }
+    Where-Object {
+        $_.FullName -notmatch '[\\/](\.git|node_modules)[\\/]' -and
+        # Vendored instruction files keep their upstream style.
+        $_.Name -notin 'bicep-code-best-practices.instructions.md', 'terraform-azure.instructions.md'
+    }
 
 # Parse each file once: raw text, lines, code-fence mask, headings.
 $docs = @{}

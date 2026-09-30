@@ -156,30 +156,17 @@ _site/
 # ============================================================================
 # Custom Exclusions (Project-Specific)
 # ============================================================================
-# CMDB files with real customer data (keep the template)
-arc-server-onboarding-automation/scripts/test_cmdb.csv
-# Allow the template CMDB.csv to remain in repo
-!arc-server-onboarding-automation/scripts/CMDB.csv
-
-# Partner Center configuration with real credentials
-*partnercenter*.json
-!partnercenter.example.json
-
-# Any Arc onboarding scripts generated from portal
+# Arc onboarding scripts generated from the portal
 OnboardingScript.ps1
 
 # SQL Server product keys
 productkey*.txt
 *-productkey.txt
 
-# Ignore filled-in output files from lab scripts but keep templates
-deployment-outputs.json
+# Keep the example files for lab script outputs
 !deployment-outputs.example.json
-service-principal-credentials.json
 !service-principal-credentials.example.json
-connectivity-report-*.json
 !connectivity-report.example.json
-
 # ============================================================================
 # Allow Specific Files (Override Above Rules)
 # ============================================================================
