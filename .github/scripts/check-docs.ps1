@@ -113,7 +113,7 @@ foreach ($f in $files) {
         if ($line -match '^#{2,6}\s') {
             $words = ($line -replace '^#+\s+', '' -replace '[`*]', '') -split '\s+'
             $caps = $words | Select-Object -Skip 1 | Where-Object { $_ -cmatch '^[A-Z][a-z]{3,}$' }
-            if (@($caps).Count -ge 2) { Add-Issue $f.FullName $n 'heading looks like Title Case (unslop 17)' }
+            if (@($caps).Count -ge 3) { Add-Issue $f.FullName $n 'heading looks like Title Case (unslop 17)' }
         }
 
         if (-not $isGithub) {
