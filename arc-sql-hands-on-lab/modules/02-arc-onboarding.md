@@ -18,7 +18,7 @@ Run [Create-ArcServicePrincipal.ps1](../scripts/Create-ArcServicePrincipal.ps1) 
 
 ```powershell
 Set-Location .\scripts
-pwsh .\Create-ArcServicePrincipal.ps1 `
+pwsh .\scripts\Create-ArcServicePrincipal.ps1 `
   -SubscriptionId "<your-subscription-id>" `
   -ServicePrincipalName "Arc-SQL-Lab-Onboarding-SP" `
   -Scope "Subscription"

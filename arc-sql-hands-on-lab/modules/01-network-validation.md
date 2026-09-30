@@ -17,7 +17,7 @@ Use [Test-ArcConnectivity.ps1](../scripts/Test-ArcConnectivity.ps1) from the `ar
 
 ```powershell
 Set-Location .\scripts
-pwsh .\Test-ArcConnectivity.ps1 -Region "swedencentral" -ExportReport -Verbose
+pwsh .\scripts\Test-ArcConnectivity.ps1 -Region "swedencentral" -ExportReport -Verbose
 ```
 
 ### 2. Review the script output
