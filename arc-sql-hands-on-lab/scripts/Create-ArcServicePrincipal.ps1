@@ -240,11 +240,11 @@ try {
     
     # Security reminders
     Write-Host "Security Best Practices:" -ForegroundColor Yellow
-    Write-Host "  ⚠ Treat the secret like a password - never commit to source control" -ForegroundColor Gray
-    Write-Host "  ⚠ Store in Azure Key Vault or secure password manager" -ForegroundColor Gray
-    Write-Host "  ⚠ Rotate secrets before expiration ($($output.SecretExpiresOn))" -ForegroundColor Gray
-    Write-Host "  ⚠ Use minimum required permissions (already configured)" -ForegroundColor Gray
-    Write-Host "  ⚠ Monitor service principal usage in Microsoft Entra ID logs" -ForegroundColor Gray
+    Write-Host "  - Treat the secret like a password - never commit to source control" -ForegroundColor Gray
+    Write-Host "  - Store in Azure Key Vault or secure password manager" -ForegroundColor Gray
+    Write-Host "  - Rotate secrets before expiration ($($output.SecretExpiresOn))" -ForegroundColor Gray
+    Write-Host "  - Use minimum required permissions (already configured)" -ForegroundColor Gray
+    Write-Host "  - Monitor service principal usage in Microsoft Entra ID logs" -ForegroundColor Gray
     Write-Host ""
     
 } catch {

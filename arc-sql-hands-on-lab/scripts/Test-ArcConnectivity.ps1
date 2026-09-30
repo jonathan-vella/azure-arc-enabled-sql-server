@@ -35,7 +35,7 @@ function Write-TestResult {
         [string]$Details = ""
     )
     
-    $status = if ($Success) { "✓ PASS" } else { "✗ FAIL" }
+    $status = if ($Success) { "PASS" } else { "FAIL" }
     $color = if ($Success) { "Green" } else { "Red" }
     
     Write-Host "[$status] " -NoNewline -ForegroundColor $color
@@ -97,15 +97,14 @@ function Test-HttpEndpoint {
     param([string]$Endpoint)
     
     try {
-        $webResponse = $null
-        $response_time = Measure-Command { 
-            $webResponse = Invoke-WebRequest -Uri "https://$Endpoint" -Method Get -ErrorAction Stop
-        }
+        $stopwatch = [Diagnostics.Stopwatch]::StartNew()
+        $webResponse = Invoke-WebRequest -Uri "https://$Endpoint" -Method Get -ErrorAction Stop
+        $stopwatch.Stop()
         
         return @{
             Success = $true
             StatusCode = $webResponse.StatusCode
-            ResponseTime = [math]::Round($response_time.TotalSeconds, 2)
+            ResponseTime = [math]::Round($stopwatch.Elapsed.TotalSeconds, 2)
         }
     } catch {
         # HTTP 401 is expected for many Arc endpoints (authentication required)
@@ -194,15 +193,15 @@ foreach ($endpoint in $allEndpoints) {
     Write-Host "($endpointUrl)" -ForegroundColor DarkGray
     
     # DNS Resolution Test
-    Write-Host "  → DNS Resolution..." -NoNewline
+    Write-Host "  - DNS Resolution..." -NoNewline
     $dnsResult = Test-DnsResolution -Endpoint $endpointUrl
     
     if ($dnsResult.Success) {
-        Write-Host " ✓" -ForegroundColor Green
+        Write-Host " OK" -ForegroundColor Green
         $dnsStatus = "Success"
         $ipAddress = $dnsResult.IPAddress
     } else {
-        Write-Host " ✗ FAILED" -ForegroundColor Red
+        Write-Host " FAILED" -ForegroundColor Red
         Write-Host "     Error: $($dnsResult.Error)" -ForegroundColor Red
         $dnsStatus = "Failed"
         $ipAddress = $null
@@ -210,14 +209,14 @@ foreach ($endpoint in $allEndpoints) {
     
     # Network Connectivity Test (ping)
     if ($dnsResult.Success) {
-        Write-Host "  → Network Connectivity..." -NoNewline
+        Write-Host "  - Network Connectivity..." -NoNewline
         $pingResult = Test-NetworkConnectivity -Endpoint $endpointUrl
         
         if ($pingResult.Success) {
-            Write-Host " ✓ ($($pingResult.ResponseTime)ms)" -ForegroundColor Green
+            Write-Host " OK ($($pingResult.ResponseTime)ms)" -ForegroundColor Green
             $pingStatus = "Success"
         } else {
-            Write-Host " ✗ No Response" -ForegroundColor Yellow
+            Write-Host " no response" -ForegroundColor Yellow
             $pingStatus = "No Response (ICMP may be blocked)"
         }
     } else {
@@ -227,19 +226,19 @@ foreach ($endpoint in $allEndpoints) {
     # HTTP/HTTPS Test (for specific endpoints)
     $httpStatus = "Not Applicable"
     if ($endpoint.TestHttp -and $dnsResult.Success) {
-        Write-Host "  → HTTPS Endpoint Test..." -NoNewline
+        Write-Host "  - HTTPS Endpoint Test..." -NoNewline
         $httpResult = Test-HttpEndpoint -Endpoint $endpointUrl
         
         if ($httpResult.Success) {
             if ($httpResult.StatusCode -eq 401) {
-                Write-Host " ✓ Expected (401)" -ForegroundColor Green
+                Write-Host " OK, expected (401)" -ForegroundColor Green
                 $httpStatus = "Success (401 Expected)"
             } else {
-                Write-Host " ✓ ($($httpResult.StatusCode))" -ForegroundColor Green
+                Write-Host " OK ($($httpResult.StatusCode))" -ForegroundColor Green
                 $httpStatus = "Success ($($httpResult.StatusCode))"
             }
         } else {
-            Write-Host " ✗ FAILED" -ForegroundColor Red
+            Write-Host " FAILED" -ForegroundColor Red
             Write-Host "     Error: $($httpResult.Error)" -ForegroundColor Red
             $httpStatus = "Failed"
         }
@@ -280,12 +279,12 @@ if ($EnableArcAgentCheck) {
         try {
             & $azcmagentPath check --location $Region --cloud $Cloud --extensions sql --enable-pls-check
             Write-Host ""
-            Write-Host "✓ Azure Arc agent check completed" -ForegroundColor Green
+            Write-Host "[OK] Azure Arc agent check completed" -ForegroundColor Green
         } catch {
-            Write-Host "✗ Azure Arc agent check failed: $_" -ForegroundColor Red
+            Write-Host "[FAIL] Azure Arc agent check failed: $_" -ForegroundColor Red
         }
     } else {
-        Write-Host "⚠ Azure Arc agent (azcmagent.exe) not found at: $azcmagentPath" -ForegroundColor Yellow
+        Write-Host "[WARN] Azure Arc agent (azcmagent.exe) not found at: $azcmagentPath" -ForegroundColor Yellow
         Write-Host "  Install the agent to run comprehensive Arc connectivity checks" -ForegroundColor Gray
     }
     Write-Host ""
@@ -310,7 +309,7 @@ Write-Host "Results by Category:" -ForegroundColor Cyan
 foreach ($group in $groupedResults) {
     $passed = ($group.Group | Where-Object { $_.OverallSuccess }).Count
     $total = $group.Count
-    $status = if ($passed -eq $total) { "✓" } else { "✗" }
+    $status = if ($passed -eq $total) { "OK" } else { "FAIL" }
     $color = if ($passed -eq $total) { "Green" } else { "Red" }
     
     Write-Host "  [$status] " -NoNewline -ForegroundColor $color
@@ -331,11 +330,11 @@ if ($optionalResults.Count -gt 0) {
 Write-Host ""
 
 if ($failedRequired.Count -eq 0) {
-    Write-Host "✓ All required connectivity tests passed!" -ForegroundColor Green
+    Write-Host "[OK] All required connectivity tests passed!" -ForegroundColor Green
     Write-Host "  You can proceed with Azure Arc onboarding." -ForegroundColor Green
     $exitCode = 0
 } else {
-    Write-Host "✗ Some required connectivity tests failed!" -ForegroundColor Red
+    Write-Host "[FAIL] Some required connectivity tests failed!" -ForegroundColor Red
     Write-Host "  Please resolve connectivity issues before proceeding." -ForegroundColor Red
     Write-Host ""
     Write-Host "Failed Endpoints:" -ForegroundColor Red

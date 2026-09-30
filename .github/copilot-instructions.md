@@ -21,6 +21,7 @@ Prose rules are in `.github/instructions/markdown.instructions.md` and `.github/
 - Scripts are PowerShell 7 first. Start with `Connect-AzAccount` and `Set-AzContext -Subscription <id>`.
 - Typical modules: `Az.Accounts`, `Az.Resources`, `Az.ConnectedMachine`, `Az.ResourceGraph`.
 - Validate docs with `pwsh .github/scripts/check-docs.ps1` before committing.
+- Lint scripts with `Invoke-ScriptAnalyzer -Path . -Recurse -Settings ./PSScriptAnalyzerSettings.psd1`.
 - Preview infrastructure changes with `az deployment sub what-if`. Do not run `deploy.ps1` to test.
 
 # Project conventions
