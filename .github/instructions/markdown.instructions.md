@@ -57,7 +57,7 @@ Files under `.github/` are exempt. Copilot instruction files use YAML front matt
 
 - Use descriptive link text, never "click here".
 - Use relative paths for internal links. Point anchors at headings that exist.
-- Write Microsoft Learn links without a locale: `https://learn.microsoft.com/azure/...`, not `/en-us/`.
+- Write Microsoft Learn links without a locale: `learn.microsoft.com/azure/<page>`, not `learn.microsoft.com/en-us/azure/<page>`.
 - Add `?view=sql-server-ver17` to SQL Server documentation links under `learn.microsoft.com/sql/`.
   Do not add it to Azure documentation links.
 - Use reference-style links when an inline URL would push a line past 120 characters.

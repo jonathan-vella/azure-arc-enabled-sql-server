@@ -74,7 +74,7 @@ jobs:
 
       - name: Check Microsoft Learn URLs
         run: |
-          grep -rhoE 'https://learn\.microsoft\.com[^) >"]*' --include='*.md' . | sed 's/[,;.]*$//' | sort -u > urls.txt
+          grep -rhoE 'https://learn\.microsoft\.com[^) >"`]*' --include='*.md' . | sed 's/[,;.]*$//' | sort -u > urls.txt
           echo "# Microsoft Learn link status" > link-report.md
           echo "" >> link-report.md
           echo "Links checked: $(wc -l < urls.txt)" >> link-report.md
