@@ -7,7 +7,7 @@ This page summarizes the data that SQL Server enabled by Azure Arc collects for 
 assessment, and optional monitoring.
 
 For the authoritative list of collected properties, metrics, and log records, see
-[View collected data][learn-collected-data].
+[Data collection and reporting][learn-collected-data].
 
 ## What data is collected
 
@@ -33,12 +33,12 @@ Recent extension builds use `unifiedagent.log`. Older builds might use `Extensio
 
 ## Related documentation
 
-- [View collected data][learn-collected-data]
+- [Data collection and reporting][learn-collected-data]
 - [Monitor SQL Server enabled by Azure Arc][learn-monitoring]
 - [Migration assessment][learn-migration]
 - [Azure Arc-enabled servers network requirements][learn-network]
 
-[learn-collected-data]: https://learn.microsoft.com/sql/sql-server/azure-arc/view-collected-data?view=sql-server-ver17
+[learn-collected-data]: https://learn.microsoft.com/sql/sql-server/azure-arc/data-collection?view=sql-server-ver17
 [learn-migration]: https://learn.microsoft.com/sql/sql-server/azure-arc/migration-assessment?view=sql-server-ver17
 [learn-monitoring]: https://learn.microsoft.com/sql/sql-server/azure-arc/sql-monitoring?view=sql-server-ver17
 [learn-network]: https://learn.microsoft.com/azure/azure-arc/servers/network-requirements
