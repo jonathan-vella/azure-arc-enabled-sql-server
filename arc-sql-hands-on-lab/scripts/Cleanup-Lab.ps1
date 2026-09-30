@@ -10,6 +10,8 @@
 #Requires -Modules @{ ModuleName="Az.Resources"; ModuleVersion="6.0.0" }
 #Requires -Modules @{ ModuleName="Az.ConnectedMachine"; ModuleVersion="0.5.0" }
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'ServerName',
+    Justification = 'Kept so existing callers that pass -ServerName do not break.')]
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $false)]
@@ -53,7 +55,10 @@ function Write-LogMessage {
 }
 
 function Confirm-Action {
-    param([string]$Message)
+    param(
+        [string]$Message,
+        [switch]$Force
+    )
     
     if ($Force) {
         return $true
@@ -86,7 +91,7 @@ function Disconnect-ArcAgent {
         if ($LASTEXITCODE -eq 0) {
             Write-LogMessage "Agent disconnected successfully" -Level Success
         } else {
-            Write-LogMessage "Agent disconnect completed with warnings" -Level Warning
+            Write-LogMessage "Agent disconnect completed with warnings: $disconnectResult" -Level Warning
         }
         
         # Uninstall agent
@@ -97,7 +102,7 @@ function Disconnect-ArcAgent {
             Write-LogMessage "Agent uninstalled successfully" -Level Success
             return $true
         } else {
-            Write-LogMessage "Agent uninstall completed with warnings" -Level Warning
+            Write-LogMessage "Agent uninstall completed with warnings: $uninstallResult" -Level Warning
             return $false
         }
     } catch {
@@ -186,7 +191,7 @@ if ($monitoringRgExists) {
 }
 
 # Confirm cleanup
-if (-not (Confirm-Action "Do you want to proceed with cleanup?")) {
+if (-not (Confirm-Action "Do you want to proceed with cleanup?" -Force:$Force)) {
     Write-LogMessage "Cleanup cancelled by user" -Level Warning
     exit 0
 }
@@ -200,7 +205,7 @@ Write-Host ""
 # Step 1: Disconnect Arc agent
 if (-not $SkipArcDisconnect) {
     Write-LogMessage "Step 1: Disconnecting Azure Arc agent..." -Level Info
-    $agentDisconnected = Disconnect-ArcAgent
+    $null = Disconnect-ArcAgent
     Write-Host ""
 } else {
     Write-LogMessage "Skipping Arc agent disconnect (as requested)" -Level Warning
@@ -244,37 +249,37 @@ $verificationPassed = $true
 if (-not $SkipArcDisconnect) {
     $agentPath = "$env:ProgramW6432\AzureConnectedMachineAgent\azcmagent.exe"
     if (Test-Path $agentPath) {
-        Write-LogMessage "✗ Arc agent still present" -Level Error
+        Write-LogMessage "[FAIL] Arc agent still present" -Level Error
         $verificationPassed = $false
     } else {
-        Write-LogMessage "✓ Arc agent successfully removed" -Level Success
+        Write-LogMessage "[OK] Arc agent successfully removed" -Level Success
     }
     
     # Check for Arc services
     $arcServices = Get-Service -Name "himds", "GCArcService", "ExtensionService" -ErrorAction SilentlyContinue
     if ($arcServices) {
-        Write-LogMessage "✗ Arc services still running" -Level Error
+        Write-LogMessage "[FAIL] Arc services still running" -Level Error
         $verificationPassed = $false
     } else {
-        Write-LogMessage "✓ No Arc services found" -Level Success
+        Write-LogMessage "[OK] No Arc services found" -Level Success
     }
 }
 
 # Verify resource groups deleted
 $arcRgCheck = Get-AzResourceGroup -Name $arcResourceGroupName -ErrorAction SilentlyContinue
 if ($arcRgCheck) {
-    Write-LogMessage "✗ Arc resource group still exists" -Level Error
+    Write-LogMessage "[FAIL] Arc resource group still exists" -Level Error
     $verificationPassed = $false
 } else {
-    Write-LogMessage "✓ Arc resource group successfully deleted" -Level Success
+    Write-LogMessage "[OK] Arc resource group successfully deleted" -Level Success
 }
 
 $monitoringRgCheck = Get-AzResourceGroup -Name $monitoringResourceGroupName -ErrorAction SilentlyContinue
 if ($monitoringRgCheck) {
-    Write-LogMessage "✗ Monitoring resource group still exists" -Level Error
+    Write-LogMessage "[FAIL] Monitoring resource group still exists" -Level Error
     $verificationPassed = $false
 } else {
-    Write-LogMessage "✓ Monitoring resource group successfully deleted" -Level Success
+    Write-LogMessage "[OK] Monitoring resource group successfully deleted" -Level Success
 }
 
 Write-Host ""
