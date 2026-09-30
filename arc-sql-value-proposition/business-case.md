@@ -1,184 +1,71 @@
-# Business Case for Azure Arc-enabled SQL Server
+# Business case for SQL Server enabled by Azure Arc
+Version: v1.2026.09
+Last updated: 2026-09-30
 
-Version: v1.2025.12
-Last updated: 2025-12-16
+This page is a decision aid. It avoids ROI claims and focuses on where Arc SQL usually reduces friction, where it can
+change spend, and when it is reasonable to wait.
 
-This document outlines the operational and financial benefits of managing SQL Server instances through Azure Arc, providing a framework for evaluating the value proposition for your organization.
+## Where Arc SQL saves time
 
-## Executive Takeaways
+| Problem | How Arc SQL helps |
+| --- | --- |
+| SQL inventory is spread across scripts, tickets, and local notes | Arc SQL creates one Azure resource model for supported instances |
+| Access reviews depend on local server access | Azure RBAC moves SQL resource access review into Azure |
+| Migration planning starts from stale data | Migration assessment gives a current readiness view in the portal |
+| Security guidance differs by server | A shared Azure control plane makes review and rollout more consistent |
 
-- **Operational efficiency**: Consolidate management tools and reduce context-switching across environments
-- **Cost flexibility**: Shift from upfront licensing to consumption-based billing where beneficial
-- **Risk reduction**: Extend security coverage for end-of-support SQL Server versions
-- **Accelerated modernization**: Assess migration readiness without disrupting current operations
+Read [use cases](use-cases.md) for examples and [security benefits](security-benefits.md) for the current security
+baseline.
 
----
+## Where spend can change
 
-## Operational Efficiency
+> [!IMPORTANT]
+> PAYG licensing, migration targets, and any preview feature that stores data in Azure can change monthly spend.
+> Review billing impact before enablement.
 
-### Unified Management Reduces Overhead
+| Choice | Cost effect to review |
+| --- | --- |
+| PAYG licensing | SQL billing can move from fixed licensing to usage-based charges |
+| Migration to SQL Managed Instance | Azure compute, storage, and networking charges apply |
+| Migration to SQL Server on Azure VMs | VM, storage, backup, and networking charges apply |
+| Monitoring or backup previews | Preview scope can change before GA |
 
-**Without Azure Arc**: Organizations typically manage SQL Server instances using a combination of:
-- On-premises monitoring tools (SCOM, custom scripts)
-- Separate security scanners for each environment
-- Manual inventory spreadsheets or CMDB updates
-- Environment-specific backup solutions
-- Multiple identity systems and access controls
+Backup to URL with managed identity is GA. Automated backups and PITR are still preview, so budget planning should
+treat them separately.
 
-**With Azure Arc**: A single Azure-based control plane provides:
-- Unified inventory automatically synced from all connected instances
-- Consistent monitoring through Azure Monitor
-- Centralized security through Microsoft Defender for Cloud
-- Policy-based governance with Azure Policy
-- Single identity platform with Microsoft Entra ID
+## When Arc SQL is a good fit
 
-### Automation and Consistency
+Arc SQL is usually worth the effort when you need one or more of these outcomes:
 
-| Management Task | Traditional Approach | With Azure Arc |
-|-----------------|---------------------|----------------|
-| Inventory updates | Manual discovery, periodic audits | Automatic, real-time sync |
-| Configuration assessment | Scheduled scripts, manual review | Automated Best Practices Assessment |
-| Security scanning | Multiple vendor tools | Integrated Defender for SQL |
-| Access management | Local accounts per server | Azure RBAC, Entra ID |
-| Reporting | Custom queries, data aggregation | Azure Resource Graph |
+- a current inventory for a hybrid SQL estate
+- Azure RBAC and Microsoft Entra ID aligned with SQL resource management
+- migration assessment before choosing a target
+- a controlled path to PAYG for selected workloads
 
-### Reduced Skill Fragmentation
+## When to defer
 
-Teams can leverage Azure skills across hybrid environments rather than maintaining expertise in multiple, environment-specific toolsets. This consolidation:
-- Simplifies training and onboarding
-- Enables cross-team collaboration using common tools
-- Reduces dependency on specialized legacy knowledge
+Defer a wider rollout when:
 
----
+- the estate is very small and already well documented
+- outbound connectivity to Azure is not available
+- the team is relying on preview-only features for the first business case
 
-## Cost Flexibility
+In those cases, start with one lab or pilot instead of a large rollout.
 
-### Pay-As-You-Go Licensing
+## Evaluation checklist
 
-Traditional SQL Server licensing requires upfront capacity planning and capital expenditure. Azure Arc enables pay-as-you-go billing:
+1. Review the [overview page](README.md) for the current GA and preview split.
+2. Run the [hands-on lab](../arc-sql-hands-on-lab/README.md) if the team needs a shared baseline.
+3. Use [Module 11](../arc-sql-hands-on-lab/modules/11-disable-sql-auth.md) for SQL authentication disablement.
+4. Use [Module 12](../arc-sql-hands-on-lab/modules/12-migration.md) for assessment and portal migration.
+5. Keep [Module 13](../arc-sql-hands-on-lab/modules/13-cleanup.md) in scope when you estimate lab cost.
 
-| Scenario | Traditional Licensing | PAYG via Azure Arc |
-|----------|----------------------|-------------------|
-| Seasonal workloads | Pay for peak capacity year-round | Pay only for hours used |
-| Development/test | Full licenses or separate agreements | Consumption-based billing |
-| Proof of concept | License commitment before validation | Try before committing |
-| Disaster recovery | Secondary licenses required | Minimal cost when idle |
+## References
 
-### License Type Transitions
+- [Manage licensing and billing][license]
+- [Migration overview][migration-overview]
+- [Migration assessment][migration-assessment]
 
-Azure Arc supports transitioning between license types as needs evolve:
-
-```
-┌──────────────┐      ┌──────────────┐      ┌──────────────┐
-│  LicenseOnly │ ───▶ │     Paid     │ ───▶ │     PAYG     │
-│  (Eval/Dev)  │      │ (Bring BYOL) │      │ (Pay-as-you  │
-│              │      │              │      │     -go)     │
-└──────────────┘      └──────────────┘      └──────────────┘
-                            ▲                      │
-                            └──────────────────────┘
-```
-
-### License Consolidation Benefits
-
-- **Visibility**: See all SQL Server licenses and editions in one place
-- **Optimization**: Identify over-licensed or underutilized instances
-- **Compliance**: Track license usage against entitlements
-- **Planning**: Forecast costs based on actual usage patterns
-
----
-
-## Extended Security Updates (ESU) Value
-
-### Protection Beyond End-of-Support
-
-For SQL Server versions past end-of-support (2012, 2014), Azure Arc provides a path to Extended Security Updates:
-
-| Option | ESU Coverage | Management Benefits |
-|--------|--------------|---------------------|
-| ESU without Arc | Security patches only | Manual deployment required |
-| ESU via Azure Arc | Security patches + Azure features | Centralized management, monitoring, assessment |
-
-### ESU Through Azure Arc Advantages
-
-- **No upfront ESU purchase**: ESU access enabled through Arc connection
-- **Full feature access**: Best Practices Assessment, monitoring, Defender integration
-- **Migration readiness**: Assess and plan upgrades while maintaining security coverage
-- **Gradual transition**: Migrate instances individually while others remain protected
-
----
-
-## Migration Readiness
-
-### Assessment Without Disruption
-
-Azure Arc's migration assessment capability evaluates your SQL Server instances for Azure SQL migration without impacting production workloads:
-
-**Assessment provides**:
-- Cloud readiness analysis for each instance
-- Risk identification and remediation recommendations
-- Azure SQL target recommendations (SQL Database, Managed Instance, SQL VM)
-- Feature parity analysis
-- Estimated Azure SQL sizing and configuration
-
-### Modernization at Your Pace
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                     Modernization Journey                        │
-├─────────────┬─────────────┬─────────────┬─────────────┬─────────┤
-│   Connect   │   Assess    │   Optimize  │   Migrate   │  Cloud  │
-│   to Arc    │   Estate    │   On-Prem   │   Ready     │  Native │
-│             │             │             │   Workloads │         │
-└─────────────┴─────────────┴─────────────┴─────────────┴─────────┘
-       ▲                                                      ▲
-       │                                                      │
-   Start here                                         Eventual goal
-   (no migration required)                            (when ready)
-```
-
----
-
-## Decision Framework
-
-### When Azure Arc Provides Immediate Value
-
-✅ **High-value scenarios**:
-- Large, distributed SQL Server estates across multiple locations
-- Mixed environments (on-premises + multiple clouds)
-- End-of-support SQL Server versions requiring ESU
-- Organizations standardizing on Azure for management
-- Workloads with variable or unpredictable usage patterns
-
-### When to Evaluate Further
-
-⚠️ **Consider carefully**:
-- Very small environments (1-2 SQL instances) with simple requirements
-- Fully air-gapped networks with no outbound connectivity option
-- Environments with existing comprehensive management tooling and no consolidation goal
-
-### Adoption Path Recommendations
-
-| Current State | Recommended First Step |
-|---------------|----------------------|
-| No visibility into SQL estate | Deploy Arc for inventory and discovery |
-| Using end-of-support SQL versions | Enable Arc for ESU access |
-| Multiple management tools | Consolidate monitoring through Arc |
-| Planning cloud migration | Enable migration assessment |
-| Security posture concerns | Integrate Defender for SQL |
-
----
-
-## Next Steps
-
-1. **Start with inventory**: Connect a pilot group of SQL instances to establish baseline visibility
-2. **Evaluate features progressively**: Enable Best Practices Assessment, then monitoring, then security features
-3. **Review the [Use Cases](use-cases.md)** for specific implementation scenarios
-4. **Explore the [Hands-on Lab](../arc-sql-hands-on-lab/)** for practical experience
-
----
-
-## Related Resources
-
-- [Manage licensing and billing](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/manage-license-billing)
-- [Extended Security Updates overview](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/extended-security-updates)
-- [Migration assessment](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/migration-assessment)
+[license]: https://learn.microsoft.com/sql/sql-server/azure-arc/manage-license-billing?view=sql-server-ver17
+[migration-overview]: https://learn.microsoft.com/sql/sql-server/azure-arc/migration-overview?view=sql-server-ver17
+[migration-assessment]: https://learn.microsoft.com/sql/sql-server/azure-arc/migration-assessment?view=sql-server-ver17

@@ -1,172 +1,56 @@
-# Why Azure Arc for SQL Server?
+# Why use SQL Server enabled by Azure Arc?
+Version: v1.2026.09
+Last updated: 2026-09-30
 
-Version: v1.2025.12
-Last updated: 2025-12-16
+SQL Server enabled by Azure Arc lets you manage supported SQL Server instances in Azure without moving them first.
+It adds Azure inventory, policy, RBAC, migration assessment, and licensing controls to servers that stay
+on-premises, at the edge, or in another cloud.
 
-Azure Arc extends Azure's management capabilities to SQL Server instances running anywhere—on-premises data centers, edge locations, or other cloud providers. This document explains the business and technical value of Azure Arc-enabled SQL Server for organizations at every level.
+## What Azure Arc changes
 
-## Executive Summary
+- It discovers SQL Server instances and databases on Arc-enabled servers.
+- It gives you Azure Resource Graph queries and Azure RBAC for the SQL resource.
+- It adds migration assessment and portal migration workflows.
+- It supports license management, including PAYG, Paid, and LicenseOnly.
+- It lets you adopt features one at a time instead of moving the whole estate.
 
-**For CIOs and CFOs**: Azure Arc-enabled SQL Server provides a unified control plane for your entire SQL Server estate, regardless of where instances run. This translates to:
+## Feature status as of 2026-09-30
 
-- **Reduced operational complexity** through centralized management, eliminating the need for disparate tools across environments
-- **Flexible licensing options** including pay-as-you-go billing that aligns costs with actual usage rather than upfront capital expenditure
-- **Extended value from existing investments** by enabling Extended Security Updates (ESUs) for SQL Server 2012 and later versions past end-of-support
-- **Improved security posture** with integrated threat protection, modern authentication, and unified governance
+| Capability | Status | Notes |
+| --- | --- | --- |
+| Inventory, resource model, and license management | GA | Core Arc SQL control plane |
+| Least privilege for the SQL extension | GA | Default since extension `1.1.3518.465`; uses `NT SERVICE\\SqlServerExtension` |
+| Managed identity | GA | Required for some newer security features |
+| Backup to URL with managed identity | GA | Separate from automated backups |
+| Migration assessment | GA | Weekly assessment for supported instances |
+| Portal migration to SQL Managed Instance | GA | Azure portal workflow |
+| Portal migration to SQL Server on Azure VMs | GA | Azure portal workflow |
+| Disable SQL authentication | GA | SQL Server 2025 on Windows |
+| ⚠️ Monitoring | Preview | Portal monitoring remains preview |
+| ⚠️ Automated backups and PITR | Preview | Backup automation and restore workflow remain preview |
+| ⚠️ Linux extension | Preview | Linux Arc SQL extension remains preview |
 
-**The bottom line**: Azure Arc bridges the gap between cloud-native agility and the reality of hybrid infrastructure, enabling your organization to modernize at its own pace while maintaining control and visibility.
+⚠️ Preview features are subject to the [supplemental terms of use][preview-terms].
 
----
+## Start with the right document
 
-## Benefits by Role
+- Read [use cases](use-cases.md) for scenario-based examples.
+- Read [security benefits](security-benefits.md) for least privilege, Microsoft Entra ID, and preview boundaries.
+- Read [business case](business-case.md) if you need an adoption checklist instead of a product pitch.
+- Read [architecture diagrams](diagrams.md) for slide-ready visuals.
+- Try the [hands-on lab](../arc-sql-hands-on-lab/README.md) for a guided walkthrough.
 
-### IT Managers and Architects
+## Key Microsoft Learn references
 
-| Challenge | How Azure Arc Helps |
-|-----------|---------------------|
-| Managing SQL across multiple environments | Single pane of glass in Azure portal for all SQL instances |
-| Inconsistent tooling and processes | Unified Azure management APIs, policies, and automation |
-| Capacity and inventory visibility | Automatic discovery and detailed inventory with database metadata |
-| Migration planning complexity | Built-in migration assessment with Azure SQL recommendations |
-| License compliance tracking | Centralized license management with billing visibility |
+- [Overview][overview]
+- [Best practices assessment][assess]
+- [Manage licensing and billing][license]
+- [Migration overview][migration-overview]
+- [Disable SQL authentication][disable-sql-auth]
 
-**Key capabilities for IT leadership**:
-- **Azure Resource Graph queries** across your entire SQL estate for reporting and governance
-- **Azure Policy** enforcement for consistent configuration baselines
-- **Role-based access control (RBAC)** with Azure's identity platform
-- **Tag-based organization** for cost allocation and resource grouping
-
-### Database Administrators
-
-| Challenge | How Azure Arc Helps |
-|-----------|---------------------|
-| Performance troubleshooting across sites | Centralized monitoring dashboards with performance metrics |
-| Configuration drift and best practices | Automated Best Practices Assessment with remediation guidance |
-| Backup management complexity | Automated backups to local or network storage (preview) |
-| Recovery scenarios | Point-in-time restore capabilities (preview) |
-| Security hardening | Integrated vulnerability assessments and recommendations |
-
-**Key capabilities for DBAs**:
-- **Performance monitoring** with built-in Azure portal dashboards
-- **Best Practices Assessment** with scheduled scans and KQL-based analysis
-- **Automated discovery** of all SQL instances and databases on Arc-enabled servers
-- **Extension-based feature deployment** without manual agent installations
-
-### Security Officers and Compliance Teams
-
-| Challenge | How Azure Arc Helps |
-|-----------|---------------------|
-| Visibility into SQL security posture | Microsoft Defender for Cloud integration |
-| Identity and access management | Microsoft Entra ID authentication support |
-| Data governance requirements | Microsoft Purview integration for unified governance |
-| Vulnerability management | Automated vulnerability scanning and threat detection |
-| Privilege escalation risks | Least privilege operation mode |
-
-**Key capabilities for security teams**:
-- **Defender for SQL** threat protection and vulnerability assessment
-- **Microsoft Entra authentication** for centralized identity management
-- **Azure RBAC** for granular access control without local account sprawl
-- **Unified audit logging** through Azure Monitor and Log Analytics
-
----
-
-## Key Differentiators
-
-### 1. True Hybrid Management
-
-Unlike tools that require full migration to the cloud, Azure Arc meets you where you are. Your SQL Server instances remain on-premises or in your chosen environment while gaining Azure management capabilities.
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Azure Control Plane                       │
-│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐        │
-│  │ Portal  │  │  RBAC   │  │ Policy  │  │ Monitor │        │
-│  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘        │
-└───────┼────────────┼────────────┼────────────┼──────────────┘
-        │            │            │            │
-        ▼            ▼            ▼            ▼
-   ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐
-   │On-Prem  │  │  Edge   │  │  Other  │  │  Azure  │
-   │   DC    │  │  Site   │  │  Cloud  │  │   VMw   │
-   └─────────┘  └─────────┘  └─────────┘  └─────────┘
-```
-
-### 2. Flexible Licensing Without Lock-In
-
-- **Pay-as-you-go (PAYG)**: Convert CapEx to OpEx with hourly billing
-- **License mobility**: Bring existing Software Assurance licenses
-- **ESU through Arc**: Access Extended Security Updates without traditional ESU purchases
-
-### 3. Security Without Compromise
-
-Azure Arc doesn't require opening inbound firewall ports. The Arc agent initiates outbound connections only, maintaining your security perimeter while enabling cloud management.
-
-### 4. Incremental Adoption
-
-Start with inventory visibility, add monitoring when ready, enable security features progressively—Azure Arc supports your modernization journey at your own pace.
-
----
-
-## Architecture Overview
-
-```mermaid
-flowchart TB
-    subgraph Azure["Azure Control Plane"]
-        Portal[Azure Portal]
-        RBAC[Azure RBAC]
-        Policy[Azure Policy]
-        Monitor[Azure Monitor]
-        Defender[Defender for Cloud]
-    end
-    
-    subgraph OnPrem["On-Premises Data Center"]
-        Arc1[Arc Agent]
-        SQL1[(SQL Server)]
-        Arc1 --- SQL1
-    end
-    
-    subgraph Edge["Edge Location"]
-        Arc2[Arc Agent]
-        SQL2[(SQL Server)]
-        Arc2 --- SQL2
-    end
-    
-    subgraph OtherCloud["Other Cloud Provider"]
-        Arc3[Arc Agent]
-        SQL3[(SQL Server)]
-        Arc3 --- SQL3
-    end
-    
-    Arc1 -->|Outbound HTTPS| Azure
-    Arc2 -->|Outbound HTTPS| Azure
-    Arc3 -->|Outbound HTTPS| Azure
-    
-    style Azure fill:#0078d4,stroke:#005a9e,color:#fff
-```
-
-The architecture enables:
-- **Outbound-only connectivity** from your environment to Azure
-- **Local agent processing** for data collection and feature execution
-- **Azure-based management** for policies, monitoring, and governance
-- **Unified identity** through Microsoft Entra ID integration
-
-> 📊 **See [All Architecture Diagrams](diagrams.md)** for detailed visuals including security integration, licensing models, and data flow.
-
----
-
-## Next Steps
-
-| Document | Description |
-|----------|-------------|
-| [Architecture Diagrams](diagrams.md) | Visual diagrams of management, security, and licensing architectures |
-| [Business Case](business-case.md) | Detailed analysis of operational and cost benefits |
-| [Use Cases](use-cases.md) | Real-world scenarios and implementation patterns |
-| [Security Benefits](security-benefits.md) | Deep dive into security and compliance capabilities |
-
----
-
-## Learn More
-
-- [SQL Server enabled by Azure Arc - Overview](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview)
-- [Azure Arc documentation](https://learn.microsoft.com/en-us/azure/azure-arc/)
-- [Hands-on Lab](../arc-sql-hands-on-lab/) - Try Azure Arc-enabled SQL Server in a guided environment
+[preview-terms]: https://azure.microsoft.com/support/legal/preview-supplemental-terms/
+[overview]: https://learn.microsoft.com/sql/sql-server/azure-arc/overview?view=sql-server-ver17
+[assess]: https://learn.microsoft.com/sql/sql-server/azure-arc/assess?view=sql-server-ver17
+[license]: https://learn.microsoft.com/sql/sql-server/azure-arc/manage-license-billing?view=sql-server-ver17
+[migration-overview]: https://learn.microsoft.com/sql/sql-server/azure-arc/migration-overview?view=sql-server-ver17
+[disable-sql-auth]: https://learn.microsoft.com/sql/sql-server/azure-arc/disable-sql-authentication?view=sql-server-ver17

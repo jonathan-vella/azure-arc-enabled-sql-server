@@ -1,76 +1,60 @@
-# Azure Arc SQL Reclass Report
+# Azure Arc SQL reclass report
+Version: v1.2026.09
+Last updated: 2026-09-30
 
-Version: v1.2025.12
-Last updated: 2025-12-16
+`Get-SQLAzureArcReclassReport.ps1` exports two CSV files that help you audit SQL Server resources
+enabled by Azure Arc and the `WindowsAgent.SqlServer` extension.
 
-## Overview
+## Prerequisites
 
-This script generates a CSV report of Azure Arc SQL Server resources, including license type,
-extension version, and provisioning state. Use it to audit your Arc-enabled SQL estate and
-identify resources that may need attention.
+- Install the `Az.ResourceGraph`, `Az.ConnectedMachine`, and `Az.Accounts` modules.
+- You need at least the Reader role in each subscription that you want to query.
+- Sign in to Azure before you run the script. If you use multiple tenants, sign in to the
+  correct Microsoft Entra tenant first.
 
-## When to use
+## Output files
 
-- You need to audit license types across subscriptions
-- You want to identify servers with outdated extension versions
-- You are preparing a compliance or billing report
-- You need to troubleshoot extension provisioning issues
+### ArcSQLServerinstanceswithReclass.csv
 
-## Report columns
+| Property | Description |
+| --- | --- |
+| `createdAt` | Time when the SQL Server resource was created |
+| `subscriptionId` | Subscription ID |
+| `resourceGroup` | Resource group name |
+| `AzureArcServerName` | Azure Arc server that hosts the SQL Server instance |
+| `Status` | SQL Server resource status |
+| `SQLInstanceName` | SQL Server instance name |
+| `version` | SQL Server version |
+| `edition` | SQL Server edition |
+| `vcores` | Number of vCores |
+| `licenseTypeinGraph` | License type reported by Azure Resource Graph |
+| `licenseTypeInExt` | License type reported by the extension query |
+| `ExVersion` | `WindowsAgent.SqlServer` extension version |
+| `provisioningState` | Extension provisioning state |
 
+### SQLExtensionStatus.csv
 
+| Property | Description |
+| --- | --- |
+| `subscriptionId` | Subscription ID |
+| `resourceGroup` | Resource group name |
+| `name` | Azure Arc server where the extension is installed |
+| `Status` | Extension status |
+| `ExVersion` | `WindowsAgent.SqlServer` extension version |
+| `provisioningState` | Extension provisioning state |
 
-| **Property** | **Description** |
-|:--|:--|
-|createdAt|The time when the Azure Arc SQL resource was created|
-|subscriptionId|ID of the subscription|
-|resourceGroup|Resource group name|
-|AzureArcServerName|Azure Arc server where the SQL instance resides|
-|Status|Status of the SQL Instance Resource
-|SQLInstanceName|SQL Instance name
-|version|Version of the SQL instance
-|edition| Edition of the SQL instance
-|vcores|Number of cores
-|licenseTypeinGraph| Licence setting's value, from Azure Graph perspective
-|licenseTypeInExt|License setting's value, from the extension perspective (Powershell query)
-|ExVersion| Version of the WindowsAgent.SqlServer extension
-|provisioningState|Provision state of the WindowsAgent.SqlServer extension
+## Run the script
 
-The file is stored in the local folder with the name ***ArcSQLServerinstanceswithReclass.csv***
-
-  <br>
-
-
-Additionally, another CSV is created with the information of all the WindowsAgent.SqlServer extensions from Azure Arc Servers.
-
-| **Property** | **Description** |
-|:--|:--|
-|subscriptionId|ID of the subscription|
-|resourceGroup|Resource group name|
-|name|Azure Arc server where the SQL extension is installed
-|Status|Status of the SQL extension
-|ExVersion|Version of the SQL extension
-|provisioningState|Provision state of the WindowsAgent.SqlServer extension
-
-The information is stored in the local folder with the name ***SQLExtensionStatus.csv***
-
-<br>
-
-# Prerequisites
-
-- The following powershell modules are needed: *Az.ResourceGraph, Az.ConnectedMachine, Az.Accounts*
-- You must have at least a *Reader* role in each subscription from wich you want to extract the information
-- You must be connected to Microsoft Entra ID and logged in to your Azure account. If your account have access to multiple tenants, make sure to log in with a specific tenant ID.
-
-
-# Launching the script
-
-The script doesn't have any parameter and it is launched as is:
-
-## Example 1
-
-The following example gets a report from the subscriptions which the user has access to.
-
-```PowerShell
+```powershell
 .\Get-SQLAzureArcReclassReport.ps1
 ```
+
+The script writes both CSV files to the current folder.
+
+## Interpret the results
+
+- Compare `licenseTypeinGraph` and `licenseTypeInExt` to find mismatches.
+- Review `ExVersion` and `provisioningState` to identify failed or outdated extensions.
+- Compare `ExVersion` with the
+  [release notes](https://learn.microsoft.com/sql/sql-server/azure-arc/release-notes?view=sql-server-ver17).
+  Only extension versions released within the last year are supported.

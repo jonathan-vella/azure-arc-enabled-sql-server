@@ -1,138 +1,123 @@
-# SQL Server Monitoring and Feature Flags
+# SQL Server monitoring and feature flags
 
-Version: v1.2025.12  
-Last updated: 2025-12-16
+Version: v1.2026.09
+Last updated: 2026-09-30
 
-## Overview
-
-This folder contains tools for configuring monitoring and feature flags on the Azure extension
-for SQL Server. Feature flags control which capabilities are enabled for monitoring, discovery,
-and telemetry.
+This folder contains the script and notes used to configure monitoring-related feature flags on the Azure extension
+for SQL Server.
 
 > [!NOTE]
-> Advanced SQL monitoring is a **preview feature**. Review the
-> [preview terms][preview-terms] before enabling in production.
+> Advanced SQL monitoring is still preview. Review the [preview terms][preview-terms] before you enable it in
+> production.
 
-## When to use
+## When to use this folder
 
-- You want to enable or disable SQL Server monitoring features
-- You need to discover Always On Availability Groups or Failover Cluster Instances
-- You are configuring monitoring at scale across multiple Arc-enabled servers
+- Enable or disable monitoring-related feature flags on a machine.
+- Enable discovery for availability groups or failover cluster instances.
+- Review the script inputs before you change extension settings.
 
 ## Prerequisites
 
-- Azure PowerShell modules: `Az.Accounts`, `Az.ConnectedMachine`
-- Azure Connected Machine Resource Administrator role on the target machine
-- Logged in to Azure (`Connect-AzAccount`)
-
-## Quick start
-
-Enable SQL monitoring on a single machine:
-
-```powershell
-.\set-feature-flags.ps1 `
-    -Subscription "<subscription-id>" `
-    -ResourceGroup "<resource-group>" `
-    -MachineName "<machine-name>" `
-    -FeatureFlagsToEnable "SqlManagement"
-```
+- Azure PowerShell modules `Az.Accounts` and `Az.ConnectedMachine`.
+- Azure Connected Machine Resource Administrator on the target machine.
+- An authenticated Azure PowerShell session.
+- A current Azure extension for SQL Server build. Microsoft supports only extension versions released within the
+  last year.
 
 ## Available feature flags
 
-| Feature Flag | Description |
-|--------------|-------------|
-| `SqlManagement` | Enables SQL Server management features and telemetry |
-| `AvailabilityGroupDiscovery` | Enables discovery of Always On Availability Groups |
-| `SqlFailoverClusterInstanceDiscovery` | Enables discovery of SQL Server Failover Cluster Instances |
+| Feature flag | Description |
+| --- | --- |
+| `SqlManagement` | Enables SQL Server management features and telemetry. |
+| `AvailabilityGroupDiscovery` | Enables discovery of Always On availability groups. |
+| `SqlFailoverClusterInstanceDiscovery` | Enables discovery of SQL Server failover cluster instances. |
 
-## Script: set-feature-flags.ps1
+## Quick start
 
-### Parameters
+```powershell
+.\set-feature-flags.ps1 `
+  -Subscription "<subscription-id>" `
+  -ResourceGroup "<resource-group>" `
+  -MachineName "<machine-name>" `
+  -FeatureFlagsToEnable "SqlManagement"
+```
+
+## Script parameters
 
 | Parameter | Required | Description |
-|-----------|----------|-------------|
-| `-Subscription` | Yes | The Azure subscription ID containing the machine |
-| `-ResourceGroup` | Yes | The resource group containing the Arc-enabled machine |
-| `-MachineName` | Yes | The name of the Arc-enabled SQL Server machine |
-| `-FeatureFlagsToEnable` | No | Array of feature flags to enable |
-| `-FeatureFlagsToDisable` | No | Array of feature flags to disable |
-| `-Force` | No | Proceed even if unrecognized feature flags are provided |
-| `-DryRun` | No | Preview changes without applying them |
+| --- | --- | --- |
+| `-Subscription` | Yes | Azure subscription ID that contains the machine. |
+| `-ResourceGroup` | Yes | Resource group that contains the Arc-enabled machine. |
+| `-MachineName` | Yes | Arc-enabled machine name. |
+| `-FeatureFlagsToEnable` | No | Array of feature flags to enable. |
+| `-FeatureFlagsToDisable` | No | Array of feature flags to disable. |
+| `-Force` | No | Continue when the script finds an unrecognized feature flag. |
+| `-DryRun` | No | Preview the change without applying it. |
 
-### Examples
+## Examples
 
-### Example 1: Enable SQL Management
+### Example 1: enable SQL management
 
-```PowerShell
+```powershell
 .\set-feature-flags.ps1 `
-    -Subscription "<subscription-id>" `
-    -ResourceGroup "contoso-rg" `
-    -MachineName "contoso-sql-host" `
-    -FeatureFlagsToEnable "SqlManagement"
+  -Subscription "<subscription-id>" `
+  -ResourceGroup "contoso-rg" `
+  -MachineName "contoso-sql-host" `
+  -FeatureFlagsToEnable "SqlManagement"
 ```
 
-### Example 2: Enable Availability Group Discovery
+### Example 2: enable availability group discovery
 
-```PowerShell
+```powershell
 .\set-feature-flags.ps1 `
-    -Subscription "<subscription-id>" `
-    -ResourceGroup "contoso-rg" `
-    -MachineName "contoso-sql-host" `
-    -FeatureFlagsToEnable "AvailabilityGroupDiscovery"
+  -Subscription "<subscription-id>" `
+  -ResourceGroup "contoso-rg" `
+  -MachineName "contoso-sql-host" `
+  -FeatureFlagsToEnable "AvailabilityGroupDiscovery"
 ```
 
-### Example 3: Enable Multiple Features
+### Example 3: enable multiple features
 
-```PowerShell
+```powershell
 .\set-feature-flags.ps1 `
-    -Subscription "<subscription-id>" `
-    -ResourceGroup "contoso-rg" `
-    -MachineName "contoso-sql-host" `
-    -FeatureFlagsToEnable "SqlManagement", "AvailabilityGroupDiscovery"
+  -Subscription "<subscription-id>" `
+  -ResourceGroup "contoso-rg" `
+  -MachineName "contoso-sql-host" `
+  -FeatureFlagsToEnable "SqlManagement", "AvailabilityGroupDiscovery"
 ```
 
-### Example 4: Disable a Feature
+### Example 4: disable a feature
 
-```PowerShell
+```powershell
 .\set-feature-flags.ps1 `
-    -Subscription "<subscription-id>" `
-    -ResourceGroup "contoso-rg" `
-    -MachineName "contoso-sql-host" `
-    -FeatureFlagsToDisable "SqlManagement"
+  -Subscription "<subscription-id>" `
+  -ResourceGroup "contoso-rg" `
+  -MachineName "contoso-sql-host" `
+  -FeatureFlagsToDisable "SqlManagement"
 ```
 
-### Example 5: Preview Changes (Dry Run)
+### Example 5: preview a change
 
-```PowerShell
+```powershell
 .\set-feature-flags.ps1 `
-    -Subscription "<subscription-id>" `
-    -ResourceGroup "contoso-rg" `
-    -MachineName "contoso-sql-host" `
-    -FeatureFlagsToEnable "SqlManagement" `
-    -DryRun
+  -Subscription "<subscription-id>" `
+  -ResourceGroup "contoso-rg" `
+  -MachineName "contoso-sql-host" `
+  -FeatureFlagsToEnable "SqlManagement" `
+  -DryRun
 ```
 
-## Notes
+## Hands-on lab
 
-- Unknown feature flags will generate a warning and may prompt for confirmation (use `-Force` to bypass)
-- Use `-DryRun` to verify changes before applying them
-- Feature flag changes require the extension to update, which may take a few minutes
-
-## Troubleshooting
-
-| Symptom | Cause | Resolution |
-|---------|-------|------------|
-| Feature flag not taking effect | Extension update pending | Wait a few minutes for extension to update |
-| Unknown feature flag warning | Typo or unsupported flag | Verify flag name; use `-Force` if intentional |
-| Permission denied | Missing RBAC role | Ensure Azure Connected Machine Resource Administrator role |
+- [Module 5: Basic monitoring](../arc-sql-hands-on-lab/modules/05-basic-monitoring.md)
+- [Module 9: Configure advanced monitoring](../arc-sql-hands-on-lab/modules/09-advanced-monitoring.md)
 
 ## Related documentation
 
-- [Configure SQL Server enabled by Azure Arc][learn-config]
+- [Manage SQL Server enabled by Azure Arc configuration][learn-config]
 - [Monitor SQL Server enabled by Azure Arc][learn-monitoring]
 - [Preview terms][preview-terms]
 
-<!-- Reference links -->
-[learn-config]: https://learn.microsoft.com/sql/sql-server/azure-arc/manage-configuration
-[learn-monitoring]: https://learn.microsoft.com/sql/sql-server/azure-arc/sql-monitoring
+[learn-config]: https://learn.microsoft.com/sql/sql-server/azure-arc/manage-configuration?view=sql-server-ver17
+[learn-monitoring]: https://learn.microsoft.com/sql/sql-server/azure-arc/sql-monitoring?view=sql-server-ver17
 [preview-terms]: https://azure.microsoft.com/support/legal/preview-supplemental-terms/

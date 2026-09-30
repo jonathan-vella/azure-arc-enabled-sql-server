@@ -1,57 +1,35 @@
-# Lab Bicep Templates
+# Lab Bicep templates
+Version: v1.2026.09
+Last updated: 2026-09-30
 
-Version: v1.2025.12
-Last updated: 2025-12-16
-
-This directory contains Infrastructure as Code (IaC) templates for deploying the Azure Arc-enabled SQL Server hands-on lab infrastructure.
+This folder contains the Bicep deployment used by the hands-on lab.
 
 ## Files
 
-### `main.bicep`
-Main Bicep template that orchestrates the lab infrastructure deployment.
+- `main.bicep` deploys the lab resource groups and the Log Analytics workspace.
+- `modules/log-analytics.bicep` creates the Log Analytics workspace used by the lab.
+- `deploy.ps1` wraps the Bicep deployment and writes deployment outputs locally.
+- `deployment-outputs.example.json` shows the expected output structure.
 
-**Creates:**
-- Resource group for Azure Arc resources (`arcsql-lab-arc-rg`)
-- Resource group for monitoring resources (`arcsql-lab-monitoring-rg`)
-- Log Analytics workspace with SQL Assessment solution
-
-### `modules/log-analytics.bicep`
-Bicep module for creating and configuring Log Analytics workspace.
-
-### `deploy.ps1`
-PowerShell deployment script that wraps the Bicep deployment.
-
-**Output:** `deployment-outputs.json` (sensitive - not committed to repo)
-
-## Template Files
-
-- **`deployment-outputs.example.json`** - Example of deployment output structure
-
-## Generated Files (Not in Source Control)
-
-The following files are generated during deployment and are **excluded from source control** via `.gitignore`:
-
-- `deployment-outputs.json` - Contains actual workspace IDs and keys
-
-## Usage
+## Deploy the lab infrastructure
 
 ```powershell
-# Set Azure context
-Set-AzContext -SubscriptionId "<your-subscription-id>"
-
-# Deploy infrastructure
+Set-AzContext -SubscriptionId "<subscription-id>"
 .\deploy.ps1 -BaseName "arcsql-lab" -Environment "dev"
 ```
 
 ## Outputs
 
-The deployment provides the following outputs:
+The deployment returns:
+
 - Arc resource group name
 - Monitoring resource group name
-- Log Analytics workspace ID and name
-- Log Analytics customer ID (workspace ID)
-- Region where resources are deployed
+- Log Analytics workspace name
+- Log Analytics workspace ID
+- Azure region
 
-## Security Note
+## Sensitive output
 
-⚠️ The `deployment-outputs.json` file contains sensitive information including Log Analytics workspace keys. This file is automatically excluded from source control but should be handled securely.
+> [!IMPORTANT]
+> `deployment-outputs.json` contains workspace identifiers and keys. The file is generated
+> locally and is excluded from source control.
