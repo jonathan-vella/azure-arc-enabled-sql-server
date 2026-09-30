@@ -1,138 +1,57 @@
-# Azure Arc-Enabled SQL Server
+# SQL Server enabled by Azure Arc
+Version: v1.2026.09
+Last updated: 2026-09-30
 
-![Azure Arc-Enabled SQL Server](media/azure-arc-sql-banner.gif)
+![SQL Server enabled by Azure Arc](media/azure-arc-sql-banner.gif)
 
-Version: v1.2025.12  
-Last updated: 2025-12-16
+Use this repository to onboard SQL Server to Azure Arc, manage licensing, review assessments,
+and run the hands-on lab.
 
-Extend Azure management to SQL Server instances running anywhere—on-premises, edge, or other clouds.
-
-![PowerShell](https://img.shields.io/badge/PowerShell-5391FE?logo=powershell&logoColor=white)
-![Bicep](https://img.shields.io/badge/Bicep-0078D4?logo=microsoft-azure&logoColor=white)
-![Last updated](https://img.shields.io/badge/updated-2025--12-blue)
-
----
-
-## 🚀 Most common tasks
+## Start here
 
 | Task | Link |
-|------|------|
-| Onboard a server to Azure Arc | [Hands-on lab Module 2][lab-module2] |
-| Change license type (PAYG ↔ Paid) | [License management](arc-sql-modify-license-type/README.md) |
-| Enable Best Practices Assessment | [BPA setup](arc-sql-best-practice-assessment/README.md) |
+| --- | --- |
+| Prepare the lab environment | [Lab prerequisites](arc-sql-hands-on-lab/PREREQUISITES.md) |
+| Run the full lab | [Hands-on lab module index](arc-sql-hands-on-lab/README.md#modules) |
+| Deploy lab infrastructure | [Module 0: Infrastructure setup](arc-sql-hands-on-lab/modules/00-infrastructure.md) |
+| Connect a server to Azure Arc | [Module 2: Arc onboarding](arc-sql-hands-on-lab/modules/02-arc-onboarding.md) |
+| Install the Azure extension for SQL Server | [Module 3: SQL Server extension](arc-sql-hands-on-lab/modules/03-sql-extension.md) |
+| Change license type or ESU settings | [License management](arc-sql-modify-license-type/README.md) |
+| Generate an extension status report | [Extension status report](arc-sql-report-reclass-extension-status/README.md) |
 | Troubleshoot connectivity | [Connectivity guide](arc-sql-connectivity/README.md) |
 
----
+The lab now uses one file per module. Start with the
+[hands-on lab module index](arc-sql-hands-on-lab/README.md#modules), which includes Module 11:
+Disable SQL authentication and Module 12: Migration assessment and portal migration.
 
-## 📖 Start here
+## Current feature status
 
-Use the links below to find the right documentation for your task.
+For the current support matrix, use the
+[release notes][learn-release-notes]. Key points as of 2026-09-30:
 
-### 1. Get started / prerequisites
-
-[Prerequisites](arc-sql-hands-on-lab/PREREQUISITES.md) – What you need before onboarding
-
-### 2. Onboard Azure Arc servers
-
-[Module 2: Arc onboarding][lab-module2] – Connect on-premises servers to Azure Arc
-
-### 3. Install / configure SQL extension
-
-[Module 3: SQL extension][lab-module3] – Deploy the Azure extension for SQL Server
-
-### 4. Licensing (PAYG / Paid / ESU)
-
-[License management](arc-sql-modify-license-type/README.md) – Manage license types and billing
-
-### 5. Best Practices Assessment
-
-[BPA guide](arc-sql-best-practice-assessment/README.md) – Run and review SQL best practices
-
-### 6. Monitoring / feature flags
-
-[Monitoring](arc-sql-monitoring/README.md) – Enable advanced monitoring and feature flags
-
-### 7. Reporting / audits
-
-[Extension status report](arc-sql-report-reclass-extension-status/README.md) – Generate reports
-
-### 8. Hands-on lab
-
-[Full lab](arc-sql-hands-on-lab/README.md) – End-to-end guided lab (~2 hours)
-
-### 9. Troubleshooting / connectivity
-
-[Connectivity](arc-sql-connectivity/README.md) – Diagnose and fix connectivity issues
-
-### 10. Reference
-
-- [FAQ](arc-sql-faq/README.md)
-- [Videos](arc-sql-videos/README.md)
-- [Presentations](arc-sql-presentation-files/README.md)
-
----
-
-## Why Azure Arc for SQL Server?
-
-Azure Arc extends Azure management capabilities to SQL Server instances running anywhere.
-**[Explore the value proposition →](arc-sql-value-proposition/README.md)**
-
-**Key benefits:**
-
-- **Unified management** – Single control plane for your entire SQL Server estate
-- **Flexible licensing** – Pay-as-you-go billing and license mobility options
-- **Enhanced security** – Microsoft Defender, Microsoft Entra ID authentication, unified governance
-- **Modernization path** – Migration assessment and ESU coverage for end-of-support versions
-
----
-
-## Prerequisites
-
-Before you begin, ensure you have:
-
-- **Azure subscription** – [Create a free account][azure-free]
-- **SQL Server 2012 or later** – 64-bit only
-- **Supported OS** – Windows Server 2012+ or Windows 10/11; Linux (Ubuntu 20.04, RHEL 8, SLES 15)
-- **.NET Framework 4.7.2+** – Windows only (extension 1.1.2504.99+)
-- **PowerShell 7.0+** – For automation scripts
-- **Network** – Outbound HTTPS (TCP 443) to `*.<region>.arcdataservices.com`
-- **Azure RBAC** – Azure Connected Machine Onboarding role (minimum)
-
-For full details, see [Prerequisites on Microsoft Learn][learn-prereqs].
-
----
-
-## Unsupported configurations
-
-The following are **not supported**:
-
-- SQL Server running in containers
-- SQL Server 2008 / 2008 R2 or older
-- SQL Server in Azure VMs (use native Azure management)
-- Instance names containing `#`
-- Multiple instances with the same name on the same host
-
-For the complete list, see [Unsupported configurations][learn-unsupported].
-
----
+- Least privilege is enabled by default starting with extension `1.1.3518.465`.
+- Managed identity and backup to URL are generally available.
+- Migration to Azure SQL Managed Instance and to SQL Server on Azure VMs from the Azure portal
+  are generally available.
+- Disabling SQL authentication is generally available for SQL Server 2025 on Windows.
+- Monitoring, automated backups, point-in-time restore, and the Linux extension remain preview.
+- Only Azure extension for SQL Server versions released within the last year are supported.
 
 ## Repository contents
 
 | Folder | Description |
-|--------|-------------|
-| [arc-sql-best-practice-assessment](arc-sql-best-practice-assessment/) | SQL Best Practices Assessment |
-| [arc-sql-connectivity](arc-sql-connectivity/) | Network connectivity validation tools |
-| [arc-sql-data-collection](arc-sql-data-collection/) | Data collection categories and privacy info |
-| [arc-sql-faq](arc-sql-faq/) | Frequently asked questions |
-| [arc-sql-hands-on-lab](arc-sql-hands-on-lab/) | End-to-end hands-on lab with Bicep templates |
-| [arc-sql-modify-license-type](arc-sql-modify-license-type/) | Modify license type, P-Core, and ESU settings |
-| [arc-sql-monitoring](arc-sql-monitoring/) | Configure monitoring and feature flags |
-| [arc-sql-presentation-files](arc-sql-presentation-files/) | Slide decks and presentation materials |
-| [arc-sql-report-reclass-extension-status](arc-sql-report-reclass-extension-status/) | Extension status reports |
-| [arc-sql-value-proposition](arc-sql-value-proposition/) | Business case and security benefits |
-| [arc-sql-videos](arc-sql-videos/) | Instructional videos |
-
----
+| --- | --- |
+| [arc-sql-best-practice-assessment](arc-sql-best-practice-assessment/) | Configure and review SQL best practices assessments |
+| [arc-sql-connectivity](arc-sql-connectivity/) | Validate required endpoints and outbound connectivity |
+| [arc-sql-data-collection](arc-sql-data-collection/) | Review data collection categories and privacy information |
+| [arc-sql-faq](arc-sql-faq/) | Read operational and support FAQs |
+| [arc-sql-hands-on-lab](arc-sql-hands-on-lab/) | Run the end-to-end lab with one file per module |
+| [arc-sql-modify-license-type](arc-sql-modify-license-type/) | Change license type, P-Core, and ESU settings |
+| [arc-sql-monitoring](arc-sql-monitoring/) | Configure monitoring and preview monitoring features |
+| [arc-sql-presentation-files](arc-sql-presentation-files/) | Access slide decks and presentation files |
+| [arc-sql-report-reclass-extension-status](arc-sql-report-reclass-extension-status/) | Export extension status and license reports |
+| [arc-sql-value-proposition](arc-sql-value-proposition/) | Review business and security positioning |
+| [arc-sql-videos](arc-sql-videos/) | Watch recorded walkthroughs |
 
 ## Microsoft Learn documentation
 
@@ -147,55 +66,39 @@ For the complete list, see [Unsupported configurations][learn-unsupported].
 
 - [Best practices assessment][learn-bpa]
 - [Migration assessment][learn-migration]
-- [Monitoring (preview)][learn-monitoring]
-- [Microsoft Entra authentication][learn-entra]
+- [Disable SQL authentication][learn-disable-sql-auth]
+- [Monitoring][learn-monitoring]
 - [Extended Security Updates][learn-esu]
 
-### Management
+### Management and troubleshooting
 
 - [Manage licensing and billing][learn-license]
-- [Configure least privilege mode][learn-lpp]
+- [Configure least privilege][learn-lpp]
 - [View inventory][learn-inventory]
-
-### Troubleshooting
-
-- [Troubleshooting guide][learn-troubleshoot]
+- [Troubleshoot deployment][learn-troubleshoot]
 - [Known issues][learn-known-issues]
 - [Release notes][learn-release-notes]
 
----
+## Support and security
 
-## Security best practices
-
-- Follow the principle of least privilege when assigning permissions
-- Use Managed Identity for authentication when possible
-- Keep Azure Arc agents updated to the latest versions
-- Review security recommendations in Microsoft Defender for Cloud
-- **Never commit credentials or secrets** – See [TEMPLATE-FILES.md](TEMPLATE-FILES.md)
-
----
+- Review the official [prerequisites][learn-prereqs] and
+  [unsupported configurations][learn-unsupported] before onboarding production systems.
+- Prefer Microsoft Entra ID and least-privilege access where the feature supports it.
+- Do not commit credentials or secrets. See [TEMPLATE-FILES.md](TEMPLATE-FILES.md).
 
 ## Contributing
 
-This project welcomes contributions and suggestions. Please follow the standard GitHub pull request
-process.
-
----
-
-© Microsoft Corporation. Licensed under the Apache License, Version 2.0.
+Use the standard GitHub pull request process for documentation and script changes.
 
 <!-- Reference links -->
-[azure-free]: https://azure.microsoft.com/pricing/purchase-options/azure-account?icid=azurefreeaccount
-[lab-module2]: arc-sql-hands-on-lab/README.md#module-2-arc-server-onboarding-15-minutes
-[lab-module3]: arc-sql-hands-on-lab/README.md#module-3-sql-server-extension-deployment--auto-discovery-15-minutes
 [learn-overview]: https://learn.microsoft.com/sql/sql-server/azure-arc/overview?view=sql-server-ver17
 [learn-prereqs]: https://learn.microsoft.com/sql/sql-server/azure-arc/prerequisites?view=sql-server-ver17
 [learn-deploy]: https://learn.microsoft.com/sql/sql-server/azure-arc/deployment-options?view=sql-server-ver17
 [learn-connect]: https://learn.microsoft.com/sql/sql-server/azure-arc/connect?view=sql-server-ver17
 [learn-bpa]: https://learn.microsoft.com/sql/sql-server/azure-arc/assess?view=sql-server-ver17
 [learn-migration]: https://learn.microsoft.com/sql/sql-server/azure-arc/migration-assessment?view=sql-server-ver17
+[learn-disable-sql-auth]: https://learn.microsoft.com/sql/sql-server/azure-arc/disable-sql-authentication?view=sql-server-ver17
 [learn-monitoring]: https://learn.microsoft.com/sql/sql-server/azure-arc/sql-monitoring?view=sql-server-ver17
-[learn-entra]: https://learn.microsoft.com/sql/relational-databases/security/authentication-access/azure-ad-authentication-sql-server-overview?view=sql-server-ver17
 [learn-esu]: https://learn.microsoft.com/sql/sql-server/azure-arc/extended-security-updates?view=sql-server-ver17
 [learn-license]: https://learn.microsoft.com/sql/sql-server/azure-arc/manage-license-billing?view=sql-server-ver17
 [learn-lpp]: https://learn.microsoft.com/sql/sql-server/azure-arc/configure-least-privilege?view=sql-server-ver17

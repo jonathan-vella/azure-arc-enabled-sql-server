@@ -1,52 +1,44 @@
-# Data Collection for SQL Server enabled by Azure Arc
+# Data collection for SQL Server enabled by Azure Arc
 
-Version: v1.2025.12
-Last updated: 2025-12-16
+Version: v1.2026.09
+Last updated: 2026-09-30
 
-## Overview
+This page summarizes the data that SQL Server enabled by Azure Arc collects for inventory, billing, migration
+assessment, and optional monitoring.
 
-SQL Server enabled by Azure Arc collects usage and monitoring data to support inventory, billing, performance monitoring, and migration assessment. This page provides a summary of what data is collected.
+For the authoritative list of collected properties, metrics, and log records, see
+[Data collection and reporting][learn-collected-data].
 
-> **For complete details**, see [View collected data - SQL Server enabled by Azure Arc](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/view-collected-data?view=sql-server-ver17)
+## What data is collected
 
-## Key Points
+| Area | Summary |
+| --- | --- |
+| Inventory | Machine, SQL Server, and database inventory used for discovery and management. |
+| Billing | License configuration and related resource metadata. |
+| Migration assessment | Performance and capacity signals used by the migration assessment workflow. |
+| Monitoring | Performance telemetry when monitoring is enabled. Monitoring is still preview. |
 
-| Category | Details |
-|----------|---------|
-| **Privacy** | No PII or customer data is collected |
-| **Transmission** | Secure HTTPS to `*.<region>.arcdataservices.com` |
-| **Monitoring Limitations** | Windows only, SQL Server 2016 SP1+, Standard/Enterprise editions, no FCI support |
+## Monitoring and migration notes
 
-## Data Categories
+- Migration assessment is generally available.
+- Advanced monitoring is still preview.
+- Monitoring data collection depends on the monitoring features that you enable on the resource.
 
-### Always Collected
-- SQL Server instance metadata (name, version, edition, cores, license type)
-- Database inventory (names, sizes, recovery models)
-- Connection status and health
+## Extension logs
 
-### When Monitoring is Enabled
-- CPU, memory, and storage utilization (10-second to 1-minute intervals)
-- Active sessions and wait statistics
-- Performance counters (buffer cache, transactions, connections)
-- Storage I/O metrics (IOPS, throughput, latency)
+Extension logs are stored under
+`C:\ProgramData\GuestConfig\extension_logs\Microsoft.AzureData.WindowsAgent.SqlServer\`.
 
-### For Migration Assessment
-- CPU and memory utilization percentages
-- Read/write IOPS and throughput
-- Database sizes and file organization
+Recent extension builds use `unifiedagent.log`. Older builds might use `ExtensionLog_0.log`.
 
-## Log Files
+## Related documentation
 
-| Extension Version | Log File |
-|-------------------|----------|
-| Latest | `unifiedagent.log` |
-| 1.1.24724.69 and earlier | `ExtensionLog_0.log` |
+- [Data collection and reporting][learn-collected-data]
+- [Monitor SQL Server enabled by Azure Arc][learn-monitoring]
+- [Migration assessment][learn-migration]
+- [Azure Arc-enabled servers network requirements][learn-network]
 
-**Location**: `C:\ProgramData\GuestConfig\extension_logs\Microsoft.AzureData.WindowsAgent.SqlServer\`
-
-## Related Documentation
-
-- [View collected data](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/view-collected-data?view=sql-server-ver17)
-- [Monitor SQL Server enabled by Azure Arc](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/sql-monitoring?view=sql-server-ver17)
-- [Migration assessment](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/migration-assessment?view=sql-server-ver17)
-- [Connected Machine agent network requirements](https://learn.microsoft.com/en-us/azure/azure-arc/servers/network-requirements)
+[learn-collected-data]: https://learn.microsoft.com/sql/sql-server/azure-arc/data-collection?view=sql-server-ver17
+[learn-migration]: https://learn.microsoft.com/sql/sql-server/azure-arc/migration-assessment?view=sql-server-ver17
+[learn-monitoring]: https://learn.microsoft.com/sql/sql-server/azure-arc/sql-monitoring?view=sql-server-ver17
+[learn-network]: https://learn.microsoft.com/azure/azure-arc/servers/network-requirements

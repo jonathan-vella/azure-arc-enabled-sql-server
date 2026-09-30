@@ -1,49 +1,37 @@
-# Lab Scripts Directory
+# Lab scripts
+Version: v1.2026.09
+Last updated: 2026-09-30
 
-Version: v1.2025.12
-Last updated: 2025-12-16
-
-This directory contains PowerShell scripts for the Azure Arc-enabled SQL Server hands-on lab.
+This folder contains PowerShell scripts used by the hands-on lab.
 
 ## Scripts
 
-### `Create-ArcServicePrincipal.ps1`
-Creates a Microsoft Entra ID Service Principal with the Azure Connected Machine Onboarding role for Arc server onboarding.
+- `Create-ArcServicePrincipal.ps1` creates a Microsoft Entra ID service principal for Arc
+  onboarding.
+- `Test-ArcConnectivity.ps1` checks outbound connectivity to Azure Arc endpoints.
+- `Cleanup-Lab.ps1` removes lab resources, including Azure resources and Arc components.
 
-**Output:** `service-principal-credentials.json` (sensitive - not committed to repo)
+## Example files
 
-### `Test-ArcConnectivity.ps1`
-Validates network connectivity to Azure Arc endpoints before onboarding.
+- `service-principal-credentials.example.json` shows the expected service principal output.
+- `connectivity-report.example.json` shows the connectivity report structure.
 
-**Output:** `connectivity-report-<timestamp>.json` (not committed to repo)
+## Generated files
 
-### `Cleanup-Lab.ps1`
-Removes lab resources including Arc agent and Azure resources.
+The lab scripts can generate local files such as:
 
-## Template Files
+- `service-principal-credentials.json`
+- `connectivity-report-<timestamp>.json`
 
-The following `.example.json` files serve as templates to show the structure of generated files:
-
-- **`service-principal-credentials.example.json`** - Example of service principal output structure
-- **`connectivity-report.example.json`** - Example of connectivity test report structure
-
-## Generated Files (Not in Source Control)
-
-The following files are generated during lab execution and are **excluded from source control** via `.gitignore`:
-
-- `service-principal-credentials.json` - Contains actual service principal secret
-- `connectivity-report-*.json` - Contains connectivity test results with timestamps
-
-## Security Note
-
-⚠️ **Never commit files containing real credentials, secrets, or sensitive configuration data to source control.**
-
-The `.gitignore` file is configured to prevent accidental commits of sensitive files, but always verify before committing changes.
+These files are excluded from source control by `.gitignore`.
 
 ## Usage
 
-1. Review the `.example.json` files to understand output structure
-2. Run the scripts as documented in the lab guide
-3. Generated files will be created in this directory
-4. Store sensitive credentials securely (Azure Key Vault, password manager)
-5. Delete sensitive files after securing credentials elsewhere
+Run each script from the lab steps that reference it. For the full workflow, start with the
+[hands-on lab module index](../README.md#modules).
+
+## Sensitive data
+
+> [!IMPORTANT]
+> Generated files can contain secrets or environment details. Store them securely and delete
+> them when you no longer need them.

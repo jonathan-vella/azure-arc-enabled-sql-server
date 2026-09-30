@@ -1,44 +1,25 @@
-# Azure Arc-Enabled SQL Server Presentations
+# SQL Server enabled by Azure Arc presentation files
 
-Version: v1.2025.12
-Last updated: 2025-12-16
+Version: v1.2026.09
+Last updated: 2026-09-30
 
-This folder contains presentation materials related to SQL Server enabled by Azure Arc. These resources are designed to help you understand, explain, and demonstrate Azure Arc capabilities for SQL Server instances.
+This folder contains presentation material for SQL Server enabled by Azure Arc.
 
-## Contents
+## Available file
 
-- [`azure-arc-enabled-sql-jan-2025.pdf`](azure-arc-enabled-sql-jan-2025.pdf): Presentation from January 2025 covering the latest features and capabilities of Azure Arc-enabled SQL Server.
+- [`azure-arc-enabled-sql-jan-2025.pdf`](azure-arc-enabled-sql-jan-2025.pdf)
+  - Presentation deck published in January 2025.
 
-## Usage
+## Usage guidance
 
-These presentation materials can be used for:
+- Use the deck for internal briefings, partner enablement, or customer presentations.
+- Treat the deck as historical material. Feature status can change after the publish date.
+- Use Microsoft Learn for current GA and preview status.
 
-- Internal technical briefings
-- Customer presentations
-- Partner education
-- Self-paced learning about Azure Arc-enabled SQL Server capabilities
+## Related documentation
 
-## Key Topics Covered
+- [SQL Server enabled by Azure Arc overview][learn-overview]
+- [SQL Server enabled by Azure Arc videos](../arc-sql-videos/README.md)
+- [Best practices assessment](../arc-sql-best-practice-assessment/README.md)
 
-Presentations in this folder typically cover:
-
-- Overview of Azure Arc-enabled SQL Server architecture
-- Benefits of extending Azure services to on-premises and multi-cloud environments
-- Management capabilities through the Azure portal
-- Monitoring and performance insights
-- Security features and best practices
-- Licensing options (P-Core and PAYG)
-- Migration assessment tools and methodologies
-
-## Related Resources
-
-For hands-on implementation and management, refer to other folders in this repository:
-
-- [`arc-sql-monitoring`](../arc-sql-monitoring): Configure monitoring features
-- [`arc-sql-videos`](../arc-sql-videos): Video demonstrations of Azure Arc-enabled SQL Server features
-- [`arc-sql-data-collection`](../arc-sql-data-collection): Documentation on data collection processes
-
-## Learn More
-
-For the latest documentation on Azure Arc-enabled SQL Server, visit:
-[Microsoft Learn - SQL Server enabled by Azure Arc](https://learn.microsoft.com/en-us/sql/sql-server/azure-arc/overview?view=sql-server-ver17)
+[learn-overview]: https://learn.microsoft.com/sql/sql-server/azure-arc/overview?view=sql-server-ver17
