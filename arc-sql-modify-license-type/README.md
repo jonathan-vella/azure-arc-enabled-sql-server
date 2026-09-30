@@ -4,6 +4,11 @@ Last updated: 2026-09-30
 
 This README covers script version `v3.0.5`.
 
+The script is a verbatim copy of the [upstream script][upstream-script] at commit
+`2d2d81773c0491f120d6728dd63cf86ce5cddc86`.
+
+[upstream-script]: https://github.com/microsoft/sql-server-samples/blob/master/samples/manage/azure-arc-enabled-sql-server/modify-license-type/modify-arc-sql-license-type.ps1
+
 This script sets or changes the license type and can enable or disable Extended Security Updates
 for SQL Server resources enabled by Azure Arc within the scope you choose.
 
@@ -83,6 +88,9 @@ For details, see
 | `-TenantId` | tenant_id | Optional. Uses the specified Microsoft Entra tenant ID for sign-in. |
 | `-ReportOnly` | Switch | Optional. Generates a CSV file that lists the resources that would change, without making changes. |
 | `-UseManagedIdentity` | Switch | Optional. Signs in with managed identity. Required for Azure Automation runbooks. |
+| `-WaitForCompletion` | Switch | Optional. Waits for each submitted extension update to reach a terminal provisioning state and reports the confirmed outcome. Without it, the report records `RequestSubmitted`, which means only that Azure accepted the request. The run is slower because the script polls each machine. |
+| `-WaitTimeoutSeconds` | Integer | Optional. Maximum wait per resource when you use `-WaitForCompletion`. Default is `300`. Reaching the timeout isn't a failure. The script records `TimedOut` because the agent may still apply the update. |
+| `-NoSummary` | Switch | Optional. Skips the execution outcome summary that the script prints at the end of the run, including the root causes of failed and skipped resources. |
 
 <sup>1</sup> Create a subscriptions CSV file with:
 
@@ -152,6 +160,12 @@ Get-AzSubscription | Export-Csv .\mysubscriptions.csv -NoTypeInformation
 
 ```powershell
 .\modify-arc-sql-license-type.ps1 -SubId <subscription_id> -MachineName machines.csv -LicenseType PAYG -Force
+```
+
+### Example 11: Wait for confirmed results
+
+```powershell
+.\modify-arc-sql-license-type.ps1 -SubId <subscription_id> -LicenseType PAYG -Force -WaitForCompletion -WaitTimeoutSeconds 600
 ```
 
 ## Run the script in Cloud Shell
